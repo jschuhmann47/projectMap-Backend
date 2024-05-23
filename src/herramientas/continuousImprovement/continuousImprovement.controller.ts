@@ -1,14 +1,13 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { ProjectService } from '../../project/project.service';
-import { FodaService } from '../foda/foda.service';
-import { PestelService } from '../pestel/pestel.service';
 import { AnsoffService } from '../ansoff/ansoff.service';
-import { PorterService } from '../porter/porter.service';
+import { BalancedScorecardService } from '../balancedScorecard/balancedScorecard.service';
+import { FodaService } from '../foda/foda.service';
 import { MckinseyService } from '../mckinsey/mckinsey.service';
 import { OkrService } from '../okr/okr.service';
-import { BalancedScorecardService } from '../balancedScorecard/balancedScorecard.service';
+import { PestelService } from '../pestel/pestel.service';
+import { PorterService } from '../porter/porter.service';
 import { QuestionnaireService } from '../questionnaire/questionnaire.service';
 
 @UseGuards(AuthGuard('jwt'))

@@ -1,4 +1,3 @@
-import { Prop } from '@nestjs/mongoose';
 import { Tool } from '../herramientas/tools';
 
 export class StickyNoteDto {

@@ -1,10 +1,6 @@
-import { StickyNote } from '../sticky-notes/stickyNote.schema';
-import { ProjectService } from '../project/project.service';
-import { EmailNotification } from './EmailNotification';
-import { PipelineStage } from 'mongoose';
 import { Project } from '../project/project.schema';
-import { UserService } from '../user/user.service';
-import { User } from '../user/user.schema';
+import { StickyNote } from '../sticky-notes/stickyNote.schema';
+import { EmailNotification } from './EmailNotification';
 
 export class NewStickyNoteNotification extends EmailNotification {
   stickyNote: StickyNote;

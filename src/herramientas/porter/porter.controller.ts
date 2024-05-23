@@ -7,10 +7,10 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { PorterService } from './porter.service';
-import { BulkEditQuestions, PorterDto, PreguntaDto } from './porter.dto';
-import { Porter, Pregunta } from './porter.schema';
 import { ApiTags } from '@nestjs/swagger';
+import { BulkEditQuestions, PorterDto, PreguntaDto } from './porter.dto';
+import { Porter } from './porter.schema';
+import { PorterService } from './porter.service';
 
 @ApiTags('porter')
 @Controller('porter')

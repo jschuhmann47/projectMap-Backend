@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Tool } from '../herramientas/tools';
 import mongoose, { Document } from 'mongoose';
-import { Ansoff } from '../herramientas/ansoff/ansoff.schema';
+import { Tool } from '../herramientas/tools';
 
 export type StickyNoteDocument = StickyNote & Document;
 

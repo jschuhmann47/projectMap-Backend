@@ -1,5 +1,3 @@
-import { McKinsey, UnidadDeNegocio } from './mckinsey.schema';
-import { Pregunta } from '../porter/porter.schema';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class McKinseyDto {

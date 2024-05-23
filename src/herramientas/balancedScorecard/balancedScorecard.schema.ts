@@ -1,10 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { Trend } from './trends';
-import { Area } from './perspectives';
-import { Deviation } from './deviations';
 import { Completition } from '../completition';
-import { mcKinseySchema } from '../mckinsey/mckinsey.schema';
+import { Deviation } from './deviations';
+import { Area } from './perspectives';
+import { Trend } from './trends';
 
 export type BalancedScoreCardDocument = BalancedScorecard & Document;
 

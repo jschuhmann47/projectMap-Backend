@@ -1,17 +1,10 @@
-import {
-  forwardRef,
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
 import * as bcrypt from 'bcrypt';
 import { User } from './user.schema';
 import { Roles } from './user.roles';
-import { ProjectService } from '../project/project.service';
 import { ProjectAssignedNotification } from '../notifications/ProjectAssignedNotification';
 import { Project } from '../project/project.schema';
 

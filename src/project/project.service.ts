@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UserService } from '../user/user.service';
 import { ProjectDto } from './project.dto';
 import { Project } from './project.schema';
-import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ProjectService {

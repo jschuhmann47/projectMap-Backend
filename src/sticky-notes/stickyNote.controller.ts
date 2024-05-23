@@ -11,9 +11,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { StickyNoteService } from './stickyNote.service';
 import { Tool } from '../herramientas/tools';
 import { StickyNoteDto } from './stickyNote.dto';
+import { StickyNoteService } from './stickyNote.service';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('sticky-notes')

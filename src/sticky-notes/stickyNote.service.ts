@@ -6,7 +6,6 @@ import { StickyNoteDto } from './stickyNote.dto';
 import { Tool } from '../herramientas/tools';
 import { NewStickyNoteNotification } from '../notifications/NewStickyNoteNotification';
 import { ProjectService } from '../project/project.service';
-import { Project } from '../project/project.schema';
 import { User } from '../user/user.schema';
 import { UserService } from '../user/user.service';
 

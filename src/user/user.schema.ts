@@ -1,5 +1,4 @@
 import * as mongoose from 'mongoose';
-import * as bcrypt from 'bcrypt';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Roles } from './user.roles';
 import { Project } from '../project/project.schema';

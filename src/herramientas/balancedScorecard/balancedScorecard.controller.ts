@@ -8,16 +8,15 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { BalancedScorecardService } from './balancedScorecard.service';
+import { ApiTags } from '@nestjs/swagger';
 import {
   BalancedScorecardDto,
   CheckpointDto,
   InitiativeDto,
   ObjectiveDto,
 } from './balancedScorecard.dto';
-import { InjectModel } from '@nestjs/mongoose';
+import { BalancedScorecardService } from './balancedScorecard.service';
 
 @Controller('balanced-scorecards')
 @ApiTags('balanced-scorecards')

@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ProjectModule } from '../project/project.module';
+import { UserModule } from '../user/user.module';
+import { StickyNoteController } from './stickyNote.controller';
 import { StickyNote, StickyNoteSchema } from './stickyNote.schema';
 import { StickyNoteService } from './stickyNote.service';
-import { StickyNoteController } from './stickyNote.controller';
-import { ProjectModule } from '../project/project.module';
-import { UserService } from '../user/user.service';
-import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [

@@ -1,9 +1,7 @@
-import { SituacionDelMercado } from '../ansoff/situacionDelMercado';
-import { SituacionDelProducto } from '../ansoff/situacionDelProducto';
-import { Fuerza } from './fuerza';
-import { Pregunta } from './porter.schema';
 import { ApiProperty } from '@nestjs/swagger';
+import { Fuerza } from './fuerza';
 import { NivelDeConcordancia } from './nivelDeConcordancia';
+import { Pregunta } from './porter.schema';
 import { Valoracion } from './valoracion';
 
 export class PorterDto {

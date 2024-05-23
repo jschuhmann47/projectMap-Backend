@@ -10,8 +10,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
+import { BalancedScorecardService } from 'src/herramientas/balancedScorecard/balancedScorecard.service';
 import { FodaService } from 'src/herramientas/foda/foda.service';
 import { PestelService } from 'src/herramientas/pestel/pestel.service';
+import { AnsoffService } from '../herramientas/ansoff/ansoff.service';
+import { MckinseyService } from '../herramientas/mckinsey/mckinsey.service';
+import { OkrService } from '../herramientas/okr/okr.service';
+import { PorterService } from '../herramientas/porter/porter.service';
+import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service';
 import {
   ProjectDto,
   ShareProjectDto,
@@ -19,13 +26,6 @@ import {
   StopSharingProjectEmailDto,
 } from './project.dto';
 import { ProjectService } from './project.service';
-import { AnsoffService } from '../herramientas/ansoff/ansoff.service';
-import { ApiTags } from '@nestjs/swagger';
-import { PorterService } from '../herramientas/porter/porter.service';
-import { MckinseyService } from '../herramientas/mckinsey/mckinsey.service';
-import { OkrService } from '../herramientas/okr/okr.service';
-import { BalancedScorecardService } from 'src/herramientas/balancedScorecard/balancedScorecard.service';
-import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service';
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')

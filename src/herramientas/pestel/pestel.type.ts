@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { Area, Importancia, Intensidad, Tendencia } from './enums';
+import { Area } from './enums';
 
 export interface PestelPreSeed extends Document {
   area: Area;
