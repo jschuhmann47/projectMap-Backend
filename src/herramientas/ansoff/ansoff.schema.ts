@@ -24,7 +24,7 @@ export class Producto {
   @Prop({ type: String, enum: Exito })
   exito: string;
 
-  @Prop({ type: String, enum: Estrategia })
+  @Prop({ type: String, enum: Estrategia.Estrategia })
   estrategia: string;
 
   constructor(
