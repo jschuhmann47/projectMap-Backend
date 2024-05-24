@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ansoff, AnsoffDocument, Producto } from './ansoff.schema';
 import { Model } from 'mongoose';
-import { Estrategia } from './estrategia';
+import * as Estrategia from './estrategia';
 import { AnsoffDto, AnsoffProductDto } from './ansoff.dto';
 import { SituacionDelMercado } from './situacionDelMercado';
 import { Exito } from './exito';

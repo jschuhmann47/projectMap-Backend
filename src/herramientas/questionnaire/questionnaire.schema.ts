@@ -1,6 +1,5 @@
-import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Preguntas } from '../porter/preguntas';
+import { Document } from 'mongoose';
 import { Completition } from '../completition';
 
 export type QuestionnaireDocument = Questionnaire & Document;

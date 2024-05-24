@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 import { SituacionDelProducto } from './situacionDelProducto';
 import { SituacionDelMercado } from './situacionDelMercado';
 import { Exito } from './exito';
-import { Estrategia } from './estrategia';
+import * as Estrategia from './estrategia';
 import { Completition } from '../completition';
 
 export type AnsoffDocument = Ansoff & Document;

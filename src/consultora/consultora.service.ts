@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { ConsultoraDto } from './consultora.dto';
 import { UserService } from '../user/user.service';
 import { User } from '../user/user.schema';
-import { Roles } from '../user/user.roles';
+import * as Roles from '../user/user.roles';
 import { ProjectService } from '../project/project.service';
 
 @Injectable()

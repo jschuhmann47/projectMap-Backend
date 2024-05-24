@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { NivelDeConcordancia } from './nivelDeConcordancia';
-import { Valoracion } from './valoracion';
-import { Fuerza } from './fuerza';
-import { okrSchema } from '../okr/okr.schema';
-import { Preguntas } from './preguntas';
 import { Completition } from '../completition';
+import { Fuerza } from './fuerza';
+import { NivelDeConcordancia } from './nivelDeConcordancia';
+import { Preguntas } from './preguntas';
+import { Valoracion } from './valoracion';
 
 export type PorterDocument = Porter & Document;
 

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Completition } from '../completition';
-import { Cuadrantes } from './cuadrantes';
+import * as Cuadrantes from './cuadrantes';
 
 export type MckinseyDocument = McKinsey & Document;
 

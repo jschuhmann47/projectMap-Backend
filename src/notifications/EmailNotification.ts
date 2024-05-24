@@ -1,19 +1,19 @@
+import * as SgMail from '@sendgrid/mail';
+
 export abstract class EmailNotification {
   bodyText: string;
   subject: string;
 
   async send(destination: string) {
     try {
-      const sgMail = require('@sendgrid/mail');
-      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      SgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
         to: destination,
         from: 'projectmap.utn@gmail.com',
         subject: this.subject,
         text: this.bodyText,
       };
-      sgMail
-        .send(msg)
+      SgMail.send(msg)
         .then(() => {
           console.log('Email sent');
         })
