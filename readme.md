@@ -8,6 +8,13 @@ cd projectMap-Backend
 npm install
 ```
 
+Required env vars:
+
+- MONGO_URI
+- SECRET_KEY
+- SENDGRID_API_KEY
+- PORT
+
 ## Running the app
 
 ```bash
