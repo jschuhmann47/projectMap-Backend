@@ -51,7 +51,7 @@ export const mapTendenciaToValue = (key: Tendencia, area: Area): number => {
       [Tendencia.MEJORA_MUCHO]: 1,
       [Tendencia.MEJORA]: 2,
       [Tendencia.SE_MANTIENE]: 3,
-      [Tendencia.EMPEORA_MUCHO]: 4,
+      [Tendencia.EMPEORA]: 4,
       [Tendencia.EMPEORA_MUCHO]: 5,
     },
     [Area.AMENAZA]: {
