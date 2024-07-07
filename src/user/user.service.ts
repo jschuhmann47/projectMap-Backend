@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
 import * as bcrypt from 'bcrypt'
-import { User, Roles } from './user.schema'
+import { User } from './user.schema'
 import { ProjectAssignedNotification } from '../notifications/ProjectAssignedNotification'
 import { Project } from '../project/project.schema'
 
@@ -55,19 +55,19 @@ export class UserService {
             .populate(['sharedProjects', 'consultora'])
     }
 
-    async updateRole(userId: string, role: Roles) {
-        const user: User = await this.userModel.findById(userId)
-        user.role = role
-        return new this.userModel(user).save()
-    }
+    // async updateRole(userId: string, role: Roles) {
+    //     const user: User = await this.userModel.findById(userId)
+    //     user.role = role
+    //     return new this.userModel(user).save()
+    // }
 
     async update(userId: string, updateUserDto: UpdateUserDto) {
         const user: User = await this.userModel.findById(userId)
         if (updateUserDto.firstName) user.firstName = updateUserDto.firstName
         if (updateUserDto.lastName) user.lastName = updateUserDto.lastName
-        if (updateUserDto.biography) user.biography = updateUserDto.biography
-        if (updateUserDto.calendlyUser)
-            user.calendlyUser = updateUserDto.calendlyUser
+        //if (updateUserDto.biography) user.biography = updateUserDto.biography
+        /*if (updateUserDto.calendlyUser)
+            user.calendlyUser = updateUserDto.calendlyUser*/
         return new this.userModel(user).save()
     }
 
@@ -95,12 +95,12 @@ export class UserService {
     async assignProjects(userId: string, projects: Project[]) {
         const user = await this.userModel.findById(userId)
 
-        user.sharedProjects.push(...projects)
+        //user.sharedProjects.push(...projects)
 
-        user.sharedProjects = user.sharedProjects.filter(
+        /*user.sharedProjects = user.sharedProjects.filter(
             (value, index) => user.sharedProjects.indexOf(value) === index
         )
-
+*/
         const userUpdated = await new this.userModel(user).save()
 
         projects.forEach((project) =>
@@ -113,7 +113,7 @@ export class UserService {
     async replaceAssignProjects(userId: string, projects: Project[]) {
         const user = await this.userModel.findById(userId)
 
-        user.sharedProjects = projects
+        //user.sharedProjects = projects
 
         const userUpdated = await new this.userModel(user).save()
 
@@ -125,12 +125,12 @@ export class UserService {
     }
 
     async removeProjects(userId: string, projectIds: string[]) {
-        const user = await this.findById(userId)
+        // const user = await this.findById(userId)
 
-        user.sharedProjects = user.sharedProjects.filter(
-            (project) => !projectIds.includes(project._id.toString())
-        )
-        return new this.userModel(user).save()
+        // user.sharedProjects = user.sharedProjects.filter(
+        //     (project) => !projectIds.includes(project._id.toString())
+        // )
+        // return new this.userModel(user).save()
     }
 
     async removeConsultant(userId: string) {

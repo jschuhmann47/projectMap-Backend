@@ -178,11 +178,11 @@ export class ConsultoraService {
     }
 
     private checkUserIsConsultant(user: User) {
-        if (user.role && !Roles.isConsultor(user))
-            throw new HttpException(
-                'User is not consultant',
-                HttpStatus.BAD_REQUEST
-            )
+        // if (user.role && !Roles.isConsultor(user))
+        //     throw new HttpException(
+        //         'User is not consultant',
+        //         HttpStatus.BAD_REQUEST
+        //     )
     }
 
     private checkProjectsBelongToConsultora(

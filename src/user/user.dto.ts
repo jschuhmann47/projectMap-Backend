@@ -1,4 +1,4 @@
-import { Roles } from './user.schema'
+//import { Roles } from './user.schema'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class UserDto {
@@ -25,8 +25,8 @@ export class CreateUserDto {
     @ApiProperty()
     email: string
 
-    @ApiProperty({ enum: Roles })
-    type: Roles
+    // @ApiProperty({ enum: Roles })
+    // type: Roles
 
     @ApiProperty()
     biography: string

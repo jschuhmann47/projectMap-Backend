@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common'
 import { UserService } from './user.service'
 import { ApiTags } from '@nestjs/swagger'
-import { Roles } from './user.schema'
+//import { Roles } from './user.schema'
 import { UpdateUserDto } from './user.dto'
 
 @ApiTags('users')
@@ -14,10 +14,10 @@ export class UserController {
         return this.userService.findById(userId)
     }
 
-    @Put(':userId/role')
-    async updateRole(@Param('userId') userId, @Query('role') role: Roles) {
-        return this.userService.updateRole(userId, role)
-    }
+    // @Put(':userId/role')
+    // async updateRole(@Param('userId') userId, @Query('role') role: Roles) {
+    //     return this.userService.updateRole(userId, role)
+    // }
 
     @Put(':userId')
     async update(

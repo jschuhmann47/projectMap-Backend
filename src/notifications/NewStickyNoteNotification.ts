@@ -9,7 +9,7 @@ export class NewStickyNoteNotification extends EmailNotification {
         super()
         this.stickyNote = stickyNote
         this.project = project
-        this.bodyText = `There is a new sticky note in your project: ${this.project.titulo}. Note:${stickyNote.text}`
+        this.bodyText = `There is a new sticky note in your project: ${this.project.name}. Note:${stickyNote.text}`
         this.subject = `New note!`
     }
 

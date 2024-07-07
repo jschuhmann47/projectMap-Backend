@@ -10,6 +10,7 @@
     "build": "nest build -b swc",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "nest start",
+    "start:db": "docker-compose up mongo",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

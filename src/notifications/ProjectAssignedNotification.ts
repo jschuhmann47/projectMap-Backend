@@ -6,7 +6,7 @@ export class ProjectAssignedNotification extends EmailNotification {
     constructor(project: Project) {
         super()
         this.project = project
-        this.bodyText = `You have been assigned a new project: ${this.project.titulo}!`
+        this.bodyText = `You have been assigned a new project: ${this.project.name}!`
         this.subject = `New Project Assigned!`
     }
 

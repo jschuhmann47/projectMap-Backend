@@ -42,7 +42,7 @@ export class StickyNoteService {
             )
 
         destinations.push(...sharedUsers)
-        destinations.push(project.owner)
+        //destinations.push(project.owner)
 
         await new NewStickyNoteNotification(
             stickyNoteDocument,
