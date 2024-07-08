@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import type { Project } from '../project/project.schema'
-import type { Consultora } from '../consultora/consultora.schema'
 
 @Schema()
 export class User {
