@@ -1,3 +1,3 @@
 export interface Admin {
-  adminIds: string[];
+    adminIds: string[]
 }

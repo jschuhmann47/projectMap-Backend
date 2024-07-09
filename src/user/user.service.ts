@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
 import * as bcrypt from 'bcrypt'
-import { User } from './user.schema'
+import { Model } from 'mongoose'
 import { ProjectAssignedNotification } from '../notifications/ProjectAssignedNotification'
 import { Project } from '../project/project.schema'
+import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
+import { User } from './user.schema'
 
 @Injectable()
 export class UserService {
@@ -126,7 +126,6 @@ export class UserService {
 
     async removeProjects(userId: string, projectIds: string[]) {
         // const user = await this.findById(userId)
-
         // user.sharedProjects = user.sharedProjects.filter(
         //     (project) => !projectIds.includes(project._id.toString())
         // )
