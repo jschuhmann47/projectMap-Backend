@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import * as mongoose from 'mongoose'
 import type { User } from '../user/user.schema'
-import { Participant } from 'sample-data/models'
+import { Participant } from './participant.schema'
 
 @Schema()
 export class Project {
@@ -18,6 +18,9 @@ export class Project {
 
     // @Prop({ type: String, require: true })
     // color: string
+
+    @Prop({ type: String, require: true })
+    descripcion: string
 
     @Prop({ type: String, require: true })
     name: string
