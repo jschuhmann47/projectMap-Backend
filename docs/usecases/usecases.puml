@@ -1,0 +1,12 @@
+@startuml projectMap
+skinparam componentStyle uml2
+
+:Alumno:
+
+[ProjectMap]
+
+:Alumno: ---> [ProjectMap] : Carga de proyectos
+:Alumno: ---> [ProjectMap] : Datos del alumno
+[ProjectMap] ---> :Alumno: : Estado del proyecto
+
+@enduml

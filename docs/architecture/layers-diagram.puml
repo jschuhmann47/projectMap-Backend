@@ -1,0 +1,30 @@
+@startuml projectMap
+skinparam componentStyle uml2
+
+
+package "Client Layer" {
+rectangle PC
+}
+
+package "Application Layer" {
+  package "Frontend" {
+    [React App]
+}
+
+package "Backend" {
+    [Nest.js Server]
+}
+
+}
+package "Data Layer" {
+cloud {
+    database MongoDB {
+        [Collections]
+    }
+}
+}
+PC -- [React App]
+[React App] -- [Nest.js Server]
+[Nest.js Server] -- MongoDB
+
+@enduml

@@ -1,0 +1,58 @@
+@startuml projectMap
+skinparam componentStyle uml2
+
+:Usuario:
+
+package "ProjectMap" {
+  package "Frontend" {
+    [React App]
+}
+
+cloud {
+    database MongoDB {
+        [Collections]
+    }
+}
+
+package "Backend" {
+    package "Nest.js Server" {
+        [App]
+        [Auth]
+        [Consultora]
+        [Ansoff]
+        [Balanced Scorecard]
+        [Continuous Improvement]
+        [Foda]
+        [McKinskey]
+        [OKR]
+        [Pestel]
+        [Porter]
+        [Questionnaire]
+        [Notifications]
+        [Project]
+        [Sticky Notes]
+        [User]
+    }
+}
+
+:Usuario: <--> [React App]
+[React App] <--> [App]
+[Nest.js Server] <--> [Collections]
+[App] --> [User]
+[App] --> [Auth]
+[App] --> [Consultora]
+[App] --> [Ansoff]
+[App] --> [Balanced Scorecard]
+[App] --> [Continuous Improvement]
+[App] --> [Foda]
+[App] --> [McKinskey]
+[App] --> [OKR]
+[App] --> [Pestel]
+[App] --> [Porter]
+[App] --> [Questionnaire]
+[App] --> [Notifications]
+[App] --> [Project]
+[App] --> [Sticky Notes]
+
+}
+@enduml
