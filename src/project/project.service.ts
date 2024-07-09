@@ -63,7 +63,7 @@ export class ProjectService {
     }
 
     async findSharedProjects(userId: string) {
-        const user = await this.userService.findById(userId)
+        //const user = await this.userService.findById(userId)
         return null // user.sharedProjects TODO: borrar
     }
     async update(id: string, updated: ProjectDto) {

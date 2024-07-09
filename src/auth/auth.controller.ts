@@ -43,7 +43,7 @@ export class AuthController {
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/profile')
-    async getProfile(@Req() req: any) {
+    async getProfile(@Req() req: { user: { email: string } }) {
         const { email } = req.user
         const payload = {
             email,

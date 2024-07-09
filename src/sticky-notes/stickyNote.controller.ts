@@ -40,7 +40,10 @@ export class StickyNoteController {
     }
 
     @Post()
-    async create(@Req() req: any, @Body() stickyNoteDto: StickyNoteDto) {
+    async create(
+        @Req() req: { user: { id: string } },
+        @Body() stickyNoteDto: StickyNoteDto
+    ) {
         const { id: userId } = req.user
         const stickyNote = await this.stickyNoteService.create(
             stickyNoteDto,

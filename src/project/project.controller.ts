@@ -44,14 +44,14 @@ export class ProjectController {
     ) {}
 
     @Get('')
-    async getAllUserProjects(@Req() req: any) {
+    async getAllUserProjects(@Req() req: { user: { id: string } }) {
         const { id } = req.user
         const projects = await this.projectService.findUserProjects(id)
         return projects
     }
 
     @Get('shared')
-    async getAllSharedProjects(@Req() req: any) {
+    async getAllSharedProjects(@Req() req: { user: { id: string } }) {
         const { id: userId } = req.user
         const projects = await this.projectService.findSharedProjects(userId)
         return projects
@@ -115,7 +115,10 @@ export class ProjectController {
     }
 
     @Post('')
-    async insert(@Req() req: any, @Body() projectDTO: ProjectDto) {
+    async insert(
+        @Req() req: { user: { id: string } },
+        @Body() projectDTO: ProjectDto
+    ) {
         const { id } = req.user
 
         projectDTO.owner = id

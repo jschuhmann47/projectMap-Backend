@@ -4,8 +4,8 @@ import { Consultora } from './consultora.schema'
 import { Model } from 'mongoose'
 import { ConsultoraDto } from './consultora.dto'
 import { UserService } from '../user/user.service'
-import { User } from '../user/user.schema'
 import { ProjectService } from '../project/project.service'
+import { User } from 'src/user/user.schema'
 
 @Injectable()
 export class ConsultoraService {

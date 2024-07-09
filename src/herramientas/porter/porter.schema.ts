@@ -54,7 +54,7 @@ export class Porter {
     preguntas: Pregunta[]
 
     @Prop({ type: Object })
-    preguntasFormatted: any
+    preguntasFormatted: Record<string, unknown>
 
     @Prop({ type: String, default: Completition.Vacio })
     completion: Completition
