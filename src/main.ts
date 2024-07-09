@@ -19,6 +19,31 @@ async function bootstrap() {
     SwaggerModule.setup('docs', app, document)
 
     await app.listen(process.env.PORT || 3000)
+    // to print routes
+    // const server = app.getHttpServer()
+    // const router = server._events.request._router
+
+    // const availableRoutes: [] = router.stack
+    //     .map((layer) => {
+    //         if (layer.route) {
+    //             return {
+    //                 route: {
+    //                     path: layer.route?.path,
+    //                     method: layer.route?.stack[0].method,
+    //                 },
+    //             }
+    //         }
+    //     })
+    //     .filter((item) => item !== undefined)
+    // const fs = require('node:fs')
+
+    // fs.writeFile('./docs/routes.json', JSON.stringify(availableRoutes), (err) => {
+    //     if (err) {
+    //         console.error(err)
+    //     } else {
+    //         console.log('saved')
+    //     }
+    // })
 }
 
 bootstrap()

@@ -1,0 +1,794 @@
+[
+    {
+        "route": {
+            "path": "/docs/swagger-ui-init.js",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/docs/docs/swagger-ui-init.js",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/docs",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/docs/",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/docs-json",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/docs-yaml",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/tools",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/shared",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/shared",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:id/foda",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:id/pestel",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:id/ansoff",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/porter",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/mckinsey",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/okr-projects",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/balanced-scorecards",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/questionnaires",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/share",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/share/email",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/share",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:projectId/share/email/stop",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:id",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/projects/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/options",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/preSeeds",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/:id/factor",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/:id",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/:id/factor/:idFactor",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/:id/factor/:idFactor",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/foda/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/preSeeds",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/preSeeds",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/options",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/:id/factor",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/:id",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/:id/factor/:idFactor",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/:id/factor/:idFactor",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/pestel/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff/options",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff/:id/products",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff/:id/products/:productId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff/:projectId/products/:productId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/ansoff/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/options",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/preguntas",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:porterId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:porterId/preguntas",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:porterId/preguntas/:questionId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:porterId/preguntas/:questionId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:porterId/preguntas/replace",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:porterId/consejos",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/porter/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey/projects/:projectId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey/:mcKinseyId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey/:mcKinseyId/unidades/:unidadId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey/:mcKinseyId/unidades/:unidadId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey/:mcKinseyId/unidades",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/mckinsey/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId/global",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId/key-results/:keyResultId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId/key-results/:keyResultId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status/:keyStatusId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status/:keyStatusId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/okr-projects/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/options",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/initiatives",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/objectives",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/objectives/:objectiveId/checkpoints",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/initiatives/:initiativeId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/objectives/:objectiveId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/objectives/:objectiveId/checkpoints/:checkpointId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/initiatives/:initiativeId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/objectives/:objectiveId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id/objectives/:objectiveId/checkpoints/:checkpointId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/balanced-scorecards/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires/questions",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires/:id/answers",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires/:id/chapters/:chapterId/questions/:questionId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires/:id/chapters/:chapterId/questions/:questionId/answers/:answerId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/questionnaires/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/users/:userId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/users/:userId/role",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/users/:userId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/admin",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/admin",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/consultants/add",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/consultants/remove",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/consultants/projects/add",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/consultants/projects/remove",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/projects/:projectId",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/consultoras/:consultoraId/projects/:projectId",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/auth/onlyauth",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/auth/register",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/auth/login",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/auth/profile",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/sticky-notes/tools/:tool/:toolId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/sticky-notes/projects/:projectId",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/sticky-notes/:id",
+            "method": "get"
+        }
+    },
+    {
+        "route": {
+            "path": "/sticky-notes",
+            "method": "post"
+        }
+    },
+    {
+        "route": {
+            "path": "/sticky-notes/:id",
+            "method": "put"
+        }
+    },
+    {
+        "route": {
+            "path": "/sticky-notes/:id",
+            "method": "delete"
+        }
+    },
+    {
+        "route": {
+            "path": "/continuous-improvements/:projectId",
+            "method": "get"
+        }
+    }
+]
