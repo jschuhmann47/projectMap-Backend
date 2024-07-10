@@ -6,6 +6,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
     Req,
     UseGuards,
 } from '@nestjs/common'
@@ -50,10 +51,16 @@ export class ProjectController {
         return projects
     }
 
+    @Get('search')
+    async searchProjects(@Query() query) {
+        const name = query['name']
+        const projects = await this.projectService.findProjectsByName(name)
+        return projects
+    }
+
     @Get('shared')
-    async getAllSharedProjects(@Req() req: { user: { id: string } }) {
-        const { id: userId } = req.user
-        const projects = await this.projectService.findSharedProjects(userId)
+    async getAllSharedProjects() {
+        const projects = await this.projectService.findSharedProjects()
         return projects
     }
 

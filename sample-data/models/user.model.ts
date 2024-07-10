@@ -3,6 +3,6 @@ export interface User {
     firstName: string
     lastName: string
     email: string
-    passwoord: string
+    password: string
     projectsId: string[]
 }

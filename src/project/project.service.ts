@@ -4,6 +4,7 @@ import { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto } from './project.dto'
 import { Project } from './project.schema'
+import { escapeRegExp } from './utils/escape_string'
 
 @Injectable()
 export class ProjectService {
@@ -62,9 +63,15 @@ export class ProjectService {
         return this.projectModel.find({ owner })
     }
 
-    async findSharedProjects(userId: string) {
+    async findProjectsByName(name: string) {
+        return this.projectModel.find({
+            name: new RegExp(escapeRegExp(name), 'i'),
+        })
+    }
+
+    async findSharedProjects() {
         //const user = await this.userService.findById(userId)
-        return null // user.sharedProjects TODO: borrar
+        return [] // user.sharedProjects TODO: borrar
     }
     async update(id: string, updated: ProjectDto) {
         return this.projectModel.findOneAndUpdate({ _id: id }, updated)
