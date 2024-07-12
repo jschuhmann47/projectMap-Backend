@@ -6,8 +6,8 @@ import type { Project } from '../project/project.schema'
 export class User {
     _id: mongoose.Types.ObjectId
 
-    @Prop({ type: String, required: true })
-    userId: string
+    // @Prop({ type: String, required: true })
+    // userId: string
 
     @Prop({ type: String, required: true })
     firstName: string
@@ -21,7 +21,7 @@ export class User {
     @Prop({ type: String, required: true })
     password: string
 
-    @Prop({ type: String, required: false })
+    @Prop({ type: Boolean, required: true, default: false })
     isAdmin: boolean
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }] })
