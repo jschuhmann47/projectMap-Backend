@@ -47,7 +47,7 @@ export class UserService {
         return user
     }
 
-    async findByPayload(email: string) {
+    async findByEmail(email: string) {
         const user = await this.userModel.findOne({
             email: insensitiveRegExp(email),
         })

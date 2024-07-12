@@ -16,7 +16,7 @@ export class UserController {
     @Get('user/search')
     async findByEmail(@Query() query) {
         const email = query['email']
-        return this.userService.findByPayload(email)
+        return this.userService.findByEmail(email)
     }
 
     @Put(':userId') // TODO change this route since conflicts with everything
