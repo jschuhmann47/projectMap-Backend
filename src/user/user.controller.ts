@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common'
-import { UserService } from './user.service'
+import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-//import { Roles } from './user.schema'
+import { UserService } from './user.service'
 import { UpdateUserDto } from './user.dto'
 
 @ApiTags('users')
@@ -9,17 +8,18 @@ import { UpdateUserDto } from './user.dto'
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @Get(':userId')
+    @Get(':userId') // TODO change this route since conflicts with everything
     async findById(@Param('userId') userId: string) {
         return this.userService.findById(userId)
     }
 
-    // @Put(':userId/role')
-    // async updateRole(@Param('userId') userId, @Query('role') role: Roles) {
-    //     return this.userService.updateRole(userId, role)
-    // }
+    @Get('user/search')
+    async findByEmail(@Query() query) {
+        const email = query['email']
+        return this.userService.findByPayload(email)
+    }
 
-    @Put(':userId')
+    @Put(':userId') // TODO change this route since conflicts with everything
     async update(
         @Param('userId') userId,
         @Body() updateUserDto: UpdateUserDto

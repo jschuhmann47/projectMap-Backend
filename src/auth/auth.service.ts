@@ -11,6 +11,6 @@ export class AuthService {
     }
 
     async validateUser(payload: { email: string }) {
-        return await this.userService.findByPayload(payload)
+        return await this.userService.findByPayload(payload['email'])
     }
 }

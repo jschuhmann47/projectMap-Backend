@@ -54,7 +54,7 @@ export class ConsultoraService {
         const user = await this.userService
             .findUserByEmail(userEmail)
             .then((user) => {
-                this.checkUserIsConsultant(user)
+                this.checkUserIsConsultant()
                 return this.userService.assignConsultora(
                     user._id.toString(),
                     consultoraId
@@ -74,7 +74,7 @@ export class ConsultoraService {
         const user = await this.userService
             .findUserByEmail(userEmail)
             .then((user) => {
-                this.checkUserIsConsultant(user)
+                this.checkUserIsConsultant()
                 return this.userService.removeConsultant(user._id.toString())
             })
 
@@ -102,7 +102,7 @@ export class ConsultoraService {
         )
 
         await this.userService.findUserByEmail(userEmail).then((user) => {
-            this.checkUserIsConsultant(user)
+            this.checkUserIsConsultant()
 
             return this.userService.replaceAssignProjects(
                 user._id.toString(),
@@ -121,13 +121,10 @@ export class ConsultoraService {
         const consultora: Consultora = await this.findById(consultoraId)
         this.checkProjectsBelongToConsultora(projects, consultora)
 
-        await this.userService.findUserByEmail(userEmail).then((user) => {
-            this.checkUserIsConsultant(user)
+        await this.userService.findUserByEmail(userEmail).then(() => {
+            this.checkUserIsConsultant()
 
-            return this.userService.removeProjects(
-                user._id.toString(),
-                projects
-            )
+            return this.userService.removeProjects()
         })
 
         return this.findById(consultoraId)
@@ -176,7 +173,7 @@ export class ConsultoraService {
         return this.findById(consultoraId)
     }
 
-    private checkUserIsConsultant(user: User) {
+    private checkUserIsConsultant() {
         // if (user.role && !Roles.isConsultor(user))
         //     throw new HttpException(
         //         'User is not consultant',
