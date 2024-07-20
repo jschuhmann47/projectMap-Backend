@@ -12,12 +12,12 @@ import {
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiTags } from '@nestjs/swagger'
+import { AnsoffService } from '../herramientas/ansoff/ansoff.service'
 import { BalancedScorecardService } from '../herramientas/balancedScorecard/balancedScorecard.service'
 import { FodaService } from '../herramientas/foda/foda.service'
-import { PestelService } from '../herramientas/pestel/pestel.service'
-import { AnsoffService } from '../herramientas/ansoff/ansoff.service'
 import { MckinseyService } from '../herramientas/mckinsey/mckinsey.service'
 import { OkrService } from '../herramientas/okr/okr.service'
+import { PestelService } from '../herramientas/pestel/pestel.service'
 import { PorterService } from '../herramientas/porter/porter.service'
 import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service'
 import {
@@ -128,7 +128,7 @@ export class ProjectController {
     ) {
         const { id } = req.user
 
-        projectDTO.owner = id
+        projectDTO.requestorId = id
 
         const project = await this.projectService.create(projectDTO)
         return project

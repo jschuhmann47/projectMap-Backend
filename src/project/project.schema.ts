@@ -7,20 +7,8 @@ import { Participant } from './participant.schema'
 export class Project {
     _id: mongoose.Types.ObjectId
 
-    // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-    // owner: User
-
-    // @Prop({ type: String, require: true })
-    // titulo: string
-
-    // @Prop({ type: String, require: true })
-    // descripcion: string
-
-    // @Prop({ type: String, require: true })
-    // color: string
-
     @Prop({ type: String, require: true })
-    descripcion: string
+    description: string
 
     @Prop({ type: String, require: true })
     name: string
