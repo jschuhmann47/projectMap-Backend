@@ -22,10 +22,6 @@ export class ProjectService {
     }
 
     async create(req: ProjectDto) {
-        const isAdmin = await this.userService.isAdmin(req.requestorId)
-        if (!isAdmin) {
-            throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
-        }
         if (!req.name || !req.description) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
         }
