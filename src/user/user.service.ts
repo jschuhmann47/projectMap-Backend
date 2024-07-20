@@ -159,7 +159,7 @@ export class UserService {
     }
 
     async isAdmin(userId: string) {
-        const user = await this.userModel.findOne({ _id: userId })
+        const user = await this.userModel.findById(userId)
         return user.isAdmin
     }
 }
