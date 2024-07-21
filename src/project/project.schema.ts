@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import * as mongoose from 'mongoose'
-import type { User } from '../user/user.schema'
 import { Participant } from './participant.schema'
 
 @Schema()
@@ -28,10 +27,10 @@ export class Project {
     @Prop({ type: String, require: true })
     id: string
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-    coordinators: User[] // userIds
+    @Prop({ type: [Object] })
+    coordinators: { email: string }[] // userIds
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+    @Prop({ type: [Participant] })
     participants: Participant[] // userIds
 }
 

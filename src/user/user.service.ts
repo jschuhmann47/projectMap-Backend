@@ -124,6 +124,7 @@ export class UserService {
         return userUpdated
     }
 
+    // eslint-disable-next-line
     async removeProjects(userId: string, projectIds: string[]) {
         // const user = await this.findById(userId)
         // user.sharedProjects = user.sharedProjects.filter(

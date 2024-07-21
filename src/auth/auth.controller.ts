@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service'
 import { AuthService } from './auth.service'
 import { LoginDTO } from './login.dto'
 import { ApiTags } from '@nestjs/swagger'
+import { User } from 'src/user/user.schema'
 
 @Controller('auth')
 @ApiTags('auth')
@@ -49,12 +50,16 @@ export class AuthController {
             email,
         }
         const token = await this.authService.signPayload(payload)
-        const { email: userEmail, firstName, lastName, isAdmin } = req.user;
+        const { email: userEmail, firstName, lastName, isAdmin } = req.user
 
         return {
             user: {
-                email: userEmail, firstName, lastName, isAdmin
-            }, token
+                email: userEmail,
+                firstName,
+                lastName,
+                isAdmin,
+            },
+            token,
         }
     }
 }

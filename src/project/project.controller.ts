@@ -25,6 +25,7 @@ import {
     ShareProjectDto,
     ShareProjectEmailDto,
     StopSharingProjectEmailDto,
+    UpdateParticipantDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
 
@@ -192,5 +193,31 @@ export class ProjectController {
         return {
             _id: projectId,
         }
+    }
+
+    @Put(':id/update-participant-role')
+    async updateParticipantRole(
+        @Param('id') projectId: string,
+        @Body() projectDTO: UpdateParticipantDto
+    ) {
+        console.log('vengo por aca')
+        console.log({ projectDTO })
+        const project = await this.projectService.updateParticipanRole(
+            projectId,
+            projectDTO
+        )
+        return project
+    }
+
+    @Put(':id/update-coordinator-role')
+    async updateCoordinatorRole(
+        @Param('id') projectId: string,
+        @Body() projectDTO: { userEmail: string }
+    ) {
+        const project = await this.projectService.updateCoordinatorRole(
+            projectId,
+            projectDTO.userEmail
+        )
+        return project
     }
 }
