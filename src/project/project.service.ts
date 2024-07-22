@@ -22,6 +22,9 @@ export class ProjectService {
     }
 
     async create(req: ProjectDto) {
+        if (!this.userService.validateAdmin(req.requestorId)) {
+            throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
+        }
         if (!req.name || !req.description) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
         }
