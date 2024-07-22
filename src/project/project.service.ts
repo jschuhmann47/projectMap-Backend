@@ -14,7 +14,20 @@ export class ProjectService {
     ) {}
 
     async getOne(id: string) {
-        return this.projectModel.findById(id).populate(['owner']).exec()
+        const project = await this.projectModel
+            .findById(id)
+            .populate('coordinators')
+            // .populate('participants')
+            .populate({
+                path: 'participants',
+                populate: { path: 'user' },
+            })
+            .exec()
+        project.coordinators.forEach((u) => this.userService.sanitizeUser(u))
+        project.participants.forEach((u) =>
+            this.userService.sanitizeUser(u.user)
+        )
+        return project
     }
 
     async getSharedUsers(projectId: string) {

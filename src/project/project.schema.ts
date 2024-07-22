@@ -20,7 +20,7 @@ export class Project {
     // color: string
 
     @Prop({ type: String, require: true })
-    descripcion: string
+    description: string
 
     @Prop({ type: String, require: true })
     name: string
@@ -31,7 +31,7 @@ export class Project {
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
     coordinators: User[] // userIds
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+    @Prop({ type: Object })
     participants: Participant[] // userIds
 }
 
