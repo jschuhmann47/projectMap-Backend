@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Sphere } from './sphere.schema'
 
 export class UpdateParticipantDto {
     @ApiProperty()
     userEmail: string
 
-    spheres: Sphere[]
+    sphere: 'read' | 'write' | 'view'
 }
 
 export class ProjectDto {

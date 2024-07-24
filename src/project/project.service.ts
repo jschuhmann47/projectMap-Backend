@@ -104,24 +104,23 @@ export class ProjectService {
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
     }
 
-    async updateParticipanRole(
+    async updateParticipantRole(
         projectId: string,
         participantDto: UpdateParticipantDto
     ) {
         const project = await this.projectModel.findById(projectId)
 
         if (project) {
-            const user = project.participants.find(
+            const participant = project.participants.find(
                 (participant) =>
-                    participant.userEmail == participantDto.userEmail
+                    participant.user.email == participantDto.userEmail
             )
-            console.log({ user })
-            if (user) {
-                user.spehres = participantDto.spheres
+            if (participant) {
+                participant.sphere = participantDto.sphere
             } else {
                 project.participants.push({
-                    userEmail: participantDto.userEmail,
-                    spehres: participantDto.spheres,
+                    user: participant.user, // remember to preload this
+                    sphere: participantDto.sphere,
                 })
             }
         }
@@ -136,12 +135,8 @@ export class ProjectService {
             const user = project.coordinators.find(
                 (coordinator) => coordinator.email == userEmail
             )
-            console.log({ user })
-
             if (!user) {
-                project.coordinators.push({
-                    email: userEmail,
-                })
+                project.coordinators.push(user)
             }
         }
 
