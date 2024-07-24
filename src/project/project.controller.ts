@@ -202,7 +202,7 @@ export class ProjectController {
     ) {
         console.log('vengo por aca')
         console.log({ projectDTO })
-        const project = await this.projectService.updateParticipanRole(
+        const project = await this.projectService.updateParticipantRole(
             projectId,
             projectDTO
         )

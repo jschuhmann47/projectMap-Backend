@@ -38,10 +38,9 @@ export class UserService {
             )
     }
 
-    private sanitizeUser(user: User) {
-        const sanitized = user
-        delete sanitized['password']
-        return sanitized
+    public sanitizeUser(user: User) {
+        user.password = undefined
+        return user
     }
 
     async findByPayload(payload: { email: string }) {
@@ -124,7 +123,7 @@ export class UserService {
         return userUpdated
     }
 
-    // eslint-disable-next-line
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async removeProjects(userId: string, projectIds: string[]) {
         // const user = await this.findById(userId)
         // user.sharedProjects = user.sharedProjects.filter(
