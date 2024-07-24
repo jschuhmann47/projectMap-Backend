@@ -21,7 +21,7 @@ export class User {
     @Prop({ type: String, required: true })
     password: string
 
-    @Prop({ type: String, required: false })
+    @Prop({ type: Boolean, required: true, default: false })
     isAdmin: boolean
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }] })
