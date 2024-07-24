@@ -176,6 +176,7 @@ export class ConsultoraService {
         return this.findById(consultoraId)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private checkUserIsConsultant(user: User) {
         // if (user.role && !Roles.isConsultor(user))
         //     throw new HttpException(
