@@ -39,9 +39,8 @@ export class UserService {
     }
 
     public sanitizeUser(user: User) {
-        const sanitized = user
-        delete sanitized['password']
-        return sanitized
+        user.password = undefined
+        return user
     }
 
     async findByPayload(payload: { email: string }) {

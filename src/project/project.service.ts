@@ -17,10 +17,9 @@ export class ProjectService {
         const project = await this.projectModel
             .findById(id)
             .populate('coordinators')
-            // .populate('participants')
             .populate({
-                path: 'participants',
-                populate: { path: 'user' },
+                path: 'participants.user',
+                model: 'User',
             })
             .exec()
         project.coordinators.forEach((u) => this.userService.sanitizeUser(u))
