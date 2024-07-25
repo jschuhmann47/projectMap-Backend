@@ -10,19 +10,13 @@ export class UpdateParticipantDto {
 
 export class ProjectDto {
     @ApiProperty()
-    owner: string
+    requestorId: string
 
     @ApiProperty()
-    titulo: string
+    name: string
 
     @ApiProperty()
-    descripcion: string
-
-    @ApiProperty()
-    sharedUsers: string[]
-
-    @ApiProperty()
-    color: string
+    description: string
 }
 
 export class ShareProjectDto {

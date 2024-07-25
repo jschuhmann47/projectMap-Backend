@@ -21,8 +21,15 @@ export class ProjectService {
         return this.userService.findUsersBySharedProject(projectId)
     }
 
-    async create(newProject: ProjectDto) {
-        return new this.projectModel(newProject).save()
+    async create(req: ProjectDto) {
+        const isAdmin = await this.userService.isAdmin(req.requestorId)
+        if (!isAdmin) {
+            throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
+        }
+        if (!req.name || !req.description) {
+            throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
+        }
+        return new this.projectModel(req).save()
     }
 
     async shareProject(id: string, userIds: string[]) {
