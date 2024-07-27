@@ -14,7 +14,7 @@ export class ProjectService {
     ) {}
 
     async getOne(id: string) {
-        return this.projectModel.findById(id).populate(['owner']).exec()
+        return this.projectModel.findById(id)//.populate(['owner']).exec()
     }
 
     async getSharedUsers(projectId: string) {
@@ -103,13 +103,13 @@ export class ProjectService {
                 (participant) =>
                     participant.userEmail == participantDto.userEmail
             )
-            console.log({ user })
+
             if (user) {
-                user.spehres = participantDto.spheres
+                user.stages = participantDto.stages
             } else {
                 project.participants.push({
                     userEmail: participantDto.userEmail,
-                    spehres: participantDto.spheres,
+                    stages: participantDto.stages,
                 })
             }
         }
@@ -124,7 +124,6 @@ export class ProjectService {
             const user = project.coordinators.find(
                 (coordinator) => coordinator.email == userEmail
             )
-            console.log({ user })
 
             if (!user) {
                 project.coordinators.push({

@@ -28,6 +28,7 @@ import {
     UpdateParticipantDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
+import { Participant } from './participant.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -200,8 +201,6 @@ export class ProjectController {
         @Param('id') projectId: string,
         @Body() projectDTO: UpdateParticipantDto
     ) {
-        console.log('vengo por aca')
-        console.log({ projectDTO })
         const project = await this.projectService.updateParticipanRole(
             projectId,
             projectDTO
@@ -219,5 +218,21 @@ export class ProjectController {
             projectDTO.userEmail
         )
         return project
+    }
+
+
+    @Get(':id/users/:userEmail/roles')
+    async userPermission(
+        @Param('id') projectId: string,
+        @Param('userEmail') userEmail: string,
+    ) {
+        const project = await this.projectService.getOne(projectId);
+
+        const participant = project.participants?.find(participant => participant.userEmail == userEmail);
+        const coordinator = project.coordinators?.find(participant => participant.email == userEmail);
+        
+        return {
+            participant, coordinator
+        }
     }
 }
