@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Sphere } from './sphere.schema'
+import { Stage } from './stage.schema'
 
 @Schema()
 export class Participant {
@@ -7,7 +7,7 @@ export class Participant {
     userEmail: string
 
     @Prop()
-    spehres: Sphere[]
+    stages: Stage[]
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Participant)

@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import * as mongoose from 'mongoose'
 
 @Schema()
-export class Sphere {
+export class Stage {
     _id: mongoose.Types.ObjectId
 
     @Prop({ type: String, require: true })
@@ -12,4 +12,4 @@ export class Sphere {
     permission: 'read' | 'write' | 'view'
 }
 
-export const ProjectSchema = SchemaFactory.createForClass(Sphere)
+export const ProjectSchema = SchemaFactory.createForClass(Stage)

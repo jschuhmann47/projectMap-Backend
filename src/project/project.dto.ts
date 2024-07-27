@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Sphere } from './sphere.schema'
+import { Stage } from './stage.schema'
 
 export class UpdateParticipantDto {
     @ApiProperty()
     userEmail: string
 
-    spheres: Sphere[]
+    stages: Stage[]
 }
 
 export class ProjectDto {
