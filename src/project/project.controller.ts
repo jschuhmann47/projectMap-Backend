@@ -8,6 +8,7 @@ import {
     Put,
     Query,
     Req,
+    UnauthorizedException,
     UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -25,6 +26,7 @@ import {
     ShareProjectDto,
     ShareProjectEmailDto,
     StopSharingProjectEmailDto,
+    UpdateCoordinatorRolesDro,
     UpdateParticipantDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
@@ -128,9 +130,9 @@ export class ProjectController {
         @Req() req: { user: { id: string } },
         @Body() projectDTO: ProjectDto
     ) {
-        const { id } = req.user
+        // const { id } = req.user
 
-        projectDTO.owner = id
+        // projectDTO.owner = id
 
         const project = await this.projectService.create(projectDTO)
         return project
@@ -196,26 +198,26 @@ export class ProjectController {
         }
     }
 
-    @Put(':id/update-participant-role')
-    async updateParticipantRole(
+    @Put(':id/update-participants-role')
+    async updateParticipantsRole(
         @Param('id') projectId: string,
-        @Body() projectDTO: UpdateParticipantDto
+        @Body() participantsRoleDto: UpdateParticipantDto[]
     ) {
         const project = await this.projectService.updateParticipanRole(
             projectId,
-            projectDTO
+            participantsRoleDto
         )
         return project
     }
 
-    @Put(':id/update-coordinator-role')
-    async updateCoordinatorRole(
+    @Put(':id/update-coordinators-role')
+    async updateCoordinatorsRole(
         @Param('id') projectId: string,
-        @Body() projectDTO: { userEmail: string }
+        @Body() projectDTO: UpdateCoordinatorRolesDro
     ) {
         const project = await this.projectService.updateCoordinatorRole(
             projectId,
-            projectDTO.userEmail
+            projectDTO.userEmails
         )
         return project
     }
@@ -233,6 +235,23 @@ export class ProjectController {
         
         return {
             participant, coordinator
+        }
+    }
+
+    @Get(':id/user/:userEmail/stage/:stageId/edit')
+    async us(
+        @Param('id') projectId: string,
+        @Param('userEmail') userEmail: string,
+        @Param('stageId') stageId: string,
+    ) {
+        const userStagePermission = await this.projectService.getUserStagePermission(
+            projectId,
+            userEmail,
+            stageId
+        )
+
+        if (userStagePermission && userStagePermission.permission != "write") {
+            throw new UnauthorizedException('User is not available to edit this stage')
         }
     }
 }

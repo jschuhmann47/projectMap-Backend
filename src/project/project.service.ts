@@ -5,6 +5,7 @@ import { UserService } from '../user/user.service'
 import { ProjectDto, UpdateParticipantDto } from './project.dto'
 import { Project } from './project.schema'
 import { escapeRegExp } from './utils/escape_string'
+import { Stage } from './stage.schema'
 
 @Injectable()
 export class ProjectService {
@@ -94,44 +95,65 @@ export class ProjectService {
 
     async updateParticipanRole(
         projectId: string,
-        participantDto: UpdateParticipantDto
+        participantDto: UpdateParticipantDto[]
     ) {
         const project = await this.projectModel.findById(projectId)
 
         if (project) {
-            const user = project.participants.find(
-                (participant) =>
-                    participant.userEmail == participantDto.userEmail
-            )
+            participantDto.forEach(participantDto => {
+                const user = project.participants.find(
+                    (participant) =>
+                        participant.userEmail == participantDto.userEmail
+                )
+    
+                if (user) {
+                    user.stages = participantDto.stages
+                } else {
+                    project.participants.push({
+                        userEmail: participantDto.userEmail,
+                        stages: participantDto.stages,
+                    })
+                }
+            })
 
-            if (user) {
-                user.stages = participantDto.stages
-            } else {
-                project.participants.push({
-                    userEmail: participantDto.userEmail,
-                    stages: participantDto.stages,
-                })
-            }
         }
 
         return project.save()
     }
 
-    async updateCoordinatorRole(projectId: string, userEmail: string) {
+    async updateCoordinatorRole(projectId: string, userEmails: string[]) {
         const project = await this.projectModel.findById(projectId)
 
         if (project) {
-            const user = project.coordinators.find(
-                (coordinator) => coordinator.email == userEmail
-            )
+            userEmails.forEach(userEmail => {
+                const matchedUser = project.coordinators.find(
+                    (coordinator) => coordinator.email == userEmail
+                )
 
-            if (!user) {
-                project.coordinators.push({
-                    email: userEmail,
-                })
-            }
+                if (!matchedUser) {
+                    project.coordinators.push({
+                        email: userEmail,
+                    })
+                }
+            })
         }
 
         return project.save()
+    }
+
+    async getUserStagePermission(projectId: string, userEmail: string, stageId: string): Promise<Stage> {
+        const project = await this.projectModel.findById(projectId)
+
+        if (project) {
+            const matchedUser = project.participants.find(
+                (participant) => participant.userEmail == userEmail
+            )
+
+            if (matchedUser) {
+                const stage = matchedUser.stages.find(stage => stage.id == stageId);
+
+                return stage;
+            }
+        }
     }
 }
