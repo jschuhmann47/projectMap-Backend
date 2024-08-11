@@ -15,7 +15,7 @@ export class ProjectService {
     ) {}
 
     async getOne(id: string) {
-        return this.projectModel.findById(id)//.populate(['owner']).exec()
+        return this.projectModel.findById(id) //.populate(['owner']).exec()
     }
 
     async getSharedUsers(projectId: string) {
@@ -100,12 +100,12 @@ export class ProjectService {
         const project = await this.projectModel.findById(projectId)
 
         if (project) {
-            participantDto.forEach(participantDto => {
+            participantDto.forEach((participantDto) => {
                 const user = project.participants.find(
                     (participant) =>
                         participant.userEmail == participantDto.userEmail
                 )
-    
+
                 if (user) {
                     user.stages = participantDto.stages
                 } else {
@@ -115,7 +115,6 @@ export class ProjectService {
                     })
                 }
             })
-
         }
 
         return project.save()
@@ -125,7 +124,7 @@ export class ProjectService {
         const project = await this.projectModel.findById(projectId)
 
         if (project) {
-            userEmails.forEach(userEmail => {
+            userEmails.forEach((userEmail) => {
                 const matchedUser = project.coordinators.find(
                     (coordinator) => coordinator.email == userEmail
                 )
@@ -141,7 +140,11 @@ export class ProjectService {
         return project.save()
     }
 
-    async getUserStagePermission(projectId: string, userEmail: string, stageId: string): Promise<Stage> {
+    async getUserStagePermission(
+        projectId: string,
+        userEmail: string,
+        stageId: string
+    ): Promise<Stage> {
         const project = await this.projectModel.findById(projectId)
 
         if (project) {
@@ -150,9 +153,11 @@ export class ProjectService {
             )
 
             if (matchedUser) {
-                const stage = matchedUser.stages.find(stage => stage.id == stageId);
+                const stage = matchedUser.stages.find(
+                    (stage) => stage.id == stageId
+                )
 
-                return stage;
+                return stage
             }
         }
     }

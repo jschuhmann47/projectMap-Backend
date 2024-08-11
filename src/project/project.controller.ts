@@ -8,7 +8,7 @@ import {
     Put,
     Query,
     Req,
-    UnauthorizedException,
+    ForbiddenException,
     UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -30,7 +30,6 @@ import {
     UpdateParticipantDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
-import { Participant } from './participant.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -222,19 +221,23 @@ export class ProjectController {
         return project
     }
 
-
     @Get(':id/users/:userEmail/roles')
     async userPermission(
         @Param('id') projectId: string,
-        @Param('userEmail') userEmail: string,
+        @Param('userEmail') userEmail: string
     ) {
-        const project = await this.projectService.getOne(projectId);
+        const project = await this.projectService.getOne(projectId)
 
-        const participant = project.participants?.find(participant => participant.userEmail == userEmail);
-        const coordinator = project.coordinators?.find(participant => participant.email == userEmail);
-        
+        const participant = project.participants?.find(
+            (participant) => participant.userEmail == userEmail
+        )
+        const coordinator = project.coordinators?.find(
+            (participant) => participant.email == userEmail
+        )
+
         return {
-            participant, coordinator
+            participant,
+            coordinator,
         }
     }
 
@@ -242,16 +245,19 @@ export class ProjectController {
     async us(
         @Param('id') projectId: string,
         @Param('userEmail') userEmail: string,
-        @Param('stageId') stageId: string,
+        @Param('stageId') stageId: string
     ) {
-        const userStagePermission = await this.projectService.getUserStagePermission(
-            projectId,
-            userEmail,
-            stageId
-        )
+        const userStagePermission =
+            await this.projectService.getUserStagePermission(
+                projectId,
+                userEmail,
+                stageId
+            )
 
-        if (userStagePermission && userStagePermission.permission != "write") {
-            throw new UnauthorizedException('User is not available to edit this stage')
+        if (userStagePermission && userStagePermission.permission != 'write') {
+            throw new ForbiddenException(
+                'User is not available to edit this stage'
+            )
         }
     }
 }
