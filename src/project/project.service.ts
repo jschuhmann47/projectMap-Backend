@@ -161,11 +161,24 @@ export class ProjectService {
             )
         }
         // check that email exists? or it's creating a new account?
+
+        if (
+            project.participants.some((p) => p.userEmail == userEmail) ||
+            project.coordinators.some((c) => c.email == userEmail)
+        ) {
+            throw new HttpException(
+                'Usuario ya existe en el proyecto',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+
         switch (role) {
             case 'participant':
                 project.participants.push({ userEmail, spheres: [] }) // think that should be id instead of email
+                break
             case 'coordinator':
                 project.coordinators.push({ email: userEmail })
+                break
         }
         project.save()
     }
