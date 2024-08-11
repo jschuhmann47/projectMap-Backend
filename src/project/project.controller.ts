@@ -220,4 +220,23 @@ export class ProjectController {
         )
         return project
     }
+
+    @Put(':id/user/add')
+    async addUserToProject(
+        @Param('id') projectId: string,
+        @Body()
+        req: {
+            userEmail: string
+            role: string
+            requestorId: string
+        }
+    ) {
+        const project = await this.projectService.addUserToProject(
+            projectId,
+            req.userEmail,
+            req.role,
+            req.requestorId
+        )
+        return project
+    }
 }
