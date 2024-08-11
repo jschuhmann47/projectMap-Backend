@@ -7,7 +7,7 @@ export class Participant {
     userEmail: string
 
     @Prop()
-    spehres: Sphere[]
+    spheres: Sphere[]
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Participant)

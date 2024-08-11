@@ -105,11 +105,11 @@ export class ProjectService {
             )
             console.log({ user })
             if (user) {
-                user.spehres = participantDto.spheres
+                user.spheres = participantDto.spheres
             } else {
                 project.participants.push({
                     userEmail: participantDto.userEmail,
-                    spehres: participantDto.spheres,
+                    spheres: participantDto.spheres,
                 })
             }
         }
@@ -142,14 +142,14 @@ export class ProjectService {
         role: string,
         requestorId: string
     ) {
-        const isAdmin = await this.userService.isAdmin(requestorId) // this exists on another PR
+        const isAdmin = await this.userService.isAdmin(requestorId)
         if (!isAdmin) {
             throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
         }
         if (!projectId || !userEmail || !role) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
         }
-        if (!isValidRole(role)) {
+        if (!this.isValidRole(role)) {
             throw new HttpException('Rol invalido', HttpStatus.BAD_REQUEST)
         }
 
@@ -162,10 +162,14 @@ export class ProjectService {
         }
         switch (role) {
             case 'participant':
-                project.participants.push(userEmail) // think that should be id instead of email
+                project.participants.push({ userEmail, spheres: [] }) // think that should be id instead of email
             case 'coordinator':
                 project.coordinators.push({ email: userEmail })
         }
         project.save()
+    }
+
+    private isValidRole(role: string) {
+        return role == 'participant' || role == 'coordinator'
     }
 }
