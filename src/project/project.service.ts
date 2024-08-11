@@ -135,4 +135,37 @@ export class ProjectService {
 
         return project.save()
     }
+
+    async addUserToProject(
+        projectId: string,
+        userEmail: string,
+        role: string,
+        requestorId: string
+    ) {
+        const isAdmin = await this.userService.isAdmin(requestorId) // this exists on another PR
+        if (!isAdmin) {
+            throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
+        }
+        if (!projectId || !userEmail || !role) {
+            throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
+        }
+        if (!isValidRole(role)) {
+            throw new HttpException('Rol invalido', HttpStatus.BAD_REQUEST)
+        }
+
+        const project = await this.projectModel.findById(projectId)
+        if (!project) {
+            throw new HttpException(
+                'Proyecto no encontrado',
+                HttpStatus.NOT_FOUND
+            )
+        }
+        switch (role) {
+            case 'participant':
+                project.participants.push(userEmail) // think that should be id instead of email
+            case 'coordinator':
+                project.coordinators.push({ email: userEmail })
+        }
+        project.save()
+    }
 }
