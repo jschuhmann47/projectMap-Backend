@@ -161,6 +161,9 @@ export class UserService {
 
     async isAdmin(userId: string) {
         const user = await this.userModel.findById(userId)
+        if (!user) {
+            return false
+        }
         return user.isAdmin
     }
 }

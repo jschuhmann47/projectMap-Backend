@@ -160,6 +160,7 @@ export class ProjectService {
                 HttpStatus.NOT_FOUND
             )
         }
+        // check that email exists? or it's creating a new account?
         switch (role) {
             case 'participant':
                 project.participants.push({ userEmail, spheres: [] }) // think that should be id instead of email
