@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
-import { ProjectDto } from './project.dto'
+import { ProjectDto, UpdateParticipantDto } from './project.dto'
 import { Project } from './project.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 
@@ -55,8 +55,10 @@ export class ProjectService {
         return this.getSharedUsers(id)
     }
 
+    // eslint-disable-next-line
     async findUserProjects(owner: string) {
-        return this.projectModel.find({ owner })
+        //return this.projectModel.find({ owner })
+        return this.projectModel.find({})
     }
 
     async findProjectsByName(name: string) {
@@ -80,5 +82,49 @@ export class ProjectService {
         const result = await this.projectModel.deleteOne({ _id: id })
         if (result.deletedCount) return id
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
+    }
+
+    async updateParticipanRole(
+        projectId: string,
+        participantDto: UpdateParticipantDto
+    ) {
+        const project = await this.projectModel.findById(projectId)
+
+        if (project) {
+            const user = project.participants.find(
+                (participant) =>
+                    participant.userEmail == participantDto.userEmail
+            )
+            console.log({ user })
+            if (user) {
+                user.spehres = participantDto.spheres
+            } else {
+                project.participants.push({
+                    userEmail: participantDto.userEmail,
+                    spehres: participantDto.spheres,
+                })
+            }
+        }
+
+        return project.save()
+    }
+
+    async updateCoordinatorRole(projectId: string, userEmail: string) {
+        const project = await this.projectModel.findById(projectId)
+
+        if (project) {
+            const user = project.coordinators.find(
+                (coordinator) => coordinator.email == userEmail
+            )
+            console.log({ user })
+
+            if (!user) {
+                project.coordinators.push({
+                    email: userEmail,
+                })
+            }
+        }
+
+        return project.save()
     }
 }
