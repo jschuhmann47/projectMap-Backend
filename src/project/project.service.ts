@@ -16,16 +16,13 @@ export class ProjectService {
     async getOne(id: string) {
         const project = await this.projectModel
             .findById(id)
-            .populate('coordinators')
+            .populate('coordinators', '-password')
             .populate({
                 path: 'participants.user',
                 model: 'User',
+                select: '-password',
             })
             .exec()
-        project.coordinators.forEach((u) => this.userService.sanitizeUser(u))
-        project.participants.forEach((u) =>
-            this.userService.sanitizeUser(u.user)
-        )
         return project
     }
 
