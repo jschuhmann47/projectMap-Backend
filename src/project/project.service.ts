@@ -108,7 +108,7 @@ export class ProjectService {
                 participant.sphere = participantDto.sphere
             } else {
                 project.participants.push({
-                    user: participant.user, // remember to preload this
+                    user: participant.user, // this is wrong TODO
                     sphere: participantDto.sphere,
                 })
             }
@@ -125,7 +125,7 @@ export class ProjectService {
                 (coordinator) => coordinator.email == userEmail
             )
             if (!user) {
-                project.coordinators.push(user)
+                project.coordinators.push(user) // TODO fix
             }
         }
 

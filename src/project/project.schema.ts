@@ -29,10 +29,10 @@ export class Project {
     id: string
 
     @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-    coordinators: User[] // userIds
+    coordinators: User[]
 
     @Prop({ type: Object })
-    participants: Participant[] // userIds
+    participants: Participant[]
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project)
