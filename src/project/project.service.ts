@@ -160,7 +160,6 @@ export class ProjectService {
                 HttpStatus.NOT_FOUND
             )
         }
-        // check that email exists? or it's creating a new account?
 
         if (
             project.participants.some((p) => p.userEmail == userEmail) ||
@@ -174,7 +173,7 @@ export class ProjectService {
 
         switch (role) {
             case 'participant':
-                project.participants.push({ userEmail, spheres: [] }) // think that should be id instead of email
+                project.participants.push({ userEmail, spheres: [] })
                 break
             case 'coordinator':
                 project.coordinators.push({ email: userEmail })

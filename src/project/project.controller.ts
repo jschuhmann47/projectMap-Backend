@@ -221,7 +221,7 @@ export class ProjectController {
         return project
     }
 
-    @Put(':id/user/add')
+    @Post(':id/user/add')
     async addUserToProject(
         @Req() header: { user: { id: string } },
         @Param('id') projectId: string,
