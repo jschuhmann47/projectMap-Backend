@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Sphere } from './sphere.schema'
 
+// TODO this should be a list
 export class UpdateParticipantDto {
     @ApiProperty()
     userEmail: string
 
-    sphere: 'read' | 'write' | 'view'
+    sphere: Sphere
 }
 
 export class ProjectDto {
