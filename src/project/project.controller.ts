@@ -158,14 +158,9 @@ export class ProjectController {
     }
 
     @Delete(':projectId/share')
-    async stopSharing(
-        @Param('projectId') projectId: string,
-        @Param('userId') userId: string
-    ) {
-        const project = await this.projectService.removeUserFromProject(
-            projectId,
-            userId
-        )
+    async stopSharing(@Param('projectId') projectId: string) {
+        const project =
+            await this.projectService.removeUserFromProject(projectId)
         return project
     }
 

@@ -124,7 +124,7 @@ export class UserService {
         return userUpdated
     }
 
-    async removeProjects(userId: string, projectIds: string[]) {
+    async removeProjects() {
         // const user = await this.findById(userId)
         // user.sharedProjects = user.sharedProjects.filter(
         //     (project) => !projectIds.includes(project._id.toString())

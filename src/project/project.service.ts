@@ -57,16 +57,12 @@ export class ProjectService {
         const users = await Promise.all(
             emails.map((email) => this.userService.findUserByEmail(email))
         )
-        await Promise.all(
-            users.map((user) =>
-                this.userService.removeProjects(user._id.toString(), [id])
-            )
-        )
+        await Promise.all(users.map(() => this.userService.removeProjects()))
         return this.getSharedUsers(id)
     }
 
-    async removeUserFromProject(id: string, userId: string) {
-        await this.userService.removeProjects(userId, [id])
+    async removeUserFromProject(id: string) {
+        await this.userService.removeProjects()
         return this.getSharedUsers(id)
     }
 
@@ -91,11 +87,7 @@ export class ProjectService {
     async delete(id: string) {
         const users = await this.getSharedUsers(id)
 
-        await Promise.all(
-            users.map((user) =>
-                this.userService.removeProjects(user._id.toString(), [id])
-            )
-        )
+        await Promise.all(users.map(() => this.userService.removeProjects()))
         const result = await this.projectModel.deleteOne({ _id: id })
         if (result.deletedCount) return id
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
