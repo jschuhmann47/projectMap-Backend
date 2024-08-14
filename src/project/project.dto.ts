@@ -5,10 +5,13 @@ export class ProjectDto {
     requestorId: string
 
     @ApiProperty()
-    name: string
+    titulo: string
 
     @ApiProperty()
-    description: string
+    descripcion: string
+
+    @ApiProperty()
+    color: string
 }
 
 export class ShareProjectDto {

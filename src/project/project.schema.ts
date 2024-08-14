@@ -16,11 +16,20 @@ export class Project {
     @Prop({ type: String, require: true })
     id: string
 
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-    coordinators: User[] // userIds
+    @Prop({ type: String, require: true })
+    color: string
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
-    participants: Participant[] // userIds
+    coordinators: User[]
+
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+    participants: Participant[]
+
+    constructor(name: string, description: string, color: string) {
+        this.name = name
+        this.description = description
+        this.color = color
+    }
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project)

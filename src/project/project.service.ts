@@ -25,10 +25,15 @@ export class ProjectService {
         if (!this.userService.validateAdmin(req.requestorId)) {
             throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
         }
-        if (!req.name || !req.description) {
+        if (!req.titulo || !req.descripcion || !req.color) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
         }
-        return new this.projectModel(req).save()
+        const projectToCreate = new Project(
+            req.titulo,
+            req.descripcion,
+            req.color
+        )
+        return this.projectModel.create(projectToCreate)
     }
 
     async shareProject(id: string, userIds: string[]) {
