@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
-import { AppService } from './app.service'
 
 import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from './user/user.module'
@@ -34,6 +33,6 @@ dotenv.config()
         ContinuousImprovementModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [],
 })
 export class AppModule {}
