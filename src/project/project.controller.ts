@@ -212,7 +212,7 @@ export class ProjectController {
     @Put(':id/update-coordinators-role')
     async updateCoordinatorsRole(
         @Param('id') projectId: string,
-        @Body() projectDTO: UpdateCoordinatorRolesDro
+        @Body() projectDTO: UpdateCoordinatorRolesDto
     ) {
         const project = await this.projectService.updateCoordinatorRole(
             projectId,
