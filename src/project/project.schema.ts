@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import * as mongoose from 'mongoose'
-import type { User } from '../user/user.schema'
 import { Participant } from './participant.schema'
 
 @Schema()
@@ -30,6 +29,7 @@ export class Project {
         this.description = description
         this.color = color
     }
+
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project)

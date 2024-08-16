@@ -6,8 +6,8 @@ import type { Project } from '../project/project.schema'
 export class User {
     _id: mongoose.Types.ObjectId
 
-    @Prop({ type: String, required: true })
-    userId: string
+    // @Prop({ type: String, required: true })
+    // userId: string
 
     @Prop({ type: String, required: true })
     firstName: string
