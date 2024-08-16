@@ -6,20 +6,8 @@ import { Participant } from './participant.schema'
 export class Project {
     _id: mongoose.Types.ObjectId
 
-    // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-    // owner: User
-
-    // @Prop({ type: String, require: true })
-    // titulo: string
-
-    // @Prop({ type: String, require: true })
-    // descripcion: string
-
-    // @Prop({ type: String, require: true })
-    // color: string
-
     @Prop({ type: String, require: true })
-    descripcion: string
+    description: string
 
     @Prop({ type: String, require: true })
     name: string
@@ -27,11 +15,21 @@ export class Project {
     @Prop({ type: String, require: true })
     id: string
 
-    @Prop({ type: [Object] })
-    coordinators: { email: string }[] // userIds
+    @Prop({ type: String, require: true })
+    color: string
 
-    @Prop({ type: [Participant] })
-    participants: Participant[] // userIds
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+    coordinators: User[]
+
+    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] })
+    participants: Participant[]
+
+    constructor(name: string, description: string, color: string) {
+        this.name = name
+        this.description = description
+        this.color = color
+    }
+
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project)
