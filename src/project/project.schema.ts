@@ -29,7 +29,6 @@ export class Project {
         this.description = description
         this.color = color
     }
-
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project)
