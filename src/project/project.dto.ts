@@ -11,16 +11,13 @@ export class UpdateParticipantDto {
 
 export class ProjectDto {
     @ApiProperty()
-    owner: string
+    requestorId: string
 
     @ApiProperty()
     titulo: string
 
     @ApiProperty()
     descripcion: string
-
-    @ApiProperty()
-    sharedUsers: string[]
 
     @ApiProperty()
     color: string
