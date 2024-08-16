@@ -93,7 +93,7 @@ export class ProjectService {
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
     }
 
-    async updateParticipanRole(
+    async updateParticipantRole(
         projectId: string,
         participantDto: UpdateParticipantDto[]
     ) {
