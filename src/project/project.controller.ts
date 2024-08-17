@@ -3,6 +3,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
+    HttpStatus,
     Param,
     Post,
     Put,
@@ -196,6 +198,33 @@ export class ProjectController {
         @Param('id') projectId: string,
         @Body() req: UpdateUserRolesDto
     ) {
+        if (!req || !req.users) {
+            throw new HttpException(
+                'Missing users to update',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        req.users.forEach((v) => {
+            if (
+                !v.role ||
+                !v.spheres ||
+                !v.userId ||
+                !Array.isArray(v.spheres)
+            ) {
+                throw new HttpException(
+                    'Invalid fields',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+
+            v.spheres.forEach((s) => {
+                if (!s.id || !s.permission)
+                    throw new HttpException(
+                        'Invalid fields',
+                        HttpStatus.BAD_REQUEST
+                    )
+            })
+        })
         const project = await this.projectService.updateUserRoles(
             header.user.id,
             projectId,

@@ -110,12 +110,6 @@ export class ProjectService {
         projectId: string,
         req: UpdateUserRolesDto
     ) {
-        if (!req || !req.users) {
-            throw new HttpException(
-                'Missing users to update',
-                HttpStatus.BAD_REQUEST
-            )
-        }
         const project = await this.projectModel.findById(projectId)
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
