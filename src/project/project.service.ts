@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
@@ -105,18 +105,51 @@ export class ProjectService {
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
     }
 
-    async updateUserRoles(projectId: string, req: UpdateUserRolesDto) {
+    async updateUserRoles(
+        requestorId: string,
+        projectId: string,
+        req: UpdateUserRolesDto
+    ) {
+        if (!req || !req.users || !req.users) {
+            throw new HttpException(
+                'Missing users to update',
+                HttpStatus.BAD_REQUEST
+            )
+        }
         const project = await this.projectModel.findById(projectId)
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
         }
-        // TODO: this.userService.isAdmin()
+
+        const isCoordinator = project.coordinators.find(
+            (c) => c._id.toString() == requestorId
+        )
+        const isAdmin = await this.userService.isAdmin(requestorId)
+        if (!isAdmin && !isCoordinator) {
+            throw new HttpException('Unauthorized', HttpStatus.FORBIDDEN)
+        }
+
         const participants = req.users
             .filter((u) => u.role === 'participant')
-            .map((u) => u.toParticipant())
+            .map((u) => {
+                return u.toParticipant()
+            })
         const coordinators = req.users
             .filter((u) => u.role === 'coordinator')
-            .map((u) => new User(u)) // with id TODO
+            .map((u) => {
+                const user = new User()
+                user._id = new mongoose.mongo.ObjectId(u.userId)
+                return user
+            })
+        if (
+            participants.length + coordinators.length !=
+            project.coordinators.length + project.participants.length
+        ) {
+            throw new HttpException(
+                'Wrong amount of users',
+                HttpStatus.BAD_REQUEST
+            )
+        }
 
         project.participants = participants
         project.coordinators = coordinators

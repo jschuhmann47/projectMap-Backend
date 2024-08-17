@@ -192,10 +192,12 @@ export class ProjectController {
 
     @Put(':id/roles')
     async updateUserRoles(
+        @Req() header: { user: { id: string } },
         @Param('id') projectId: string,
         @Body() req: UpdateUserRolesDto
     ) {
         const project = await this.projectService.updateUserRoles(
+            header.user.id,
             projectId,
             req
         )

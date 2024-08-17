@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Sphere } from './sphere.schema'
-import { Participant } from './participant.schema'
 import { User } from 'src/user/user.schema'
+import { Participant } from './participant.schema'
+import { Sphere } from './sphere.schema'
+import mongoose from 'mongoose'
 
 // // TODO this should be a list
 // export class UpdateParticipantDto {
@@ -62,7 +63,7 @@ export class UpdateUserRolesData {
     public toParticipant() {
         const p = new Participant()
         p.user = new User()
-        p.user._id = this.userId
+        p.user._id = new mongoose.mongo.ObjectId(this.userId)
         p.spheres = this.spheres
         return p
     }
