@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
-import { ProjectDto, UpdateUserRolesDto } from './project.dto'
+import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
@@ -110,7 +110,7 @@ export class ProjectService {
         projectId: string,
         req: UpdateUserRolesDto
     ) {
-        if (!req || !req.users || !req.users) {
+        if (!req || !req.users) {
             throw new HttpException(
                 'Missing users to update',
                 HttpStatus.BAD_REQUEST
@@ -131,9 +131,7 @@ export class ProjectService {
 
         const participants = req.users
             .filter((u) => u.role === 'participant')
-            .map((u) => {
-                return u.toParticipant()
-            })
+            .map((u) => toParticipant(u))
         const coordinators = req.users
             .filter((u) => u.role === 'coordinator')
             .map((u) => {

@@ -56,15 +56,12 @@ export class UpdateUserRolesData {
     // Only if participant
     @ApiProperty()
     spheres: Sphere[]
+}
 
-    /**
-     * toParticipant
-     */
-    public toParticipant() {
-        const p = new Participant()
-        p.user = new User()
-        p.user._id = new mongoose.mongo.ObjectId(this.userId)
-        p.spheres = this.spheres
-        return p
-    }
+export function toParticipant(u: UpdateUserRolesData) {
+    const p = new Participant()
+    p.user = new User()
+    p.user._id = new mongoose.mongo.ObjectId(u.userId)
+    p.spheres = u.spheres
+    return p
 }
