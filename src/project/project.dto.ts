@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Sphere } from './sphere.schema'
+import { Participant } from './participant.schema'
+import { User } from 'src/user/user.schema'
 
 // // TODO this should be a list
 // export class UpdateParticipantDto {
@@ -53,4 +55,15 @@ export class UpdateUserRolesData {
     // Only if participant
     @ApiProperty()
     spheres: Sphere[]
+
+    /**
+     * toParticipant
+     */
+    public toParticipant() {
+        const p = new Participant()
+        p.user = new User()
+        p.user._id = this.userId
+        p.spheres = this.spheres
+        return p
+    }
 }

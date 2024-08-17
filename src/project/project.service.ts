@@ -5,6 +5,7 @@ import { UserService } from '../user/user.service'
 import { ProjectDto, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
 import { insensitiveRegExp } from './utils/escape_string'
+import { User } from 'src/user/user.schema'
 
 @Injectable()
 export class ProjectService {
@@ -109,6 +110,18 @@ export class ProjectService {
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
         }
+        // TODO: this.userService.isAdmin()
+        const participants = req.users
+            .filter((u) => u.role === 'participant')
+            .map((u) => u.toParticipant())
+        const coordinators = req.users
+            .filter((u) => u.role === 'coordinator')
+            .map((u) => new User(u)) // with id TODO
+
+        project.participants = participants
+        project.coordinators = coordinators
+
+        project.save()
     }
 
     async addUserToProject(
