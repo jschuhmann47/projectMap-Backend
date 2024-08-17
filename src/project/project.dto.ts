@@ -4,14 +4,6 @@ import { Participant } from './participant.schema'
 import { Sphere } from './sphere.schema'
 import mongoose from 'mongoose'
 
-// // TODO this should be a list
-// export class UpdateParticipantDto {
-//     @ApiProperty()
-//     userEmail: string
-
-//     sphere: Sphere
-// }
-
 export class ProjectDto {
     @ApiProperty()
     requestorId: string
