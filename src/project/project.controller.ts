@@ -3,6 +3,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
+    HttpStatus,
     Param,
     Post,
     Put,
@@ -12,12 +14,12 @@ import {
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiTags } from '@nestjs/swagger'
+import { AnsoffService } from '../herramientas/ansoff/ansoff.service'
 import { BalancedScorecardService } from '../herramientas/balancedScorecard/balancedScorecard.service'
 import { FodaService } from '../herramientas/foda/foda.service'
-import { PestelService } from '../herramientas/pestel/pestel.service'
-import { AnsoffService } from '../herramientas/ansoff/ansoff.service'
 import { MckinseyService } from '../herramientas/mckinsey/mckinsey.service'
 import { OkrService } from '../herramientas/okr/okr.service'
+import { PestelService } from '../herramientas/pestel/pestel.service'
 import { PorterService } from '../herramientas/porter/porter.service'
 import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service'
 import {
@@ -25,9 +27,10 @@ import {
     ShareProjectDto,
     ShareProjectEmailDto,
     StopSharingProjectEmailDto,
-    UpdateParticipantDto,
+    UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
+import { isValidSphereType } from './sphere.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -129,7 +132,7 @@ export class ProjectController {
     ) {
         const { id } = req.user
 
-        projectDTO.owner = id
+        projectDTO.requestorId = id
 
         const project = await this.projectService.create(projectDTO)
         return project
@@ -190,28 +193,67 @@ export class ProjectController {
         }
     }
 
-    @Put(':id/update-participant-role')
-    async updateParticipantRole(
+    @Put(':id/roles')
+    async updateUserRoles(
+        @Req() header: { user: { id: string } },
         @Param('id') projectId: string,
-        @Body() projectDTO: UpdateParticipantDto
+        @Body() req: UpdateUserRolesDto
     ) {
-        console.log('vengo por aca')
-        console.log({ projectDTO })
-        const project = await this.projectService.updateParticipanRole(
+        if (!req || !req.users) {
+            throw new HttpException(
+                'Missing users to update',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        req.users.forEach((v) => {
+            if (!v.role || !v.userId) {
+                throw new HttpException(
+                    'Invalid fields',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+            if (v.role != 'coordinator' && v.role != 'participant') {
+                throw new HttpException('Invalid role', HttpStatus.BAD_REQUEST)
+            }
+            if (v.role == 'participant' && !Array.isArray(v.spheres)) {
+                throw new HttpException(
+                    'Invalid fields',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+
+            v.spheres.forEach((s) => {
+                if (!s.id || !s.permission || !isValidSphereType(s.id))
+                    throw new HttpException(
+                        'Invalid fields',
+                        HttpStatus.BAD_REQUEST
+                    )
+            })
+        })
+        const project = await this.projectService.updateUserRoles(
+            header.user.id,
             projectId,
-            projectDTO
+            req
         )
         return project
     }
 
-    @Put(':id/update-coordinator-role')
-    async updateCoordinatorRole(
+    @Post(':id/user/add')
+    async addUserToProject(
+        @Req() header: { user: { id: string } },
         @Param('id') projectId: string,
-        @Body() projectDTO: { userEmail: string }
+        @Body()
+        req: {
+            userEmail: string
+            role: string
+        }
     ) {
-        const project = await this.projectService.updateCoordinatorRole(
+        const { id } = header.user
+        const project = await this.projectService.addUserToProject(
             projectId,
-            projectDTO.userEmail
+            req.userEmail,
+            req.role,
+            id
         )
         return project
     }

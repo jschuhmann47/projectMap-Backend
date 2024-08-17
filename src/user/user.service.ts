@@ -156,4 +156,12 @@ export class UserService {
                 HttpStatus.BAD_REQUEST
             )
     }
+
+    async isAdmin(userId: string) {
+        const user = await this.userModel.findById(userId)
+        if (!user) {
+            return false
+        }
+        return user.isAdmin
+    }
 }

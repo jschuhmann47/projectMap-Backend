@@ -11,7 +11,7 @@ const projects: Project[] = [
                 spheres: [
                     {
                         id: 'SP21',
-                        permission: 'write',
+                        permission: 'edit',
                     },
                 ],
             },
