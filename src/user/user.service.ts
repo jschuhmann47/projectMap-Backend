@@ -50,8 +50,9 @@ export class UserService {
     async findByEmail(email: string) {
         const user = await this.userModel.findOne({
             email: insensitiveRegExp(email),
-        })
-        return this.sanitizeUser(user)
+        }).select('-password');
+
+        return user;
     }
 
     async findById(id: string) {

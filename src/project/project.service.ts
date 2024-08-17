@@ -142,21 +142,21 @@ export class ProjectService {
         const project = await this.getOne(projectId)
 
         if (project) {
-            userEmails.forEach((userEmail) => {
+            for (let i = 0; i < userEmails.length; i ++) {
+                const userEmail = userEmails[i];
+
                 const matchedUser = project.coordinators.find(
                     (coordinator) => coordinator.email == userEmail
                 )
 
                 if (!matchedUser) {
-                    const user = project.coordinators.find(
-                        (coordinator) => coordinator.email == userEmail
-                    )
+                    const user = await this.userService.findByEmail(userEmail);
 
                     if (user) {
                         project.coordinators.push(user)
                     }
                 }
-            })
+            }
         }
 
         return project.save()

@@ -26,6 +26,7 @@ import {
     ShareProjectDto,
     ShareProjectEmailDto,
     StopSharingProjectEmailDto,
+    UpdateCoordinatorRolesDto,
     UpdateParticipantDto,
 } from './project.dto'
 import { ProjectService } from './project.service'

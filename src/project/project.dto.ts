@@ -9,7 +9,7 @@ export class UpdateParticipantDto {
     stages: Stage[]
 }
 
-export class UpdateCoordinatorRolesDro {
+export class UpdateCoordinatorRolesDto {
     @ApiProperty()
     userEmails: string[]
 }
