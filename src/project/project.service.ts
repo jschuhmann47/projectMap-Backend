@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
-import { ProjectDto, UpdateParticipantDto } from './project.dto'
+import { ProjectDto, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 
@@ -104,47 +104,11 @@ export class ProjectService {
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
     }
 
-    async updateParticipantRole(
-        projectId: string,
-        participantDto: UpdateParticipantDto
-    ) {
+    async updateUserRoles(projectId: string, req: UpdateUserRolesDto) {
         const project = await this.projectModel.findById(projectId)
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
         }
-
-        const participant = project.participants.find(
-            (participant) => participant.user.email == participantDto.userEmail
-        )
-        if (participant) {
-            const sphereToUpdate = participant.spheres.find(
-                (s) => s.id == participantDto.sphere.id
-            )
-            if (sphereToUpdate) {
-                sphereToUpdate.permission = participantDto.sphere.permission
-            }
-        } else {
-            throw new HttpException(
-                'User is not in project',
-                HttpStatus.BAD_REQUEST
-            )
-        }
-        return project.save()
-    }
-
-    async updateCoordinatorRole(projectId: string, userEmail: string) {
-        const project = await this.projectModel.findById(projectId)
-
-        if (project) {
-            const user = project.coordinators.find(
-                (coordinator) => coordinator.email == userEmail
-            )
-            if (user) {
-                project.coordinators.push(user) // TODO this is wrong
-            }
-        }
-
-        return project.save()
     }
 
     async addUserToProject(

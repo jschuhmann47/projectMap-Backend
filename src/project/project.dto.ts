@@ -1,13 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Sphere } from './sphere.schema'
 
-// TODO this should be a list
-export class UpdateParticipantDto {
-    @ApiProperty()
-    userEmail: string
+// // TODO this should be a list
+// export class UpdateParticipantDto {
+//     @ApiProperty()
+//     userEmail: string
 
-    sphere: Sphere
-}
+//     sphere: Sphere
+// }
 
 export class ProjectDto {
     @ApiProperty()
@@ -36,4 +36,21 @@ export class ShareProjectEmailDto {
 export class StopSharingProjectEmailDto {
     @ApiProperty()
     emails: string[]
+}
+
+export class UpdateUserRolesDto {
+    @ApiProperty()
+    users: UpdateUserRolesData[]
+}
+
+export class UpdateUserRolesData {
+    @ApiProperty()
+    userId: string
+
+    @ApiProperty()
+    role: string
+
+    // Only if participant
+    @ApiProperty()
+    spheres: Sphere[]
 }
