@@ -26,7 +26,6 @@ import {
     ShareProjectDto,
     ShareProjectEmailDto,
     StopSharingProjectEmailDto,
-    UpdateCoordinatorRolesDro,
     UpdateParticipantDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
@@ -249,8 +248,10 @@ export class ProjectController {
                 stageId
             )
 
-        if (!userStagePermission || 
-            userStagePermission && userStagePermission.permission != 'write') {
+        if (
+            !userStagePermission ||
+            (userStagePermission && userStagePermission.permission != 'write')
+        ) {
             throw new ForbiddenException(
                 'User is not available to edit this stage'
             )

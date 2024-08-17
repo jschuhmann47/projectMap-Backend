@@ -109,7 +109,7 @@ export class ProjectService {
         projectId: string,
         participantDto: UpdateParticipantDto[]
     ) {
-        const project = await this.getOne(projectId);
+        const project = await this.getOne(projectId)
 
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
@@ -134,13 +134,12 @@ export class ProjectService {
                     })
                 }
             }
-            
         }
         return project.save()
     }
 
     async updateCoordinatorRole(projectId: string, userEmails: string[]) {
-        const project = await this.getOne(projectId);
+        const project = await this.getOne(projectId)
 
         if (project) {
             userEmails.forEach((userEmail) => {
@@ -168,8 +167,8 @@ export class ProjectService {
         userEmail: string,
         stageId: string
     ): Promise<Stage> {
-        const project = await this.getOne(projectId);
-        let stage = null;
+        const project = await this.getOne(projectId)
+        let stage = null
 
         if (project) {
             const matchedUser = project.participants.find(
@@ -177,13 +176,11 @@ export class ProjectService {
             )
 
             if (matchedUser) {
-                stage = matchedUser.stages.find(
-                    (stage) => stage.id == stageId
-                )
+                stage = matchedUser.stages.find((stage) => stage.id == stageId)
             }
         }
 
-        return stage;
+        return stage
     }
 
     async addUserToProject(
