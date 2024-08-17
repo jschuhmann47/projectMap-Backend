@@ -30,6 +30,7 @@ import {
     UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
+import { isValidSphereType } from './sphere.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -205,12 +206,16 @@ export class ProjectController {
             )
         }
         req.users.forEach((v) => {
-            if (
-                !v.role ||
-                !v.spheres ||
-                !v.userId ||
-                !Array.isArray(v.spheres)
-            ) {
+            if (!v.role || !v.userId) {
+                throw new HttpException(
+                    'Invalid fields',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+            if (v.role != 'coordinator' && v.role != 'participant') {
+                throw new HttpException('Invalid role', HttpStatus.BAD_REQUEST)
+            }
+            if (v.role == 'participant' && !Array.isArray(v.spheres)) {
                 throw new HttpException(
                     'Invalid fields',
                     HttpStatus.BAD_REQUEST
@@ -218,7 +223,7 @@ export class ProjectController {
             }
 
             v.spheres.forEach((s) => {
-                if (!s.id || !s.permission)
+                if (!s.id || !s.permission || !isValidSphereType(s.id))
                     throw new HttpException(
                         'Invalid fields',
                         HttpStatus.BAD_REQUEST
