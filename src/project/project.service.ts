@@ -4,8 +4,8 @@ import { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, UpdateParticipantDto } from './project.dto'
 import { Project } from './project.schema'
-import { escapeRegExp } from './utils/escape_string'
 import { Stage } from './stage.schema'
+import { insensitiveRegExp } from './utils/escape_string'
 
 @Injectable()
 export class ProjectService {
@@ -15,15 +15,35 @@ export class ProjectService {
     ) {}
 
     async getOne(id: string) {
-        return this.projectModel.findById(id) //.populate(['owner']).exec()
+        const project = await this.projectModel
+            .findById(id)
+            .populate('coordinators', '-password')
+            .populate({
+                path: 'participants.user',
+                model: 'User',
+                select: '-password',
+            })
+            .exec()
+        return project
     }
 
     async getSharedUsers(projectId: string) {
         return this.userService.findUsersBySharedProject(projectId)
     }
 
-    async create(newProject: ProjectDto) {
-        return new this.projectModel(newProject).save()
+    async create(req: ProjectDto) {
+        if (!this.userService.isAdmin(req.requestorId)) {
+            throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
+        }
+        if (!req.titulo || !req.descripcion || !req.color) {
+            throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
+        }
+        const projectToCreate = new Project(
+            req.titulo,
+            req.descripcion,
+            req.color
+        )
+        return this.projectModel.create(projectToCreate)
     }
 
     async shareProject(id: string, userIds: string[]) {
@@ -47,16 +67,12 @@ export class ProjectService {
         const users = await Promise.all(
             emails.map((email) => this.userService.findUserByEmail(email))
         )
-        await Promise.all(
-            users.map((user) =>
-                this.userService.removeProjects(user._id.toString(), [id])
-            )
-        )
+        await Promise.all(users.map(() => this.userService.removeProjects()))
         return this.getSharedUsers(id)
     }
 
-    async removeUserFromProject(id: string, userId: string) {
-        await this.userService.removeProjects(userId, [id])
+    async removeUserFromProject(id: string) {
+        await this.userService.removeProjects()
         return this.getSharedUsers(id)
     }
 
@@ -68,7 +84,7 @@ export class ProjectService {
 
     async findProjectsByName(name: string) {
         return this.projectModel.find({
-            name: new RegExp(escapeRegExp(name), 'i'),
+            name: insensitiveRegExp(name),
         })
     }
 
@@ -83,45 +99,48 @@ export class ProjectService {
     async delete(id: string) {
         const users = await this.getSharedUsers(id)
 
-        await Promise.all(
-            users.map((user) =>
-                this.userService.removeProjects(user._id.toString(), [id])
-            )
-        )
+        await Promise.all(users.map(() => this.userService.removeProjects()))
         const result = await this.projectModel.deleteOne({ _id: id })
         if (result.deletedCount) return id
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
     }
 
-    async updateParticipanRole(
+    async updateParticipantRole(
         projectId: string,
         participantDto: UpdateParticipantDto[]
     ) {
-        const project = await this.projectModel.findById(projectId)
+        const project = await this.getOne(projectId);
 
-        if (project) {
-            participantDto.forEach((participantDto) => {
-                const user = project.participants.find(
-                    (participant) =>
-                        participant.userEmail == participantDto.userEmail
-                )
-
-                if (user) {
-                    user.stages = participantDto.stages
-                } else {
-                    project.participants.push({
-                        userEmail: participantDto.userEmail,
-                        stages: participantDto.stages,
-                    })
-                }
-            })
+        if (!project) {
+            throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
         }
 
+        if (project) {
+            for (let i = 0; i < participantDto.length; i++) {
+                const participant = project.participants.find(
+                    (participant) =>
+                        participant.user.email == participantDto[i].userEmail
+                )
+
+                if (participant) {
+                    participant.stages = participantDto[i].stages
+                } else {
+                    const user = await this.userService.findByEmail(
+                        participantDto[i].userEmail
+                    )
+                    project.participants.push({
+                        user,
+                        stages: participantDto[i].stages,
+                    })
+                }
+            }
+            
+        }
         return project.save()
     }
 
     async updateCoordinatorRole(projectId: string, userEmails: string[]) {
-        const project = await this.projectModel.findById(projectId)
+        const project = await this.getOne(projectId);
 
         if (project) {
             userEmails.forEach((userEmail) => {
@@ -130,9 +149,13 @@ export class ProjectService {
                 )
 
                 if (!matchedUser) {
-                    project.coordinators.push({
-                        email: userEmail,
-                    })
+                    const user = project.coordinators.find(
+                        (coordinator) => coordinator.email == userEmail
+                    )
+
+                    if (user) {
+                        project.coordinators.push(user)
+                    }
                 }
             })
         }
@@ -145,20 +168,76 @@ export class ProjectService {
         userEmail: string,
         stageId: string
     ): Promise<Stage> {
-        const project = await this.projectModel.findById(projectId)
+        const project = await this.getOne(projectId);
+        let stage = null;
 
         if (project) {
             const matchedUser = project.participants.find(
-                (participant) => participant.userEmail == userEmail
+                (participant) => participant.user.email == userEmail
             )
 
             if (matchedUser) {
-                const stage = matchedUser.stages.find(
+                stage = matchedUser.stages.find(
                     (stage) => stage.id == stageId
                 )
-
-                return stage
             }
         }
+
+        return stage;
+    }
+
+    async addUserToProject(
+        projectId: string,
+        userEmail: string,
+        role: string,
+        requestorId: string
+    ) {
+        const isAdmin = await this.userService.isAdmin(requestorId)
+        if (!isAdmin) {
+            throw new HttpException('No autorizado', HttpStatus.FORBIDDEN)
+        }
+        if (!projectId || !userEmail || !role) {
+            throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
+        }
+        if (!this.isValidRole(role)) {
+            throw new HttpException('Rol invalido', HttpStatus.BAD_REQUEST)
+        }
+
+        const project = await this.projectModel.findById(projectId)
+        if (!project) {
+            throw new HttpException(
+                'Proyecto no encontrado',
+                HttpStatus.NOT_FOUND
+            )
+        }
+
+        if (
+            project.participants.some((p) => p.user.email == userEmail) ||
+            project.coordinators.some((c) => c.email == userEmail)
+        ) {
+            throw new HttpException(
+                'Usuario ya existe en el proyecto',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+
+        const existingUser = await this.userService.findByEmail(userEmail)
+
+        switch (role) {
+            case 'participant':
+                project.participants.push({
+                    user: existingUser,
+                    stages: [],
+                })
+                break
+            case 'coordinator':
+                project.coordinators.push(existingUser)
+                break
+        }
+        project.save()
+    }
+
+    private isValidRole(role: string) {
+        return role == 'participant' || role == 'coordinator'
     }
 }

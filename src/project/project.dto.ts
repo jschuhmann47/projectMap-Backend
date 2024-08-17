@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Stage } from './stage.schema'
 
+// TODO this should be a list
 export class UpdateParticipantDto {
     @ApiProperty()
     userEmail: string
@@ -15,16 +16,13 @@ export class UpdateCoordinatorRolesDro {
 
 export class ProjectDto {
     @ApiProperty()
-    owner: string
+    requestorId: string
 
     @ApiProperty()
     titulo: string
 
     @ApiProperty()
     descripcion: string
-
-    @ApiProperty()
-    sharedUsers: string[]
 
     @ApiProperty()
     color: string

@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
 import { Model } from 'mongoose'
+import { insensitiveRegExp } from 'src/project/utils/escape_string'
 import { ProjectAssignedNotification } from '../notifications/ProjectAssignedNotification'
 import { Project } from '../project/project.schema'
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
@@ -39,14 +40,18 @@ export class UserService {
     }
 
     private sanitizeUser(user: User) {
-        const sanitized = user
-        delete sanitized['password']
-        return sanitized
+        if (user == null) {
+            return new User()
+        }
+        user.password = undefined
+        return user
     }
 
-    async findByPayload(payload: { email: string }) {
-        const { email } = payload
-        return this.userModel.findOne({ email })
+    async findByEmail(email: string) {
+        const user = await this.userModel.findOne({
+            email: insensitiveRegExp(email),
+        })
+        return this.sanitizeUser(user)
     }
 
     async findById(id: string) {
@@ -54,12 +59,6 @@ export class UserService {
             .findById(id)
             .populate(['sharedProjects', 'consultora'])
     }
-
-    // async updateRole(userId: string, role: Roles) {
-    //     const user: User = await this.userModel.findById(userId)
-    //     user.role = role
-    //     return new this.userModel(user).save()
-    // }
 
     async update(userId: string, updateUserDto: UpdateUserDto) {
         const user: User = await this.userModel.findById(userId)
@@ -124,8 +123,7 @@ export class UserService {
         return userUpdated
     }
 
-    // eslint-disable-next-line
-    async removeProjects(userId: string, projectIds: string[]) {
+    async removeProjects() {
         // const user = await this.findById(userId)
         // user.sharedProjects = user.sharedProjects.filter(
         //     (project) => !projectIds.includes(project._id.toString())
@@ -157,5 +155,13 @@ export class UserService {
                 'El mail ingresado ya se encuentra registrado',
                 HttpStatus.BAD_REQUEST
             )
+    }
+
+    async isAdmin(userId: string) {
+        const user = await this.userModel.findById(userId)
+        if (!user) {
+            return false
+        }
+        return user.isAdmin
     }
 }
