@@ -103,7 +103,8 @@ export class ProjectService {
         projectId: string,
         req: UpdateUserRolesDto
     ) {
-        const project = await this.getPopulatedProject(projectId)
+        mongoose.set('debug', true)
+        const project = await this.projectModel.findById(projectId)
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
         }
@@ -227,9 +228,6 @@ export class ProjectService {
                 select: '-password',
             })
             .populate({
-                transform: (doc ,id) => {
-                    return doc
-                },
                 path: 'participants.user',
                 model: 'User',
                 select: '-password',

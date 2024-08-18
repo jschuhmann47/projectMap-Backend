@@ -22,10 +22,10 @@ export class Project {
     @Prop({ type: String, require: true })
     color: string
 
-    @Prop({ type: [String] })
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'User' })
     coordinators: User[]
 
-    @Prop({ type: [Object] })
+    @Prop({ type: [Participant] })
     participants: Participant[]
 
     constructor(name: string, description: string, color: string) {

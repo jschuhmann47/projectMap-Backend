@@ -31,8 +31,12 @@ import {
     UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
-import { isValidPermission, isValidStageType } from './stage.schema'
-import { Permission } from './stage.schema'
+import {
+    isValidPermission,
+    isValidStageType,
+    Permission,
+    StageType,
+} from './stage.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -223,19 +227,24 @@ export class ProjectController {
                     HttpStatus.BAD_REQUEST
                 )
             }
-
-            user.stages?.forEach((s) => {
-                if (
-                    !s.id ||
-                    !s.permission ||
-                    !isValidStageType(s.id) ||
-                    !isValidPermission(s.permission)
-                )
+            if (user.role == 'participant') {
+                user.stages.forEach((s) => {
+                    if (
+                        !isValidStageType(s.id) ||
+                        !isValidPermission(s.permission)
+                    )
+                        throw new HttpException(
+                            'Invalid stage or permission',
+                            HttpStatus.BAD_REQUEST
+                        )
+                })
+                if (user.stages.length != Object.keys(StageType).length) {
                     throw new HttpException(
-                        'Invalid fields',
+                        'Invalid stage count',
                         HttpStatus.BAD_REQUEST
                     )
-            })
+                }
+            }
         })
         const project = await this.projectService.updateUserRoles(
             header.user.id,
@@ -253,13 +262,12 @@ export class ProjectController {
         const project = await this.projectService.getOne(projectId)
         console.log(project.participants[0])
         const participant = project.participants?.find(
-            // @ts-ignore
-            (participant) => participant.user._id.email == userEmail
+            (participant) => participant.user.email == userEmail
         )
         const coordinator = project.coordinators?.find(
             (coordinator) => coordinator.email == userEmail
         )
-        console.log({participant, coordinator})
+        console.log({ participant, coordinator })
         return {
             participant,
             coordinator,
