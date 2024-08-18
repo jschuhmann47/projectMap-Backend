@@ -6,6 +6,7 @@ import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
+import { defaultSpheres } from './sphere.schema'
 
 @Injectable()
 export class ProjectService {
@@ -190,7 +191,7 @@ export class ProjectService {
             case 'participant':
                 project.participants.push({
                     user: existingUser,
-                    spheres: [],
+                    spheres: defaultSpheres(),
                 })
                 break
             case 'coordinator':

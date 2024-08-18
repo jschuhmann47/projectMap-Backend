@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import * as mongoose from 'mongoose'
 
+type Permission = 'edit' | 'view' | 'hide'
+
 @Schema()
 export class Sphere {
     _id: mongoose.Types.ObjectId
@@ -9,7 +11,12 @@ export class Sphere {
     id: SphereType
 
     @Prop({ type: String, require: true })
-    permission: 'edit' | 'view' | 'hide'
+    permission: Permission
+
+    constructor(type: SphereType, permission: Permission) {
+        this.id = type
+        this.permission = permission
+    }
 }
 
 export enum SphereType {
@@ -24,6 +31,10 @@ export enum SphereType {
 
 export function isValidSphereType(value: string) {
     return Object.values(SphereType).includes(value as SphereType)
+}
+
+export function defaultSpheres() {
+    return Object.values(SphereType).map((t) => new Sphere(t, 'hide'))
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Sphere)
