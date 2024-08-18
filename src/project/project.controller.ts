@@ -260,14 +260,13 @@ export class ProjectController {
         @Param('userEmail') userEmail: string
     ) {
         const project = await this.projectService.getOne(projectId)
-        console.log(project.participants[0])
+
         const participant = project.participants?.find(
             (participant) => participant.user.email == userEmail
         )
         const coordinator = project.coordinators?.find(
             (coordinator) => coordinator.email == userEmail
         )
-        console.log({ participant, coordinator })
         return {
             participant,
             coordinator,
