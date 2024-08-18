@@ -1,6 +1,6 @@
 export interface Spheres {
     id: string
-    permission: 'read' | 'write' | 'view'
+    permission: 'edit' | 'view' | 'hide'
 }
 
 export interface Participant {

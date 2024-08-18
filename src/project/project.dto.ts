@@ -1,18 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { User } from 'src/user/user.schema'
+import { Participant } from './participant.schema'
+import mongoose from 'mongoose'
 import { Stage } from './stage.schema'
-
-// TODO this should be a list
-export class UpdateParticipantDto {
-    @ApiProperty()
-    userEmail: string
-
-    stages: Stage[]
-}
-
-export class UpdateCoordinatorRolesDto {
-    @ApiProperty()
-    userEmails: string[]
-}
 
 export class ProjectDto {
     @ApiProperty()
@@ -41,4 +31,29 @@ export class ShareProjectEmailDto {
 export class StopSharingProjectEmailDto {
     @ApiProperty()
     emails: string[]
+}
+
+export class UpdateUserRolesDto {
+    @ApiProperty()
+    users: UpdateUserRolesData[]
+}
+
+export class UpdateUserRolesData {
+    @ApiProperty()
+    userId: string
+
+    @ApiProperty()
+    role: string
+
+    // Only if participant
+    @ApiProperty()
+    stages: Stage[]
+}
+
+export function toParticipant(u: UpdateUserRolesData) {
+    const p = new Participant()
+    p.user = new User()
+    p.user._id = new mongoose.mongo.ObjectId(u.userId)
+    p.stages = u.stages
+    return p
 }

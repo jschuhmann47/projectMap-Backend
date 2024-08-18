@@ -1,6 +1,5 @@
-import * as mongoose from 'mongoose'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import type { Project } from '../project/project.schema'
+import * as mongoose from 'mongoose'
 
 @Schema()
 export class User {
@@ -20,8 +19,5 @@ export class User {
 
     @Prop({ type: Boolean, required: true, default: false })
     isAdmin: boolean
-
-    @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }] })
-    projectsId: Project[]
 }
 export const UserSchema = SchemaFactory.createForClass(User)

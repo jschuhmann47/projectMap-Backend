@@ -3,6 +3,8 @@ import {
     Controller,
     Delete,
     Get,
+    HttpException,
+    HttpStatus,
     Param,
     Post,
     Put,
@@ -26,10 +28,11 @@ import {
     ShareProjectDto,
     ShareProjectEmailDto,
     StopSharingProjectEmailDto,
-    UpdateCoordinatorRolesDto,
-    UpdateParticipantDto,
+    UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
+import { isValidPermission, isValidStageType } from './stage.schema'
+import { Permission } from './stage.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -192,26 +195,52 @@ export class ProjectController {
         }
     }
 
-    @Put(':id/update-participants-role')
-    async updateParticipantsRole(
+    @Put(':id/roles')
+    async updateUserRoles(
+        @Req() header: { user: { id: string } },
         @Param('id') projectId: string,
-        @Body() participantsRoleDto: UpdateParticipantDto[]
+        @Body() req: UpdateUserRolesDto
     ) {
-        const project = await this.projectService.updateParticipantRole(
-            projectId,
-            participantsRoleDto
-        )
-        return project
-    }
+        if (!req || !req.users) {
+            throw new HttpException(
+                'Missing users to update',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        req.users.forEach((user) => {
+            if (!user.role || !user.userId) {
+                throw new HttpException(
+                    'Invalid fields',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+            if (user.role != 'coordinator' && user.role != 'participant') {
+                throw new HttpException('Invalid role', HttpStatus.BAD_REQUEST)
+            }
+            if (user.role == 'participant' && !Array.isArray(user.stages)) {
+                throw new HttpException(
+                    'Invalid fields',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
 
-    @Put(':id/update-coordinators-role')
-    async updateCoordinatorsRole(
-        @Param('id') projectId: string,
-        @Body() projectDTO: UpdateCoordinatorRolesDto
-    ) {
-        const project = await this.projectService.updateCoordinatorRole(
+            user.stages?.forEach((s) => {
+                if (
+                    !s.id ||
+                    !s.permission ||
+                    !isValidStageType(s.id) ||
+                    !isValidPermission(s.permission)
+                )
+                    throw new HttpException(
+                        'Invalid fields',
+                        HttpStatus.BAD_REQUEST
+                    )
+            })
+        })
+        const project = await this.projectService.updateUserRoles(
+            header.user.id,
             projectId,
-            projectDTO.userEmails
+            req
         )
         return project
     }
@@ -222,14 +251,15 @@ export class ProjectController {
         @Param('userEmail') userEmail: string
     ) {
         const project = await this.projectService.getOne(projectId)
-
+        console.log(project.participants[0])
         const participant = project.participants?.find(
-            (participant) => participant.user.email == userEmail
+            // @ts-ignore
+            (participant) => participant.user._id.email == userEmail
         )
         const coordinator = project.coordinators?.find(
-            (participant) => participant.email == userEmail
+            (coordinator) => coordinator.email == userEmail
         )
-
+        console.log({participant, coordinator})
         return {
             participant,
             coordinator,
@@ -251,7 +281,8 @@ export class ProjectController {
 
         if (
             !userStagePermission ||
-            (userStagePermission && userStagePermission.permission != 'write')
+            (userStagePermission &&
+                userStagePermission.permission != Permission.Edit)
         ) {
             throw new ForbiddenException(
                 'User is not available to edit this stage'
