@@ -30,7 +30,11 @@ import {
     UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
-import { isValidSphereType } from './sphere.schema'
+import {
+    isValidPermission,
+    isValidSphereType,
+    SphereType,
+} from './sphere.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -221,14 +225,24 @@ export class ProjectController {
                     HttpStatus.BAD_REQUEST
                 )
             }
-
-            v.spheres.forEach((s) => {
-                if (!s.id || !s.permission || !isValidSphereType(s.id))
+            if (v.role == 'participant') {
+                v.spheres.forEach((s) => {
+                    if (
+                            !isValidSphereType(s.id) ||
+                        !isValidPermission(s.permission)
+                    )
+                        throw new HttpException(
+                            'Invalid sphere or permission',
+                            HttpStatus.BAD_REQUEST
+                        )
+                })
+                if (v.spheres.length != Object.keys(SphereType).length) {
                     throw new HttpException(
-                        'Invalid fields',
+                        'Invalid sphere count',
                         HttpStatus.BAD_REQUEST
                     )
-            })
+                }
+            }
         })
         const project = await this.projectService.updateUserRoles(
             header.user.id,
