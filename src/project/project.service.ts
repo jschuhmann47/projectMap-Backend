@@ -185,7 +185,7 @@ export class ProjectService {
             )
         }
 
-        const existingUser = await this.userService.findByEmail(userEmail)
+        const existingUser = await this.userService.findUserByEmail(userEmail)
 
         switch (role) {
             case 'participant':
