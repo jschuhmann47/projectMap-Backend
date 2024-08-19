@@ -70,7 +70,8 @@ export class ProjectService {
     }
 
     async findUserProjects(requestorId: string) {
-        if (this.userService.isAdmin(requestorId)) {
+        const isAdmin = await this.userService.isAdmin(requestorId)
+        if (isAdmin) {
             return this.projectModel.find({})
         } else {
             return this.projectModel.find({
