@@ -88,10 +88,6 @@ export class ProjectService {
         })
     }
 
-    async findSharedProjects() {
-        //const user = await this.userService.findById(userId)
-        return [] // user.sharedProjects TODO: borrar
-    }
     async update(id: string, updated: ProjectDto) {
         return this.projectModel.findOneAndUpdate({ _id: id }, updated)
     }

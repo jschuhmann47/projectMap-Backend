@@ -66,12 +66,6 @@ export class ProjectController {
         return projects
     }
 
-    @Get('shared')
-    async getAllSharedProjects() {
-        const projects = await this.projectService.findSharedProjects()
-        return projects
-    }
-
     @Get(':id')
     async findById(@Param('id') id: string) {
         const project = await this.projectService.getOne(id)
