@@ -228,7 +228,7 @@ export class ProjectController {
             if (v.role == 'participant') {
                 v.spheres.forEach((s) => {
                     if (
-                            !isValidSphereType(s.id) ||
+                        !isValidSphereType(s.id) ||
                         !isValidPermission(s.permission)
                     )
                         throw new HttpException(

@@ -69,10 +69,17 @@ export class ProjectService {
         return this.getSharedUsers(id)
     }
 
-    // eslint-disable-next-line
-    async findUserProjects(owner: string) {
-        //return this.projectModel.find({ owner })
-        return this.projectModel.find({})
+    async findUserProjects(requestorId: string) {
+        if (this.userService.isAdmin(requestorId)) {
+            return this.projectModel.find({})
+        } else {
+            return this.projectModel.find({
+                $or: [
+                    { 'participants.user': requestorId },
+                    { 'coordinators.user': requestorId },
+                ],
+            })
+        }
     }
 
     async findProjectsByName(name: string) {
