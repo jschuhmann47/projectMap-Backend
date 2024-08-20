@@ -69,10 +69,18 @@ export class ProjectService {
         return this.getSharedUsers(id)
     }
 
-    // eslint-disable-next-line
-    async findUserProjects(owner: string) {
-        //return this.projectModel.find({ owner })
-        return this.projectModel.find({})
+    async findUserProjects(requestorId: string) {
+        const isAdmin = await this.userService.isAdmin(requestorId)
+        if (isAdmin) {
+            return this.projectModel.find({})
+        } else {
+            return this.projectModel.find({
+                $or: [
+                    { 'participants.user': requestorId },
+                    { 'coordinators.user': requestorId },
+                ],
+            })
+        }
     }
 
     async findProjectsByName(name: string) {
@@ -81,10 +89,6 @@ export class ProjectService {
         })
     }
 
-    async findSharedProjects() {
-        //const user = await this.userService.findById(userId)
-        return [] // user.sharedProjects TODO: borrar
-    }
     async update(id: string, updated: ProjectDto) {
         return this.projectModel.findOneAndUpdate({ _id: id }, updated)
     }
@@ -103,7 +107,6 @@ export class ProjectService {
         projectId: string,
         req: UpdateUserRolesDto
     ) {
-        mongoose.set('debug', true)
         const project = await this.projectModel.findById(projectId)
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
