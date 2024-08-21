@@ -33,8 +33,41 @@ export enum StageType {
     ContinuousImprovement = 'continuousImprovement',
 }
 
+export enum Tool {
+    Porter = 'porter',
+    Pestel = 'pestel',
+    Foda = 'foda',
+    Ansoff = 'ansoff',
+    McKinsey = 'mckinsey',
+    Questionnaires = 'questionnaires',
+    BalacedScorecard = 'balanced-scorecards',
+    Okr = 'okr-projects'
+ }
+
+const StagesByTool = {
+    [Tool.Porter]: StageType.ExternalEnvironment,
+    [Tool.Pestel]: StageType.ExternalEnvironment,
+    [Tool.Foda]: StageType.InternalSituation,
+    [Tool.Ansoff]: StageType.StrategicGuidelines,
+    [Tool.McKinsey]: StageType.CompetitiveStrategy,
+    [Tool.Questionnaires]: StageType.TransformationPlans,
+    [Tool.BalacedScorecard]: StageType.FinancialPlanning,
+    [Tool.Okr]: StageType.FinancialPlanning,
+}
+
+export function fromToolToStage(tool: string): string {
+    if (isValidTool(tool)) {
+        return StagesByTool[tool];
+    }
+    return null;
+}
+
 export function isValidStageType(value: string) {
     return Object.values(StageType).includes(value as StageType)
+}
+
+export function isValidTool(value: string) {
+    return Object.values(Tool).includes(value as Tool)
 }
 
 export function isValidPermission(value: string) {
