@@ -1,25 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { Document } from 'mongoose'
-import { Completition } from '../completition'
-
-export type OkrDocument = OkrProject & Document
+import mongoose from 'mongoose'
 
 @Schema()
 export class KeyStatus {
     _id: mongoose.Types.ObjectId
 
     @Prop({ type: String, required: true })
-    month: string
+    period: string
 
-    @Prop({ type: Number, required: false, default: 0 })
+    @Prop({ type: Number, required: true })
     value: number
 
     constructor(month: string, value: number) {
-        this.month = month
+        this.period = month
         this.value = value
     }
 }
-export const keyStatusSchema = SchemaFactory.createForClass(KeyStatus)
+export const KeyStatusSchema = SchemaFactory.createForClass(KeyStatus)
 
 @Schema()
 export class KeyResult {
@@ -28,26 +25,29 @@ export class KeyResult {
     @Prop({ type: String, required: true })
     description: string
 
-    @Prop({ type: Number, required: true })
-    goal: number
+    @Prop({ type: String, required: false })
+    responsible: string
 
     @Prop({ type: Number })
     priority: number
 
-    @Prop({ type: Date })
-    startDate: Date
+    @Prop({ type: Number })
+    baseline: number
 
-    @Prop({ type: Date })
-    dueDate: Date
+    @Prop({ type: Number })
+    currentScore: number
 
-    @Prop([keyStatusSchema])
-    keyStatus: KeyStatus[]
+    @Prop({ type: Number, required: true })
+    goal: number
 
     @Prop({ type: Number })
     progress: number
 
-    @Prop({ type: String, required: false })
-    responsible: string
+    @Prop({ type: String })
+    frequency: Frequency
+
+    @Prop([KeyStatusSchema])
+    keyStatus: KeyStatus[]
 
     constructor(
         description: string,
@@ -61,15 +61,14 @@ export class KeyResult {
         this.priority = priority
     }
 }
-export const keyResultSchema = SchemaFactory.createForClass(KeyResult)
-keyResultSchema.pre('save', function (next) {
+export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
+KeyResultSchema.pre('save', function (next) {
     this.progress =
         (this.keyStatus.map((k) => k.value).reduce((a, b) => a + b) * 100) /
         this.goal
     next()
 })
 
-// TODO entre 3 y 5
 @Schema()
 export class Okr {
     _id: mongoose.Types.ObjectId
@@ -77,73 +76,50 @@ export class Okr {
     @Prop({ type: String })
     description: string
 
-    @Prop([keyResultSchema])
-    keyResults: KeyResult[]
-
-    @Prop({ type: String, required: false })
-    globalOkr: string
-
     @Prop({ type: String, required: false })
     area: string
 
-    @Prop({ type: Number })
-    progress: number
+    @Prop({ type: String, required: true })
+    horizon: Horizon
 
     @Prop({ type: Number, required: true })
-    quarter: number
+    priority: number
+
+    @Prop({ type: Number, required: true })
+    progress: number
+
+    @Prop([KeyResultSchema])
+    keyResults: KeyResult[]
 
     constructor(
         description: string,
-        globalOkr: string,
         area: string,
-        quarter: number
+        horizon: Horizon,
+        priority: Priority
     ) {
         this.description = description
-        this.globalOkr = globalOkr
         this.area = area
-        this.quarter = quarter
+        this.horizon = horizon
+        this.priority = priority
     }
 }
-export const okrSchema = SchemaFactory.createForClass(Okr)
-okrSchema.pre('save', function (next) {
-    if (this.keyResults.length)
+export const OkrSchema = SchemaFactory.createForClass(Okr)
+OkrSchema.pre('save', function (next) {
+    if (this.keyResults.length) {
+        this.priority =
+            this.keyResults
+                .map((kr) => kr.priority)
+                .reduce((a, b) => a + b, 0) / this.keyResults.length
         this.progress =
-            this.keyResults.map((k) => k.progress).reduce((a, b) => a + b) /
-            this.keyResults.length
-
+            this.keyResults
+                .map((kr) => kr.progress)
+                .reduce((a, b) => a + b, 0) / this.keyResults.length
+    }
     next()
 })
 
-@Schema()
-export class OkrProject {
-    _id: mongoose.Types.ObjectId
+enum Horizon {}
 
-    @Prop({ required: true })
-    projectId: string
+enum Priority {}
 
-    @Prop({ type: String })
-    titulo: string
-
-    @Prop({ type: Date, default: Date.now })
-    createdAt: Date
-
-    @Prop([okrSchema])
-    okrs: Okr[]
-
-    @Prop({ type: String, default: Completition.Vacio })
-    completion: Completition
-}
-
-export const okrProjectSchema = SchemaFactory.createForClass(OkrProject)
-
-okrProjectSchema.pre('save', function (next) {
-    const completedKeyResults = this.okrs.filter(
-        (okr) => okr.keyResults.length > 1
-    )
-    if (completedKeyResults.length >= 2) this.completion = Completition.Completo
-    else if (completedKeyResults.length == 0)
-        this.completion = Completition.Vacio
-    else this.completion = Completition.Incompleto
-
-    next()
-})
+enum Frequency {}
