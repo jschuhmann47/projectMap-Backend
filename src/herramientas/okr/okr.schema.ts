@@ -121,8 +121,30 @@ OkrSchema.pre('save', function (next) {
     next()
 })
 
-export enum Horizon {}
+export enum Horizon {
+    YEAR = 0,
+    SEMESTER,
+    QUARTER,
+    TRIMESTER,
+    BIMESTER,
+    MONTH,
+    FORTNIGHT,
+    WEEK,
+    DAY,
+}
 
-export enum Priority {}
+export enum Priority {
+    LOW = 0,
+    MEDIUM,
+    HIGH,
+}
 
-export enum Frequency {}
+export enum Frequency {
+    SIX_MONTHS,
+    THREE_MONTHS,
+    TWO_MONTHS,
+    MONTHLY,
+    TWO_WEEKS,
+    WEEKLY,
+    DAILY,
+}
