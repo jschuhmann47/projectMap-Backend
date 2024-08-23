@@ -30,32 +30,32 @@ export class OkrController {
         return okrProject
     }
 
-    @Get(':okrProjectId/okrs/:okrId/global')
-    async findGlobalOkr(
-        @Param('okrProjectId') okrProjectId: string,
-        @Param('okrId') okrId: string
-    ) {
-        const okr = await this.okrService.findGlobalOkrById(okrProjectId, okrId)
-        return okr
-    }
+    // @Get(':okrProjectId/okrs/:okrId/global')
+    // async findGlobalOkr(
+    //     @Param('okrProjectId') okrProjectId: string,
+    //     @Param('okrId') okrId: string
+    // ) {
+    //     const okr = await this.okrService.findGlobalOkrById(okrProjectId, okrId)
+    //     return okr
+    // }
 
     @Get(':okrProjectId/okrs/:okrId')
     async findOkrById(
         @Param('okrProjectId') okrProjectId: string,
         @Param('okrId') okrId: string
     ) {
-        const okr = await this.okrService.findOkrById(okrProjectId, okrId)
+        const okr = await this.okrService.findOkrById(okrId)
         return okr
     }
 
-    @Post(':okrProjectId/okrs')
-    async addOkr(
-        @Param('okrProjectId') okrProjectId: string,
-        @Body() okrDto: OkrDto
-    ) {
-        const okrProject = await this.okrService.addOkr(okrProjectId, okrDto)
-        return okrProject
-    }
+    // @Post(':okrProjectId/okrs')
+    // async addOkr(
+    //     @Param('okrProjectId') okrProjectId: string,
+    //     @Body() okrDto: OkrDto
+    // ) {
+    //     const okrProject = await this.okrService.addOkr(okrProjectId, okrDto)
+    //     return okrProject
+    // }
 
     @Put(':okrProjectId/okrs/:okrId')
     async editOkr(

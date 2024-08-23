@@ -30,11 +30,11 @@ export class KeyResultDto {
 
 export class KeyStatusDto {
     _id: string
-    month: string
+    period: string
     value: number
 
     constructor(month: string, value: number) {
-        this.month = month
+        this.period = month
         this.value = value
     }
 }
