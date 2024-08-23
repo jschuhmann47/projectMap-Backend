@@ -140,7 +140,7 @@ export enum Priority {
 }
 
 export enum Frequency {
-    SIX_MONTHS,
+    SIX_MONTHS = 0,
     THREE_MONTHS,
     TWO_MONTHS,
     MONTHLY,
