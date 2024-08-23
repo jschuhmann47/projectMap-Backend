@@ -73,6 +73,9 @@ KeyResultSchema.pre('save', function (next) {
 export class Okr {
     _id: mongoose.Types.ObjectId
 
+    @Prop({ required: true })
+    projectId: string
+
     @Prop({ type: String })
     description: string
 
@@ -118,8 +121,8 @@ OkrSchema.pre('save', function (next) {
     next()
 })
 
-enum Horizon {}
+export enum Horizon {}
 
-enum Priority {}
+export enum Priority {}
 
-enum Frequency {}
+export enum Frequency {}

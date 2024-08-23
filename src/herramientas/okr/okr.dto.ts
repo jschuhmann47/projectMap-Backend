@@ -1,31 +1,27 @@
-export class OkrProjectDto {
-    _id: string
-    projectId: string
-    titulo: string
-    createdAt: Date
-    okrs: OkrDto[]
-}
+import { Frequency, Horizon } from './okr.schema'
 
 export class OkrDto {
     _id: string
+    projectId: string
     description: string
-    keyResults: KeyResultDto[]
-    globalOkr: string
     area: string
+    horizon: Horizon
+    priority: number
     progress: number
-    quarter: number
+    keyResults: KeyResultDto[]
 }
 
 export class KeyResultDto {
     _id: string
     description: string
-    goal: number
-    keyStatus: KeyStatusDto[]
-    progress: number
-    startDate: string
-    dueDate: string
     responsible: string
     priority: number
+    baseline: number
+    currentScore: number
+    goal: number
+    progress: number
+    frequency: Frequency
+    keyStatus: KeyStatusDto[]
 }
 
 export class KeyStatusDto {
@@ -33,30 +29,8 @@ export class KeyStatusDto {
     period: string
     value: number
 
-    constructor(month: string, value: number) {
-        this.period = month
+    constructor(period: string, value: number) {
+        this.period = period
         this.value = value
-    }
-}
-
-export class GlobalOkrDto {
-    _id: string
-    description: string
-    keyStatus: KeyStatusDto[]
-    progress: number
-    area: string
-
-    constructor(
-        id: string,
-        description,
-        keyStatus: KeyStatusDto[],
-        progress: number,
-        area: string
-    ) {
-        this._id = id
-        this.description = description
-        this.keyStatus = keyStatus
-        this.progress = progress
-        this.area = area
     }
 }

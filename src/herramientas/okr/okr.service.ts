@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { KeyResultDto, KeyStatusDto, OkrDto, OkrProjectDto } from './okr.dto'
+import { KeyResultDto, KeyStatusDto, OkrDto } from './okr.dto'
 import { KeyResult, KeyStatus, Okr } from './okr.schema'
 
 @Injectable()
 export class OkrService {
     constructor(@InjectModel(Okr.name) private okrModel: Model<Okr>) {}
 
-    async create(okrProjectDto: OkrProjectDto) {
+    async create(okrProjectDto: OkrDto) {
         const okrProject = new this.okrModel(okrProjectDto)
         return okrProject.save()
     }
@@ -108,7 +108,7 @@ export class OkrService {
     //     return new this.okrModel(okrProject).save()
     // }
 
-    async editOkr(okrProjectId: string, okrId: string, okrDto: OkrDto) {
+    async editOkr(okrId: string, okrDto: OkrDto) {
         const okrProject: Okr = await this.okrModel.findById(okrId).exec()
 
         okrProject.area = okrDto.area
@@ -118,18 +118,14 @@ export class OkrService {
     }
 
     // check
-    async removeOkr(okrProjectId: string, okrId: string) {
+    async removeOkr(okrId: string) {
         this.okrModel
             .deleteOne({ _id: okrId })
             .then(() => {})
             .catch((err) => err)
     }
 
-    async addKeyResult(
-        okrProjectId: string,
-        okrId: string,
-        keyResultDto: KeyResultDto
-    ) {
+    async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
         const okrProject: Okr = await this.okrModel.findById(okrId).exec()
 
         const keyStatuses = keyResultDto.keyStatus.map(
@@ -151,7 +147,6 @@ export class OkrService {
     }
 
     async editKeyResult(
-        okrProjectId: string,
         okrId: string,
         keyResultId: string,
         keyResultDto: KeyResultDto
@@ -179,11 +174,7 @@ export class OkrService {
         return new this.okrModel(okrProject).save()
     }
 
-    async removeKeyResult(
-        okrProjectId: string,
-        okrId: string,
-        keyResultId: string
-    ) {
+    async removeKeyResult(okrId: string, keyResultId: string) {
         const okrProject: Okr = await this.okrModel.findById(okrId).exec()
 
         okrProject.keyResults = okrProject.keyResults.filter(
