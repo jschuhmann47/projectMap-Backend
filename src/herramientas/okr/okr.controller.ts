@@ -38,7 +38,7 @@ export class OkrController {
 
     @Delete(':okrId')
     async removeOkr(@Param('okrId') okrId: string) {
-        const okr = await this.okrService.removeOkr(okrId)
+        const okr = await this.okrService.delete(okrId)
         return okr
     }
 
@@ -76,22 +76,6 @@ export class OkrController {
         )
         return okrProject
     }
-    // these are created when kr is created, so the size is fixed
-    // @Post(':okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status')
-    // async addKeyStatus(
-    //     @Param('okrProjectId') okrProjectId: string,
-    //     @Param('okrId') okrId: string,
-    //     @Param('keyResultId') keyResultId: string,
-    //     @Body() keyStatusDto: KeyStatusDto
-    // ) {
-    //     const okrProject = await this.okrService.addKeyStatus(
-    //         okrProjectId,
-    //         okrId,
-    //         keyResultId,
-    //         keyStatusDto
-    //     )
-    //     return okrProject
-    // }
 
     @Put(
         ':okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status/:keyStatusId'
@@ -112,31 +96,4 @@ export class OkrController {
         )
         return okrProject
     }
-
-    // @Delete(
-    //     ':okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status/:keyStatusId'
-    // )
-    // async removeKeyStatus(
-    //     @Param('okrProjectId') okrProjectId: string,
-    //     @Param('okrId') okrId: string,
-    //     @Param('keyResultId') keyResultId: string,
-    //     @Param('keyStatusId') keyStatusId: string
-    // ) {
-    //     const okrProject = await this.okrService.removeKeyStatus(
-    //         okrProjectId,
-    //         okrId,
-    //         keyResultId,
-    //         keyStatusId
-    //     )
-    //     return okrProject
-    // }
-
-    // repeated
-    // @Delete(':id')
-    // async delete(@Param('id') id: string) {
-    //     const documentId = await this.okrService.delete(id)
-    //     return {
-    //         _id: documentId,
-    //     }
-    // }
 }
