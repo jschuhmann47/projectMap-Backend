@@ -57,12 +57,12 @@ export class OkrController {
         @Param('keyResultId') keyResultId: string,
         @Body() keyResultDto: KeyResultDto
     ) {
-        const okrProject = await this.okrService.editKeyResult(
+        const okr = await this.okrService.editKeyResult(
             okrId,
             keyResultId,
             keyResultDto
         )
-        return okrProject
+        return okr
     }
 
     @Delete(':okrId/key-result/:keyResultId')
@@ -70,11 +70,8 @@ export class OkrController {
         @Param('okrId') okrId: string,
         @Param('keyResultId') keyResultId: string
     ) {
-        const okrProject = await this.okrService.removeKeyResult(
-            okrId,
-            keyResultId
-        )
-        return okrProject
+        const okr = await this.okrService.removeKeyResult(okrId, keyResultId)
+        return okr
     }
 
     @Put(':okrId/key-results/:keyResultId/key-status/:keyStatusId')
@@ -84,12 +81,12 @@ export class OkrController {
         @Param('keyStatusId') keyStatusId: string,
         @Body() keyStatusDto: KeyStatusDto
     ) {
-        const okrProject = await this.okrService.editKeyStatus(
+        const okr = await this.okrService.editKeyStatus(
             okrId,
             keyResultId,
             keyStatusId,
             keyStatusDto
         )
-        return okrProject
+        return okr
     }
 }
