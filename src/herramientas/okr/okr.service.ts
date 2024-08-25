@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { KeyResultDto, KeyStatusDto, OkrDto } from './okr.dto'
+import { KeyResultDto, OkrDto } from './okr.dto'
 import { KeyResult, KeyStatus, Okr } from './okr.schema'
 
 @Injectable()
@@ -15,12 +15,6 @@ export class OkrService {
 
     async findById(okrId: string) {
         return this.okrModel.findById(okrId).exec()
-    }
-
-    async findOkrById(okrId: string) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
-
-        return okr
     }
 
     async getAllByProjectId(projectId: string) {
@@ -94,40 +88,6 @@ export class OkrService {
         okr.keyResults = okr.keyResults.filter(
             (keyResult) => keyResult._id.toString() != keyResultId
         )
-
-        return new this.okrModel(okr).save()
-    }
-
-    async addKeyStatus(
-        okrId: string,
-        keyResultId: string,
-        keyStatusDto: KeyStatusDto
-    ) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
-
-        const keyResult = okr.keyResults.find(
-            (kr) => kr._id.toString() == keyResultId
-        )
-
-        const keystatus = new KeyStatus(keyStatusDto.period, keyStatusDto.value)
-        keyResult.keyStatus.push(keystatus)
-
-        return new this.okrModel(okr).save()
-    }
-
-    // think that this is not needed anymore
-    async removeKeyStatus(
-        okrId: string,
-        keyResultId: string,
-        keyStatusId: string
-    ) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
-
-        const keyResult = okr.keyResults.find(
-            (kr) => kr._id.toString() == keyResultId
-        )
-
-        keyResult.keyStatus.filter((ks) => ks._id.toString() != keyStatusId)
 
         return new this.okrModel(okr).save()
     }
