@@ -115,28 +115,6 @@ export class OkrService {
         return new this.okrModel(okr).save()
     }
 
-    async editKeyStatus(
-        okrId: string,
-        keyResultId: string,
-        keyStatusId: string,
-        keyStatusDto: KeyStatusDto
-    ) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
-
-        const keyResult = okr.keyResults.find(
-            (kr) => kr._id.toString() == keyResultId
-        )
-
-        keyResult.keyStatus.forEach((keyStatus) => {
-            if (keyStatus._id.toString() == keyStatusId) {
-                keyStatus.period = keyStatusDto.period
-                keyStatus.value = keyStatusDto.value
-            }
-        })
-
-        return new this.okrModel(okr).save()
-    }
-
     // think that this is not needed anymore
     async removeKeyStatus(
         okrId: string,

@@ -11,8 +11,8 @@ export class KeyStatus {
     @Prop({ type: Number, required: true })
     value: number
 
-    constructor(month: string, value: number) {
-        this.period = month
+    constructor(period: string, value: number) {
+        this.period = period
         this.value = value
     }
 }
@@ -29,13 +29,10 @@ export class KeyResult {
     responsible: string
 
     @Prop({ type: Number })
-    priority: number
+    priority: Priority
 
     @Prop({ type: Number })
     baseline: number
-
-    @Prop({ type: Number })
-    currentScore: number
 
     @Prop({ type: Number, required: true })
     goal: number
@@ -86,7 +83,7 @@ export class Okr {
     horizon: Horizon
 
     @Prop({ type: Number, required: true })
-    priority: number
+    priority: Priority
 
     @Prop({ type: Number, required: true })
     progress: number
@@ -129,8 +126,8 @@ export enum Horizon {
     BIMESTER,
     MONTH,
     FORTNIGHT,
-    WEEK,
-    DAY,
+    // WEEK,
+    // DAY,
 }
 
 export enum Priority {

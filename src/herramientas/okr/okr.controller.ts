@@ -8,10 +8,10 @@ import {
     Put,
     UseGuards,
 } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
-import { OkrService } from './okr.service'
-import { KeyResultDto, KeyStatusDto, OkrDto } from './okr.dto'
 import { AuthGuard } from '@nestjs/passport'
+import { ApiTags } from '@nestjs/swagger'
+import { KeyResultDto, OkrDto } from './okr.dto'
+import { OkrService } from './okr.service'
 
 @Controller('okr')
 @ApiTags('okr')
@@ -71,22 +71,6 @@ export class OkrController {
         @Param('keyResultId') keyResultId: string
     ) {
         const okr = await this.okrService.removeKeyResult(okrId, keyResultId)
-        return okr
-    }
-
-    @Put(':okrId/key-results/:keyResultId/key-status/:keyStatusId')
-    async editKeyStatus(
-        @Param('okrId') okrId: string,
-        @Param('keyResultId') keyResultId: string,
-        @Param('keyStatusId') keyStatusId: string,
-        @Body() keyStatusDto: KeyStatusDto
-    ) {
-        const okr = await this.okrService.editKeyStatus(
-            okrId,
-            keyResultId,
-            keyStatusId,
-            keyStatusDto
-        )
         return okr
     }
 }
