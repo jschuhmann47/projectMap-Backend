@@ -25,22 +25,22 @@ export class KeyResult {
     @Prop({ type: String, required: true })
     description: string
 
-    @Prop({ type: String, required: false })
+    @Prop({ type: String, required: true })
     responsible: string
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, required: false })
     priority: Priority
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, required: true })
     baseline: number
 
     @Prop({ type: Number, required: true })
     goal: number
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, required: false })
     progress: number
 
-    @Prop({ type: String })
+    @Prop({ type: String, required: true })
     frequency: Frequency
 
     @Prop([KeyStatusSchema])
@@ -70,22 +70,22 @@ KeyResultSchema.pre('save', function (next) {
 export class Okr {
     _id: mongoose.Types.ObjectId
 
-    @Prop({ required: true })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, required: true })
     projectId: string
 
-    @Prop({ type: String })
+    @Prop({ type: String, required: true })
     description: string
 
-    @Prop({ type: String, required: false })
+    @Prop({ type: String, required: true })
     area: string
 
     @Prop({ type: String, required: true })
     horizon: Horizon
 
-    @Prop({ type: Number, required: true })
+    @Prop({ type: Number })
     priority: Priority
 
-    @Prop({ type: Number, required: true })
+    @Prop({ type: Number })
     progress: number
 
     @Prop([KeyResultSchema])
