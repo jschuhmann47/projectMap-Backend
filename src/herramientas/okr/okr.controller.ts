@@ -77,18 +77,14 @@ export class OkrController {
         return okrProject
     }
 
-    @Put(
-        ':okrProjectId/okrs/:okrId/key-results/:keyResultId/key-status/:keyStatusId'
-    )
+    @Put(':okrId/key-results/:keyResultId/key-status/:keyStatusId')
     async editKeyStatus(
-        @Param('okrProjectId') okrProjectId: string,
         @Param('okrId') okrId: string,
         @Param('keyResultId') keyResultId: string,
         @Param('keyStatusId') keyStatusId: string,
         @Body() keyStatusDto: KeyStatusDto
     ) {
         const okrProject = await this.okrService.editKeyStatus(
-            okrProjectId,
             okrId,
             keyResultId,
             keyStatusId,
