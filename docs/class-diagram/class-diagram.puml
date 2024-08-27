@@ -1,0 +1,928 @@
+@startuml
+class AuthController {
+    - userService: UserService
+    - authService: AuthService
+    + hiddenInformation(): String
+    + register(userDTO: CreateUserDto): { user: User, token: String }
+    + login(loginDTO: LoginDTO): { user: User, token: String }
+    + getProfile(req: { user: User }): { user: { email: String, firstName: String, lastName: String, isAdmin: Boolean }, token: String }
+}
+
+class AuthService {
+    - userService: UserService
+    + signPayload(payload: { email: String }): String
+    + validateUser(payload: { email: String }): User
+}
+
+class ProjectController {
+    - projectService: ProjectService
+    - fodaService: FodaService
+    - pestelService: PestelService
+    - ansoffService: AnsoffService
+    - porterService: PorterService
+    - mckinseyService: MckinseyService
+    - okrService: OkrService
+    - balancedService: BalancedScorecardService
+    - questionnaireService: QuestionnaireService
+
+    + getAllUserProjects(req: { user: { id: String } }): Project[]
+    + searchProjects(query: { name: String }): Project[]
+    + getAllSharedProjects(): Project[]
+    + findById(id: String): Project
+    + getSharedUsers(projectId: String): User[]
+    + getFoda(id: String): Foda[]
+    + getPestel(id: String): Pestel[]
+    + getAnsoff(id: String): Ansoff[]
+    + getPorter(projectId: String): Porter[]
+    + getMcKinsey(projectId: String): McKinsey[]
+    + getOkr(projectId: String): Okr[]
+    + getBalancedScorecards(projectId: String): BalancedScorecard[]
+    + getQuestionnaires(projectId: String): Questionnaire[]
+    + insert(req: { user: { id: String } }, projectDTO: ProjectDto): Project
+    + shareProject(projectId: String, shareProjectDto: ShareProjectDto): Project
+    + shareProjectEmail(projectId: String, shareProjectDto: ShareProjectEmailDto): Project
+    + stopSharing(projectId: String): Project
+    + stopSharingEmail(projectId: String, stopSharingProjectEmailDto: StopSharingProjectEmailDto): Project
+    + update(id: String, projectDTO: ProjectDto): Project
+    + delete(id: String): { _id: String }
+    + updateParticipantRole(projectId: String, projectDTO: UpdateParticipantDto): Project
+    + updateCoordinatorRole(projectId: String, projectDTO: { userEmail: String }): Project
+}
+
+class Project {
+    - _id: mongoose.Types.ObjectId
+    - descripcion: String
+    - name: String
+    - id: String
+    - coordinators: { email: String }[]
+    - participants: Participant[]
+}
+
+class ProjectService {
+    - projectModel: Model<Project>
+    - userService: UserService
+
+    + getOne(id: String): Project
+    + getSharedUsers(projectId: String): User[]
+    + create(newProject: ProjectDto): Project
+    + shareProject(id: String, userIds: String[]): User[]
+    + shareProjectByEmail(id: String, email: String): User[]
+    + removeUserFromProjectByEmail(id: String, emails: String[]): User[]
+    + removeUserFromProject(id: String): User[]
+    + findUserProjects(owner: String): Project[]
+    + findProjectsByName(name: String): Project[]
+    + findSharedProjects(): Project[]
+    + update(id: String, updated: ProjectDto): Project
+    + delete(id: String): String
+    + updateParticipanRole(projectId: String, participantDto: UpdateParticipantDto): Project
+    + updateCoordinatorRole(projectId: String, userEmail: String): Project
+}
+
+class Participant {
+    - userEmail: String
+    - spehres: Sphere[]
+}
+
+class Sphere {
+    - _id: mongoose.Types.ObjectId
+    - id: String
+    - permission: 'read' | 'write' | 'view'
+}
+
+class UserController {
+    - userService: UserService
+
+    + findById(userId: String): User
+    + findByEmail(query: { email: String }): User
+    + update(userId: String, updateUserDto: UpdateUserDto): User
+}
+
+class UserDto {
+    + email: String
+    + password: String
+}
+
+class CreateUserDto {
+    + firstName: String
+    + lastName: String
+    + password: String
+    + confirmPassword: String
+    + email: String
+    + biography: String
+}
+
+class UpdateUserDto {
+    + firstName: String
+    + lastName: String
+    + calendlyUser: String
+    + biography: String
+}
+
+class UserService {
+    - userModel: Model<User>
+
+    + create(userDTO: CreateUserDto): User
+    + findByLogin(UserDTO: UserDto): User
+    + findByEmail(email: String): User
+    + findById(id: String): User
+    + update(userId: String, updateUserDto: UpdateUserDto): User
+    + findUserByEmail(email: String): User
+    + assignConsultora(userId: String, consultoraId: String): User
+    + assignProjects(userId: String, projects: Project[]): User
+    + replaceAssignProjects(userId: String, projects: Project[]): User
+    + removeProjects(): void
+    + removeConsultant(userId: String): User
+    + findUsersBySharedProject(projectId: String): User[]
+    + validate(newUser: CreateUserDto): void
+}
+
+class AnsoffController {
+    - ansoffService: AnsoffService
+
+    + insert(ansoffDto: AnsoffDto): Ansoff
+    + getOptions(): Any
+    + find(id: String): Ansoff
+    + addProduct(id: String, productRequest: AnsoffProductDto): Any
+    + editProduct(id: String, productId: String, productRequest: AnsoffProductDto): Any
+    + deleteProduct(projectId: String, productId: String): Any
+    + delete(id: String): { _id: String }
+}
+
+class AnsoffDto {
+    - projectId: String
+    - titulo: String
+    - createdAt: String
+    - productos: AnsoffProductDto[]
+}
+
+class AnsoffProductDto {
+    - _id: String
+    - nombre: String
+    - situacionDelMercado: SituacionDelMercado
+    - situacionDelProducto: SituacionDelProducto
+    - exito: Exito
+    - estrategia: Estrategia
+}
+
+class Producto {
+    - _id: mongoose.Types.ObjectId
+    - nombre: String
+    - situacionDelMercado: String
+    - situacionDelProducto: String
+    - exito: String
+    - estrategia: String
+
+    + constructor(nombre: String, situacionDelMercado: SituacionDelMercado, situacionDelProducto: SituacionDelProducto, exito?: String)
+}
+
+class Ansoff {
+    - projectId: String
+    - titulo: String
+    - createdAt: Date
+    - productos: Producto[]
+    - completion: Completition
+}
+
+class AnsoffService {
+    - ansoffModel: Model<AnsoffDocument>
+
+    + create(ansoffDto: AnsoffDto): Promise<Ansoff>
+    + addProduct(id: String, productRequest: AnsoffProductDto): Promise<Ansoff>
+    + editProduct(id: String, productId: String, productRequest: AnsoffProductDto): Promise<Ansoff>
+    + deleteProduct(id: String, productId: String): Promise<Ansoff>
+    + findById(id: String): Promise<Ansoff>
+    + getAllByProjectId(projectId: String): Promise<Ansoff[]>
+    + getOptions(): Object
+    + delete(id: String): Promise<String>
+}
+
+' enum Estrategia {
+'     PENETRACION 
+'     DIVERSIFICACION
+'     DESARROLLO_DE_PRODUCTO
+'     DESARROLLO_DE_MERCADO
+' }
+' enum Exito {
+'     INDEFINIDO
+'     POCO_EXITOSO
+'     MUY_EXITOSO
+' }
+' enum SituacionDelMercado {
+'     MERCADO_EXISTENTE
+'     NUEVO
+' }
+' enum SituacionDelProducto {
+'     PRODUCTO_EXISTENTE
+'     NUEVO
+' }
+
+class BalancedScorecardController {
+    - balancedScorecardService: BalancedScorecardService
+
+    + create(balancedScorecardDto: BalancedScorecardDto): Promise<BalancedScorecard>
+    + getOptions(): Object
+    + findById(id: String): Promise<BalancedScorecard>
+    + addInitiative(id: String, initiativeDto: InitiativeDto): Promise<BalancedScorecard>
+    + addObjective(id: String, objectiveDto: ObjectiveDto): Promise<BalancedScorecard>
+    + addCheckpoint(id: String, objectiveId: String, checkpointDto: CheckpointDto): Promise<BalancedScorecard>
+    + removeInitiative(id: String, initiativeId: String): Promise<BalancedScorecard>
+    + removeObjective(id: String, objectiveId: String): Promise<BalancedScorecard>
+    + removeCheckpoint(id: String, objectiveId: String, checkpointId: String): Promise<BalancedScorecard>
+    + editBalancedScorecard(id: String, balancedScoreCardDto: BalancedScorecardDto): Promise<BalancedScorecard>
+    + editInitiative(id: String, initiativeId: String, initiativeDto: InitiativeDto): Promise<BalancedScorecard>
+    + editObjective(id: String, objectiveId: String, objectiveDto: ObjectiveDto): Promise<BalancedScorecard>
+    + editCheckpoint(id: String, objectiveId: String, checkpointId: String, checkpointDto: CheckpointDto): Promise<BalancedScorecard>
+    + delete(id: String): Promise<{_id: String}>
+}
+class CheckpointDto {
+    - _id: String
+    - month: String
+    - target: Number
+    - actual: Number
+}
+
+class ObjectiveDto {
+    - _id: String
+    - action: String
+    - measure: String
+    - target: Number
+    - area: String
+    - checkpoints: CheckpointDto[]
+    - progress: Number
+    - trend: Trend
+    - responsible: String
+}
+
+class InitiativeDto {
+    - _id: String
+    - area: Area
+    - description: String
+}
+
+class BalancedScorecardDto {
+    - _id: String
+    - projectId: String
+    - titulo: String
+    - createdAt: Date
+    - objectives: ObjectiveDto[]
+    - initiatives: InitiativeDto[]
+}
+
+CheckpointDto --> ObjectiveDto : contains
+ObjectiveDto --> BalancedScorecardDto : contains
+InitiativeDto --> BalancedScorecardDto : contains
+
+class Checkpoint {
+    - _id: mongoose.Types.ObjectId
+    - month: String
+    - target: Number
+    - actual: Number
+
+    + Checkpoint(month: String, target: Number, actual: Number)
+}
+class Objective {
+    - _id: mongoose.Types.ObjectId
+    - action: String
+    - measure: String
+    - target: Number
+    - area: Area
+    - checkpoints: List<Checkpoint>
+    - progress: Number
+    - trend: Trend
+    - deviation: Deviation
+    - responsible: String
+
+    + Objective(action: String, measure: String, target: Number, area: Area, responsible: String)
+}
+class Initiative {
+    - _id: mongoose.Types.ObjectId
+    - area: Area
+    - description: String
+
+    + Initiative(area: Area, description: String)
+}
+class BalancedScorecard {
+    - _id: mongoose.Types.ObjectId
+    - projectId: String
+    - titulo: String
+    - createdAt: Date
+    - objectives: List<Objective>
+    - initiatives: List<Initiative>
+    - completion: Completition
+}
+class BalancedScorecardService {
+    - balancedScorecardModel: Model<BalancedScoreCardDocument>
+
+    + create(balancedScorecardDto: BalancedScorecardDto): Promise<BalancedScorecard>
+    + delete(id: string): Promise<string>
+    + findById(balancedScorecardId: string): Promise<BalancedScorecard>
+    + findObjectiveById(balancedScorecardId: string, objectiveId: string): Promise<Objective>
+    + getAllByProjectId(projectId: string): Promise<BalancedScorecard[]>
+    + edit(balancedScorecardId: string, balancedScorecardDto: BalancedScorecardDto): Promise<BalancedScorecard>
+    + addInitiative(balancedScorecardId: string, initiativeDto: InitiativeDto): Promise<BalancedScorecard>
+    + removeInitiative(balancedScorecardId: string, initiativeId: string): Promise<BalancedScorecard>
+    + editInitiative(balancedScorecardId: string, initiativeId: string, initiativeDto: InitiativeDto): Promise<BalancedScorecard>
+    + addObjective(balancedScorecardId: string, objectiveDto: ObjectiveDto): Promise<BalancedScorecard>
+    + editObjective(balancedScorecardId: string, objectiveId: string, objectiveDto: ObjectiveDto): Promise<BalancedScorecard>
+    + removeObjective(balancedScorecardId: string, objectiveId: string): Promise<BalancedScorecard>
+    + addCheckpoint(balancedScorecardId: string, objectiveId: string, checkpointDto: CheckpointDto): Promise<BalancedScorecard>
+    + editCheckpoint(balancedScorecardId: string, objectiveId: string, checkpointId: string, checkpointDto: CheckpointDto): Promise<BalancedScorecard>
+    + removeCheckpoint(balancedScorecardId: string, objectiveId: string, checkpointId: string): Promise<BalancedScorecard>
+    + getOptions(): { trend: Trend[], deviation: Deviation[], area: Area[] }
+}
+' enum Area {
+'     Financiera
+'     Clientes
+'     ProcesosInternos
+'     Aprendizaje
+' }
+class ContinuousImprovementController {
+    - fodaService: FodaService
+    - pestelService: PestelService
+    - ansoffService: AnsoffService
+    - porterService: PorterService
+    - mckinseyService: MckinseyService
+    - okrService: OkrService
+    - balancedService: BalancedScorecardService
+    - questionnaireService: QuestionnaireService
+
+    + getContinuousImprovement(projectId: string): Promise<{ 
+        fodas: Foda[], 
+        pestels: Pestel[], 
+        ansoffs: Ansoff[], 
+        porters: { titulo: string, _id: string, consejos: string[] }[], 
+        mckinseys: Mckinsey[], 
+        okrs: Okr[], 
+        balancedScorecards: BalancedScorecard[]
+    }>
+}
+class FodaController {
+    - fodaService: FodaService
+
+    + getOptions(): Promise<Options>
+    + getPreSeeds(): Promise<PreSeed[]>
+    + getOne(id: string): Promise<Foda>
+    + insert(fodaDTO: FodaDto): Promise<Foda>
+    + insertRelation(id: string, factorDTO: FactorDto): Promise<Foda>
+    + update(id: string, fodaDTO: FodaDto): Promise<Foda>
+    + updateFactor(id: string, idFactor: string, factorDTO: FactorDto): Promise<Foda>
+    + deleteFactor(id: string, idFactor: string): Promise<void>
+    + delete(id: string): Promise<{ _id: string }>
+}
+class FodaDto {
+    + titulo: string
+    + createdAt: string
+    + factores: FactorDto[]
+}
+
+class FactorDto {
+    + area: string
+    + importancia: string
+    + intensidad: string
+    + tendencia: string
+    + urgencia: string
+    + descripcion: string
+}
+class Factor {
+    - _id: mongoose.Types.ObjectId
+    - descripcion: string
+    - area: Area
+    - importancia: Importancia
+    - intensidad: Intensidad
+    - tendencia: Tendencia
+    - urgencia: Urgencia
+    - puntuacion: number
+
+    + Factor(descripcion: string, area: Area, importancia: Importancia, intensidad: Intensidad, tendencia: Tendencia, urgencia: Urgencia)
+}
+class Foda {
+    - _id: mongoose.Types.ObjectId
+    - projectId: string
+    - titulo: string
+    - createdAt: Date
+    - factores: List<Factor>
+    - completion: Completition
+
+    + Foda(projectId: string, titulo: string, createdAt: Date, factores: List<Factor>, completion: Completition)
+}
+class FodaService {
+    - fodaModel: Model<FodaDocument>
+    
+    + getPreSeeds(): Promise<PreSeedsFormated>
+    + getOptions(): Promise<Options>
+    + getAllByProjectId(projectId: string): Promise<List<Foda>>
+    + getOne(id: string): Promise<Foda>
+    + insertFactor(id: string, factorDto: FactorDto): Promise<Foda>
+    + create(newFoda: FodaDto): Promise<Foda>
+    + update(id: string, updated: FodaDto): Promise<Foda>
+    + delete(id: string): Promise<string>
+    + deleteFactor(id: string, idFactor: string): Promise<Foda>
+    + updateFactor(id: string, idFactor: string, updatedFactor: FactorDto): Promise<Foda>
+}
+' enum Cuadrantes {
+'     DOBLE_O_NADA
+'     DESARROLLAR
+'     REFORZAR
+'     REPLANTEAR
+'     REORGANIZAR
+'     MANTENER
+'     ABANDONAR
+'     SALIR_CON_ORDEN
+'     COSECHAR
+' }
+class MckinseyController {
+    - mckinseyService: MckinseyService
+
+    + insert(mcKinseyDto: McKinseyDto): Promise<McKinsey>
+    + findByProjectId(projectId: string): Promise<List<McKinsey>>
+    + findById(mcKinseyId: string): Promise<McKinsey>
+    + editUnidadDeNegocio(mcKinseyId: string, unidadId: string, unidadDeNegocioDto: UnidadDeNegocioDto): Promise<McKinsey>
+    + removeUnidadDeNegocio(mcKinseyId: string, unidadId: string): Promise<McKinsey>
+    + addUnidadDeNegocio(mcKinseyId: string, unidadDeNegocioDto: UnidadDeNegocioDto): Promise<McKinsey>
+    + delete(id: string): Promise<{ _id: string }>
+}
+class McKinseyDto {
+    + _id: string
+    + projectId: string
+    + titulo: string
+    + createdAt: string
+    + unidadesDeNegocio: UnidadDeNegocioDto[]
+}
+
+class UnidadDeNegocioDto {
+    + _id: string
+    + nombre: string
+    + fuerzaCompetitiva: number
+    + atractivoDeMercado: number
+    + cuadrante: number
+}
+class UnidadDeNegocio {
+    + _id: mongoose.Types.ObjectId
+    + nombre: string
+    + fuerzaCompetitiva: number
+    + atractivoDeMercado: number
+    + cuadrante: string
+}
+
+class McKinsey {
+    + projectId: string
+    + titulo: string
+    + createdAt: Date
+    + unidadesDeNegocio: UnidadDeNegocio[]
+    + completion: Completition
+}
+class MckinseyService {
+    + create(mckinseyDto: McKinseyDto): Promise<McKinsey>
+    + findById(toolId: string): Promise<McKinsey>
+    + editUnidadDeNegocio(porterId: string, unidadDeNegocioId: string, unidadDeNegocioDto: UnidadDeNegocioDto): Promise<McKinsey>
+    + getAllByProjectId(projectId: string): Promise<McKinsey[]>
+    + removeUnidadDeNegocio(mcKinseyId: string, unidadId: string): Promise<McKinsey>
+    + addUnidadDeNegocio(mcKinseyId: string, unidadDeNegocioDto: UnidadDeNegocioDto): Promise<McKinsey>
+    + delete(id: string): Promise<string>
+}
+class OkrController {
+    + insert(okrProjectDto: OkrProjectDto): Promise<OkrProject>
+    + findById(okrProjectId: string): Promise<OkrProject>
+    + findGlobalOkr(okrProjectId: string, okrId: string): Promise<Okr>
+    + findOkrById(okrProjectId: string, okrId: string): Promise<Okr>
+    + addOkr(okrProjectId: string, okrDto: OkrDto): Promise<OkrProject>
+    + editOkr(okrProjectId: string, okrId: string, okrDto: OkrDto): Promise<OkrProject>
+    + removeOkr(okrProjectId: string, okrId: string): Promise<OkrProject>
+    + addKeyResult(okrProjectId: string, okrId: string, keyResultDto: KeyResultDto): Promise<OkrProject>
+    + editKeyResult(okrProjectId: string, okrId: string, keyResultId: string, keyResultDto: KeyResultDto): Promise<OkrProject>
+    + removeKeyResult(okrProjectId: string, okrId: string, keyResultId: string): Promise<OkrProject>
+    + addKeyStatus(okrProjectId: string, okrId: string, keyResultId: string, keyStatusDto: KeyStatusDto): Promise<OkrProject>
+    + editKeyStatus(okrProjectId: string, okrId: string, keyResultId: string, keyStatusId: string, keyStatusDto: KeyStatusDto): Promise<OkrProject>
+    + removeKeyStatus(okrProjectId: string, okrId: string, keyResultId: string, keyStatusId: string): Promise<OkrProject>
+    + delete(id: string): Promise<{_id: string}>
+}
+class OkrProjectDto {
+    + _id: string
+    + projectId: string
+    + titulo: string
+    + createdAt: Date
+    + okrs: OkrDto[]
+}
+
+class OkrDto {
+    + _id: string
+    + description: string
+    + keyResults: KeyResultDto[]
+    + globalOkr: string
+    + area: string
+    + progress: number
+    + quarter: number
+}
+
+class KeyResultDto {
+    + _id: string
+    + description: string
+    + goal: number
+    + keyStatus: KeyStatusDto[]
+    + progress: number
+    + startDate: string
+    + dueDate: string
+    + responsible: string
+    + priority: number
+}
+
+class KeyStatusDto {
+    + _id: string
+    + month: string
+    + value: number
+    + constructor(month: string, value: number)
+}
+
+class GlobalOkrDto {
+    + _id: string
+    + description: string
+    + keyStatus: KeyStatusDto[]
+    + progress: number
+    + area: string
+    + constructor(id: string, description: string, keyStatus: KeyStatusDto[], progress: number, area: string)
+}
+
+OkrProjectDto "1" -- "0..*" OkrDto : contains >
+OkrDto "1" -- "0..*" KeyResultDto : contains >
+KeyResultDto "1" -- "0..*" KeyStatusDto : contains >
+GlobalOkrDto "1" -- "0..*" KeyStatusDto : contains >
+
+class KeyStatus {
+    + _id: mongoose.Types.ObjectId
+    + month: string
+    + value: number
+    + constructor(month: string, value: number)
+}
+
+class KeyResult {
+    + _id: mongoose.Types.ObjectId
+    + description: string
+    + goal: number
+    + priority: number
+    + startDate: Date
+    + dueDate: Date
+    + keyStatus: KeyStatus[]
+    + progress: number
+    + responsible: string
+    + constructor(description: string, goal: number, responsible: string, priority: number)
+}
+
+class Okr {
+    + _id: mongoose.Types.ObjectId
+    + description: string
+    + keyResults: KeyResult[]
+    + globalOkr: string
+    + area: string
+    + progress: number
+    + quarter: number
+    + constructor(description: string, globalOkr: string, area: string, quarter: number)
+}
+
+class OkrProject {
+    + _id: mongoose.Types.ObjectId
+    + projectId: string
+    + titulo: string
+    + createdAt: Date
+    + okrs: Okr[]
+    + completion: Completition
+}
+KeyResult "1" -- "0..*" KeyStatus : contains >
+Okr "1" -- "0..*" KeyResult : contains >
+OkrProject "1" -- "0..*" Okr : contains >
+
+class OkrService {
+    + constructor(okrModel: Model<OkrDocument>)
+    + create(okrProjectDto: OkrProjectDto): Promise<OkrProject>
+    + findById(okrProjectId: string): Promise<OkrProject>
+    + findOkrById(okrProjectId: string, okrId: string): Promise<Okr>
+    + getAllByProjectId(projectId: string): Promise<OkrProject[]>
+    + findGlobalOkrById(okrProjectId: string, okrId: string): Promise<GlobalOkrDto>
+    + addOkr(okrProjectId: string, okrDto: OkrDto): Promise<OkrProject>
+    + editOkr(okrProjectId: string, okrId: string, okrDto: OkrDto): Promise<OkrProject>
+    + removeOkr(okrProjectId: string, okrId: string): Promise<OkrProject>
+    + addKeyResult(okrProjectId: string, okrId: string, keyResultDto: KeyResultDto): Promise<OkrProject>
+    + editKeyResult(okrProjectId: string, okrId: string, keyResultId: string, keyResultDto: KeyResultDto): Promise<OkrProject>
+    + removeKeyResult(okrProjectId: string, okrId: string, keyResultId: string): Promise<OkrProject>
+    + addKeyStatus(okrProjectId: string, okrId: string, keyResultId: string, keyStatusDto: KeyStatusDto): Promise<OkrProject>
+    + editKeyStatus(okrProjectId: string, okrId: string, keyResultId: string, keyStatusId: string, keyStatusDto: KeyStatusDto): Promise<OkrProject>
+    + removeKeyStatus(okrProjectId: string, okrId: string, keyResultId: string, keyStatusId: string): Promise<OkrProject>
+    + delete(id: string): Promise<string>
+}
+' enum Area {
+'     POLITICO 
+'     ECONOMICO
+'     SOCIAL 
+'     TECNOLOGICO
+'     AMBIENTAL
+'     LEGAL
+' }
+
+' enum Importancia {
+'     'Muy importante'
+'     'Importante' 
+'     'Indiferente'
+'     'Poco importante'
+'     'Sin importancia'
+' }
+
+' enum Intensidad {
+'     'Muy fuerte'
+'     'Fuerte'
+'     'Promedio'
+'     'Debil' 
+'     'Muy debil' 
+' }
+
+' enum Tendencia {
+'     'Mejora mucho'
+'     'Mejora' 
+'     'Se mantiene' 
+'     'Empeora' 
+'     'Empeora Mucho'
+' }
+class PestelController {
+    + constructor(pestelService: PestelService)
+    + getAll(): Promise<Pestel[]>
+    + getPreSeeds(): Promise<PreSeed[]>
+    + insertPreSeeds(preSeedDTO: PreSeedDTO): Promise<PreSeed>
+    + getOptions(): Promise<Option[]>
+    + getOne(id: string): Promise<Pestel>
+    + insert(pestelDTO: PestelDto): Promise<Pestel>
+    + insertRelation(id: string, factorDTO: FactorDto): Promise<Pestel>
+    + update(id: string, pestelDTO: PestelDto): Promise<Pestel>
+    + deleteFactor(id: string, idFactor: string): Promise<any>
+    + editFactor(id: string, idFactor: string, updatedFactor: FactorDto): Promise<Pestel>
+    + delete(id: string): Promise<{ _id: string }>
+}
+class PestelDto {
+    + titulo: string
+    + createdAt: string
+    + factores: List<Factor>
+}
+
+class FactorDto {
+    + area: Area
+    + descripcion: string
+    + importancia: Importancia
+    + intensidad: Intensidad
+    + tendencia: Tendencia
+}
+
+
+class Factor {
+    + _id: mongoose.Types.ObjectId
+    + descripcion: string
+    + area: Area
+    + importancia: Importancia
+    + intensidad: Intensidad
+    + tendencia: Tendencia
+    + puntuacion: number
+
+    + Factor(descripcion: string, area: Area, importancia: Importancia, intensidad: Intensidad, tendencia: Tendencia)
+}
+class Pestel {
+    + _id: mongoose.Types.ObjectId
+    + projectId: string
+    + titulo: string
+    + createdAt: Date
+    + factores: List<Factor>
+    + completion: Completition
+
+    + Pestel(projectId: string, titulo: string, createdAt: Date, factores: List<Factor>, completion: Completition)
+}
+class PestelService {
+    + constructor(pestelModel: Model<Pestel>, preSeedModel: Model<PestelPreSeed>)
+    + getAll(): Promise<Pestel[]>
+    + getPreSeeds(): Promise<{ [key: string]: PreSeedDTO[] }>
+    + insertPreSeed(preSeedDTO: PreSeedDTO): Promise<PestelPreSeed>
+    + getAllByProjectId(projectId: string): Promise<Pestel[]>
+    + getOne(id: string): Promise<Pestel>
+    + insertFactor(id: string, factorDto: FactorDto): Promise<Pestel>
+    + editFactor(id: string, idFactor: string, updatedFactor: FactorDto): Promise<Pestel>
+    + create(newPestel: PestelDto): Promise<Pestel>
+    + update(id: string, updated: PestelDto): Promise<Pestel>
+    + delete(id: string): Promise<string>
+    + deleteFactor(id: string, idFactor: string): Promise<Pestel>
+    + getOptions(): Promise<{ area: Area[], importancia: Importancia[], intensidad: Intensidad[], tendencia: Tendencia[] }>
+}
+' enum Fuerza {
+'     RIVALIDAD_ENTRE_COMPETIDORES 
+'     PODER_DE_NEGOCIACION_CON_LOS_CLIENTES
+'     PODER_DE_NEGOCIACION_CON_LOS_PROVEEDORES 
+'     AMENAZA_DE_NUEVOS_COMPETIDORES 
+'     AMENAZA_DE_PRODUCTOS_SUBSTITUTOS 
+' }
+' enum NivelDeConcordancia {
+'     CONCUERDO_TOTALMENTE 
+'     CONCUERDO_EN_PARTE
+'     NI_DE_ACUERDO_NI_EN_DESACUERDO 
+'     DE_ACUERDO_EN_PARTE 
+'     DE_ACUERDO_TOTALMENTE
+' }
+class PorterController {
+    -porterService: PorterService
+
+    +insert(porterDto: PorterDto): Promise<Porter>
+    +getOptions(): Promise<Options>
+    +getPreguntas(): Promise<Pregunta[]>
+    +findById(porterId: string): Promise<Porter>
+    +addPregunta(porterId: string, question: PreguntaDto): Promise<Porter>
+    +deletePregunta(porterId: string, questionId: string): Promise<Porter>
+    +editQuestion(porterId: string, questionId: string, questionDto: PreguntaDto): Promise<Porter>
+    +replaceQuestions(porterId: string, questions: BulkEditQuestions): Promise<Porter>
+    +getConsejos(porterId: string): Promise<Consejos>
+    +delete(id: string): Promise<{ _id: string }>
+}
+class PorterService {
+    +create(porterDto: PorterDto): Promise<Porter>
+    +getOptions(): Promise<{fuerza: Fuerza[], nivelDeConcordancia: NivelDeConcordancia[], valoracion: Valoracion[]}>
+    +getPorterById(porterId: string): Promise<Porter>
+    +editQuestion(porterId: string, questionId: string, preguntaDto: PreguntaDto): Promise<Porter>
+    +deleteQuestion(porterId: string, questionId: string): Promise<Porter>
+    +addQuestion(porterId: string, preguntaDto: PreguntaDto): Promise<Porter>
+    +replaceQuestions(porterId: string, questionsByFuerza: BulkEditQuestions): Promise<Porter>
+    +getAllByProjectId(projectId: string): Promise<Porter[]>
+    +delete(id: string): Promise<string>
+    +getPreguntas(): {Fuerza: Pregunta[], PoderDeNegociacionConElCliente: Pregunta[], PoderDeNegociacionConProveedores: Pregunta[], AmenazaDeNuevosCompetidores: Pregunta[], AmenazaDeSustitucion: Pregunta[]}
+    +calcularConsejos(preguntas: Pregunta[]): ConsejosResult[]
+    -calcularConsejosSegunFuerza(preguntas: Pregunta[], fuerza: Fuerza): ConsejosResult
+    -calcularConsejoGeneral(puntajeTotal: number): string
+    -formatPreguntas(preguntas: Pregunta[]): FormattedPreguntas
+}
+class PorterDto {
+    +_id: string
+    +projectId: string
+    +titulo: string
+    +createdAt: string
+    +preguntas: Pregunta[]
+}
+
+class PreguntaDto {
+    +_id: string
+    +preguntaId: number
+    +fuerza: Fuerza
+    +nivelDeConcordancia: NivelDeConcordancia
+    +valoracion: Valoracion
+}
+
+class BulkEditQuestions {
+    +preguntas: Map<Fuerza, Map<number, BulkQuestionItem>>
+}
+
+class BulkQuestionItem {
+    +nivelDeConcordancia: NivelDeConcordancia
+    +valoracion: Valoracion
+}
+
+PorterDto "1" *-- "*" PreguntaDto : contiene
+BulkEditQuestions "1" *-- "*" BulkQuestionItem : contiene
+class Pregunta {
+    +_id: ObjectId
+    +preguntaId: number
+    +fuerza: Fuerza
+    +nivelDeConcordancia: NivelDeConcordancia
+    +valoracion: Valoracion
+}
+class Porter {
+    +projectId: string
+    +titulo: string
+    +createdAt: Date
+    +preguntas: List<Pregunta>
+    +preguntasFormatted: Map<string, Object>
+    +completion: Completition
+}
+class QuestionnaireController {
+    +getQuestions()
+    +create(questionnaireDto: QuestionnaireDto)
+    +answerQuestions(id: string, answers: AnswerDto[])
+    +findById(id: string)
+    +findQuestion(id: string, chapterId: number, questionId: number)
+    +editAnswer(id: string, chapterId: number, questionId: number, answerId: number)
+    +delete(id: string)
+}
+class AnswerDto {
+    questionId: number
+    answerId: number
+    chapterId: number
+}
+
+class QuestionnaireDto {
+    projectId: string
+    titulo: string
+    createdAt: Date
+}
+class Answer {
+    +answerId: number
+    +answer: string
+
+    + Answer(answerId: number, answer: string)
+}
+class Question {
+    +questionId: number
+    +question: string
+    +answers: Answer[]
+    +rightAnswer: number
+    +selectedAnswer: number
+
+    + Question(questionId: number, question: string, answers: Answer[], rightAnswer: number, selectedAnswer: number)
+}
+abstract class EmailNotification {
+    bodyText: String
+    subject: String
+
+    +send(destination: String): void
+}
+
+' Define relationships
+BalancedScorecard "1" -- "0..*" Objective : contains
+Objective "1" -- "0..*" Checkpoint : contains
+BalancedScorecard "1" -- "0..*" Initiative : contains
+
+Pestel "1" -- "0..*" Factor : contains
+
+McKinsey "1" -- "0..*" Factor : contains
+
+Okr "1" -- "0..*" Objective : contains
+Objective "1" -- "0..*" KeyResult : contains
+
+Foda "1" -- "0..*" Factor : contains
+
+Questionnaire "1" -- "0..*" Question : contains
+Question "1" -- "1" Answer : contains
+Answer "1" -- "1" AnswerDto : contains
+
+' Dto relationships
+BalancedScorecardDto "1" -- "0..*" ObjectiveDto
+ObjectiveDto "1" -- "0..*" CheckpointDto
+BalancedScorecardDto "1" -- "0..*" InitiativeDto
+
+PestelDto "1" -- "0..*" FactorDto
+
+McKinseyDto "1" -- "0..*" FactorDto
+
+OkrDto "1" -- "0..*" ObjectiveDto
+ObjectiveDto "1" -- "0..*" KeyResultDto
+
+FodaDto "1" -- "0..*" FactorDto
+
+QuestionnaireDto "1" -- "0..*" QuestionDto
+Ansoff "1" -- "0..*" Producto : contains
+McKinsey "1" -- "0..*" UnidadDeNegocio : contains
+
+' Define relationships for controllers with their respective services
+AuthController "1" -- "1" AuthService : uses
+ProjectController "1" -- "1" ProjectService : uses
+UserController "1" -- "1" UserService : uses
+UserController "1" -- "1" UserDto : uses
+UserController "1" -- "1" CreateUserDto : uses
+UserController "1" -- "1" UpdateUserDto : uses
+AnsoffController "1" -- "1" AnsoffService : uses
+AnsoffController "1" -- "1" AnsoffDto : uses
+AnsoffController "1" -- "1" AnsoffProductDto : uses
+BalancedScorecardController "1" -- "1" BalancedScorecardService : uses
+FodaController "1" -- "1" FodaService : uses
+McKinseyController "1" -- "1" McKinseyService : uses
+McKinseyController "1" -- "1" UnidadDeNegocioDto : uses
+OkrController "1" -- "1" OkrService : uses
+PestelController "1" -- "1" PestelService : uses
+PorterController "1" -- "1" PorterService : uses
+QuestionnaireController "1" -- "1" QuestionnaireService : uses
+ContinuousImprovementController "1" -- "1" FodaService : uses
+ContinuousImprovementController "1" -- "1" PestelService : uses
+ContinuousImprovementController "1" -- "1" AnsoffService : uses
+ContinuousImprovementController "1" -- "1" PorterService : uses
+ContinuousImprovementController "1" -- "1" MckinseyService : uses
+ContinuousImprovementController "1" -- "1" OkrService : uses
+ContinuousImprovementController "1" -- "1" BalancedScorecardService : uses
+ContinuousImprovementController "1" -- "1" QuestionnaireService : uses
+
+' Define relationships for services with their respective models
+ProjectService "1" -- "0..*" Project : operates on
+ProjectService -- EmailNotification : uses
+UserService "1" -- "0..*" User : operates on
+AnsoffService "1" -- "0..*" Ansoff : operates on
+AnsoffService "1" -- "0..*" AnsoffDto : operates on
+BalancedScorecardService "1" -- "0..*" BalancedScorecard : operates on
+FodaService "1" -- "0..*" Foda : operates on
+MckinseyService "1" -- "0..*" Mckinsey : operates on
+OkrService "1" -- "0..*" Okr : operates on
+PestelService "1" -- "0..*" Pestel : operates on
+PorterService "1" -- "0..*" Porter : operates on
+PorterService "1" -- "0..*" Pregunta : operates on
+QuestionnaireService "1" -- "0..*" Questionnaire : operates on
+
+' Define relationships between controllers and their models
+ProjectController "1" -- "0..*" Project : manages
+ProjectController "1" -- "0..*" Participant : manages
+ProjectController "1" -- "0..*" Sphere : manages
+UserController "1" -- "0..*" User : manages
+AnsoffController "1" -- "0..*" Ansoff : manages
+BalancedScorecardController "1" -- "0..*" BalancedScorecard : manages
+FodaController "1" -- "0..*" Foda : manages
+MckinseyController "1" -- "0..*" Mckinsey : manages
+OkrController "1" -- "0..*" Okr : manages
+PestelController "1" -- "0..*" Pestel : manages
+PorterController "1" -- "0..*" Porter : manages
+QuestionnaireController "1" -- "0..*" Questionnaire : manages
+
+@enduml
