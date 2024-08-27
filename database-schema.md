@@ -9,24 +9,22 @@ const projects = [{
   "descripcion": "",
   "name": "",
   "coordinators": [
-    {
-      "email": "email1@gmail.com"
-    }
+    ObjectId('669165e35b31e3c8fa676582') // mongo ObjectId
   ],
   "participants": [
     {
-      "userEmail": "user3@gmail.com",
+      "user": ObjectId('669165e35b31e3c8fa676581'),
       "stages": [{
-          "id": "st1",
-          "permision": "read" // read | write | view
+          "id": "internalSituation",
+          "permision": "view" // read |edit | view
         },
         {
-          "id": "st2",
-          "permision": "write"
+          "id": "externalEnvironment",
+          "permision": "edit"
         },
         {
-          "id": "st3",
-          "permision": "view"
+          "id": "strategicGuidelines",
+          "permision": "hide"
         }]
     }
   ]
@@ -40,7 +38,6 @@ const users = [{
   "lastName": "some_lastname",
   "email": "email@email.com",
   "password": "12345",
-  "isAdmin": true | false,
-  "projectsId": [] // se usa ?
+  "isAdmin": true | false
 }]
 ```

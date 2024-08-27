@@ -10,7 +10,6 @@ import {
     Put,
     Query,
     Req,
-    ForbiddenException,
     UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -31,12 +30,7 @@ import {
     UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
-import {
-    isValidPermission,
-    isValidStageType,
-    Permission,
-    StageType,
-} from './stage.schema'
+import { isValidPermission, isValidStageType, StageType } from './stage.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -252,49 +246,6 @@ export class ProjectController {
             req
         )
         return project
-    }
-
-    @Get(':id/users/:userEmail/roles')
-    async userPermission(
-        @Param('id') projectId: string,
-        @Param('userEmail') userEmail: string
-    ) {
-        const project = await this.projectService.getOne(projectId)
-
-        const participant = project.participants?.find(
-            (participant) => participant.user.email == userEmail
-        )
-        const coordinator = project.coordinators?.find(
-            (coordinator) => coordinator.email == userEmail
-        )
-        return {
-            participant,
-            coordinator,
-        }
-    }
-
-    @Get(':id/user/:userEmail/stage/:stageId/edit')
-    async us(
-        @Param('id') projectId: string,
-        @Param('userEmail') userEmail: string,
-        @Param('stageId') stageId: string
-    ) {
-        const userStagePermission =
-            await this.projectService.getUserStagePermission(
-                projectId,
-                userEmail,
-                stageId
-            )
-
-        if (
-            !userStagePermission ||
-            (userStagePermission &&
-                userStagePermission.permission != Permission.Edit)
-        ) {
-            throw new ForbiddenException(
-                'User is not available to edit this stage'
-            )
-        }
     }
 
     @Post(':id/user/add')

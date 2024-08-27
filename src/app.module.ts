@@ -43,31 +43,39 @@ dotenv.config()
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(ProjectStageUserEditionMiddleware)
-            .forRoutes({
+        consumer.apply(ProjectStageUserEditionMiddleware).forRoutes(
+            {
                 path: 'foda',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'porter',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'pestel',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'ansoff',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'mckinsey',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'questionnaires',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'balanced-scorecards',
                 method: RequestMethod.POST,
-            }, {
+            },
+            {
                 path: 'okr-projects',
                 method: RequestMethod.POST,
-            });
+            }
+        )
     }
 }

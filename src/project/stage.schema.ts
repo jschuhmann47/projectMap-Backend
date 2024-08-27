@@ -41,8 +41,8 @@ export enum Tool {
     McKinsey = 'mckinsey',
     Questionnaires = 'questionnaires',
     BalacedScorecard = 'balanced-scorecards',
-    Okr = 'okr-projects'
- }
+    Okr = 'okr-projects',
+}
 
 const StagesByTool = {
     [Tool.Porter]: StageType.ExternalEnvironment,
@@ -57,9 +57,9 @@ const StagesByTool = {
 
 export function fromToolToStage(tool: string): string {
     if (isValidTool(tool)) {
-        return StagesByTool[tool];
+        return StagesByTool[tool]
     }
-    return null;
+    return null
 }
 
 export function isValidStageType(value: string) {
