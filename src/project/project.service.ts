@@ -4,9 +4,9 @@ import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
+import { defaultStages, Stage } from './stage.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
-import { defaultSpheres } from './sphere.schema'
 
 @Injectable()
 export class ProjectService {
@@ -146,6 +146,27 @@ export class ProjectService {
         project.save()
     }
 
+    async getUserStagePermission(
+        projectId: string,
+        userEmail: string,
+        stageId: string
+    ): Promise<Stage> {
+        const project = await this.getOne(projectId)
+        let stage = null
+
+        if (project) {
+            const matchedUser = project.participants.find(
+                (participant) => participant.user.email == userEmail
+            )
+
+            if (matchedUser) {
+                stage = matchedUser.stages.find((stage) => stage.id == stageId)
+            }
+        }
+
+        return stage
+    }
+
     async addUserToProject(
         projectId: string,
         userEmail: string,
@@ -187,7 +208,7 @@ export class ProjectService {
             case 'participant':
                 project.participants.push({
                     user: existingUser,
-                    spheres: defaultSpheres(),
+                    stages: defaultStages(),
                 })
                 break
             case 'coordinator':

@@ -8,6 +8,9 @@ export class Project {
     _id: mongoose.Types.ObjectId
 
     @Prop({ type: String, require: true })
+    titulo: string
+
+    @Prop({ type: String, require: true })
     description: string
 
     @Prop({ type: String, require: true })

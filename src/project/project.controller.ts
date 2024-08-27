@@ -30,11 +30,7 @@ import {
     UpdateUserRolesDto,
 } from './project.dto'
 import { ProjectService } from './project.service'
-import {
-    isValidPermission,
-    isValidSphereType,
-    SphereType,
-} from './sphere.schema'
+import { isValidPermission, isValidStageType, StageType } from './stage.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -203,36 +199,36 @@ export class ProjectController {
                 HttpStatus.BAD_REQUEST
             )
         }
-        req.users.forEach((v) => {
-            if (!v.role || !v.userId) {
+        req.users.forEach((user) => {
+            if (!user.role || !user.userId) {
                 throw new HttpException(
                     'Invalid fields',
                     HttpStatus.BAD_REQUEST
                 )
             }
-            if (v.role != 'coordinator' && v.role != 'participant') {
+            if (user.role != 'coordinator' && user.role != 'participant') {
                 throw new HttpException('Invalid role', HttpStatus.BAD_REQUEST)
             }
-            if (v.role == 'participant' && !Array.isArray(v.spheres)) {
+            if (user.role == 'participant' && !Array.isArray(user.stages)) {
                 throw new HttpException(
                     'Invalid fields',
                     HttpStatus.BAD_REQUEST
                 )
             }
-            if (v.role == 'participant') {
-                v.spheres.forEach((s) => {
+            if (user.role == 'participant') {
+                user.stages.forEach((s) => {
                     if (
-                        !isValidSphereType(s.id) ||
+                        !isValidStageType(s.id) ||
                         !isValidPermission(s.permission)
                     )
                         throw new HttpException(
-                            'Invalid sphere or permission',
+                            'Invalid stage or permission',
                             HttpStatus.BAD_REQUEST
                         )
                 })
-                if (v.spheres.length != Object.keys(SphereType).length) {
+                if (user.stages.length != Object.keys(StageType).length) {
                     throw new HttpException(
-                        'Invalid sphere count',
+                        'Invalid stage count',
                         HttpStatus.BAD_REQUEST
                     )
                 }

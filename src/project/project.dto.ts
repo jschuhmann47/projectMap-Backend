@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { User } from 'src/user/user.schema'
 import { Participant } from './participant.schema'
-import { Sphere } from './sphere.schema'
 import mongoose from 'mongoose'
+import { Stage } from './stage.schema'
 
 export class ProjectDto {
     @ApiProperty()
@@ -47,13 +47,13 @@ export class UpdateUserRolesData {
 
     // Only if participant
     @ApiProperty()
-    spheres: Sphere[]
+    stages: Stage[]
 }
 
 export function toParticipant(u: UpdateUserRolesData) {
     const p = new Participant()
     p.user = new User()
     p.user._id = new mongoose.mongo.ObjectId(u.userId)
-    p.spheres = u.spheres
+    p.stages = u.stages
     return p
 }

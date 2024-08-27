@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
 
 import { MongooseModule } from '@nestjs/mongoose'
@@ -14,6 +14,7 @@ import { MckinseyModule } from './herramientas/mckinsey/mckinsey.module'
 import { BalancedScorecardModule } from './herramientas/balancedScorecard/balanceScorecard.module'
 import { QuestionnaireModule } from './herramientas/questionnaire/questionnaire.module'
 import { ContinuousImprovementModule } from './herramientas/continuousImprovement/continuousImprovement.module'
+import { ProjectStageUserEditionMiddleware } from './middleware/project.middleware'
 
 dotenv.config()
 
@@ -35,4 +36,41 @@ dotenv.config()
     controllers: [AppController],
     providers: [],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(ProjectStageUserEditionMiddleware).forRoutes(
+            {
+                path: 'foda',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'porter',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'pestel',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'ansoff',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'mckinsey',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'questionnaires',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'balanced-scorecards',
+                method: RequestMethod.POST,
+            },
+            {
+                path: 'okr-projects',
+                method: RequestMethod.POST,
+            }
+        )
+    }
+}
