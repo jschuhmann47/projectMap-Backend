@@ -1,6 +1,34 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose from 'mongoose'
 
+export enum Horizon {
+    YEAR = 0,
+    SEMESTER,
+    QUARTER,
+    TRIMESTER,
+    BIMESTER,
+    MONTH,
+    FORTNIGHT,
+    // WEEK,
+    // DAY,
+}
+
+export enum Priority {
+    LOW = 0,
+    MEDIUM,
+    HIGH,
+}
+
+export enum Frequency {
+    SIX_MONTHS = 0,
+    THREE_MONTHS,
+    TWO_MONTHS,
+    MONTHLY,
+    TWO_WEEKS,
+    WEEKLY,
+    DAILY,
+}
+
 @Schema()
 export class KeyStatus {
     _id: mongoose.Types.ObjectId
@@ -28,7 +56,7 @@ export class KeyResult {
     @Prop({ type: String, required: true })
     responsible: string
 
-    @Prop({ type: Number, required: false })
+    @Prop({ type: Number, default: Priority.MEDIUM })
     priority: Priority
 
     @Prop({ type: Number, required: true })
@@ -43,14 +71,14 @@ export class KeyResult {
     @Prop({ type: String, required: true })
     frequency: Frequency
 
-    @Prop([KeyStatusSchema])
+    @Prop({ type: [KeyStatusSchema], default: [] })
     keyStatus: KeyStatus[]
 
     constructor(
         description: string,
         goal: number,
         responsible: string,
-        priority = 0
+        priority = Priority.MEDIUM
     ) {
         this.description = description
         this.goal = goal
@@ -85,10 +113,10 @@ export class Okr {
     @Prop({ type: Number })
     priority: Priority
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, default: 0 })
     progress: number
 
-    @Prop([KeyResultSchema])
+    @Prop({ type: [KeyResultSchema], default: [] })
     keyResults: KeyResult[]
 
     constructor(
@@ -106,10 +134,11 @@ export class Okr {
 export const OkrSchema = SchemaFactory.createForClass(Okr)
 OkrSchema.pre('save', function (next) {
     if (this.keyResults.length) {
-        this.priority =
+        this.priority = Math.round(
             this.keyResults
                 .map((kr) => kr.priority)
                 .reduce((a, b) => a + b, 0) / this.keyResults.length
+        )
         this.progress =
             this.keyResults
                 .map((kr) => kr.progress)
@@ -117,31 +146,3 @@ OkrSchema.pre('save', function (next) {
     }
     next()
 })
-
-export enum Horizon {
-    YEAR = 0,
-    SEMESTER,
-    QUARTER,
-    TRIMESTER,
-    BIMESTER,
-    MONTH,
-    FORTNIGHT,
-    // WEEK,
-    // DAY,
-}
-
-export enum Priority {
-    LOW = 0,
-    MEDIUM,
-    HIGH,
-}
-
-export enum Frequency {
-    SIX_MONTHS = 0,
-    THREE_MONTHS,
-    TWO_MONTHS,
-    MONTHLY,
-    TWO_WEEKS,
-    WEEKLY,
-    DAILY,
-}
