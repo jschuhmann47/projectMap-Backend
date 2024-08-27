@@ -41,7 +41,7 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
       (userStagePermission &&
         userStagePermission.permission != Permission.Edit)
     ) {
-      console.log(`El usuario: ${email} no tiene permisos para editar la herramietna ${tool} bajo el stage: ${stage}`)
+      console.log(`El usuario: ${email} no tiene permisos para editar la herramienta ${tool} bajo el stage: ${stage}`)
       throw new ForbiddenException(
         'User is not available to edit this stage'
       )
