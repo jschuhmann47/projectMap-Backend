@@ -79,11 +79,19 @@ export class OkrService {
                 if (keyResultDto.description)
                     keyResult.description = keyResultDto.description
 
-                if (keyResultDto.goal) keyResult.goal = keyResultDto.goal
                 if (keyResultDto.responsible)
                     keyResult.responsible = keyResultDto.responsible
+
+                if (keyResultDto.baseline)
+                    keyResult.baseline = keyResultDto.baseline
+
+                if (keyResultDto.goal) keyResult.goal = keyResultDto.goal
+
                 if (keyResultDto.priority)
                     keyResult.priority = keyResultDto.priority
+
+                // frequency cannot be edited
+
                 if (keyResultDto.keyStatus)
                     keyResultDto.keyStatus.forEach(
                         (status, index) =>
@@ -107,11 +115,10 @@ export class OkrService {
 
     async delete(id: string) {
         const result = await this.okrModel.deleteOne({ _id: id })
-        if (result.deletedCount) return id
-        else
-            throw new HttpException(
-                'Okr Project not found',
-                HttpStatus.NOT_FOUND
-            )
+        if (result.deletedCount) {
+            return id
+        } else {
+            throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
+        }
     }
 }
