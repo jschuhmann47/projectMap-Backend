@@ -2,7 +2,12 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { KeyResultDto, OkrDto } from './okr.dto'
-import { KeyResult, KeyStatus, Okr } from './okr.schema'
+import {
+    getStatusFromFrequencyAndHorizon,
+    KeyResult,
+    KeyStatus,
+    Okr,
+} from './okr.schema'
 
 @Injectable()
 export class OkrService {
@@ -36,18 +41,26 @@ export class OkrService {
     async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
         const okr: Okr = await this.okrModel.findById(okrId).exec()
 
-        const keyStatuses = keyResultDto.keyStatus.map(
-            (keyStatusDto) =>
-                new KeyStatus(keyStatusDto.period, keyStatusDto.value)
+        const keyStatusData = getStatusFromFrequencyAndHorizon(
+            keyResultDto.frequency,
+            okr.horizon
         )
+        const keyStatus: KeyStatus[] = []
+        for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
+            keyStatus.push(new KeyStatus(keyStatusData.periodName, i + 1))
+        }
+
         const keyResult = new KeyResult(
             keyResultDto.description,
-            keyResultDto.goal,
             keyResultDto.responsible,
-            keyResultDto.priority
+            keyResultDto.baseline,
+            keyResultDto.goal,
+            keyResultDto.frequency,
+            keyResultDto.priority,
+            keyStatus
         )
 
-        keyResult.keyStatus = keyStatuses
+        keyResult.keyStatus = keyStatus
 
         okr.keyResults.push(keyResult)
 

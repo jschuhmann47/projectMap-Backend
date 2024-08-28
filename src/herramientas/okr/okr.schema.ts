@@ -56,7 +56,7 @@ export class KeyResult {
     @Prop({ type: String, required: true })
     responsible: string
 
-    @Prop({ type: Number, default: Priority.MEDIUM })
+    @Prop({ type: Number, default: Priority.MEDIUM, enum: Priority })
     priority: Priority
 
     @Prop({ type: Number, required: true })
@@ -68,7 +68,7 @@ export class KeyResult {
     @Prop({ type: Number, required: false })
     progress: number
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: Number, required: true, enum: Frequency })
     frequency: Frequency
 
     @Prop({ type: [KeyStatusSchema], default: [] })
@@ -76,14 +76,20 @@ export class KeyResult {
 
     constructor(
         description: string,
-        goal: number,
         responsible: string,
-        priority = Priority.MEDIUM
+        baseline: number,
+        goal: number,
+        frequency: Frequency,
+        priority = Priority.MEDIUM,
+        keyStatus: KeyStatus[] = []
     ) {
         this.description = description
         this.goal = goal
         this.responsible = responsible
         this.priority = priority
+        ;(this.baseline = baseline),
+            (this.frequency = frequency),
+            (this.keyStatus = keyStatus)
     }
 }
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
@@ -107,10 +113,10 @@ export class Okr {
     @Prop({ type: String, required: true })
     area: string
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: Number, required: true, enum: Horizon })
     horizon: Horizon
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, enum: Priority })
     priority: Priority
 
     @Prop({ type: Number, default: 0 })
@@ -146,3 +152,14 @@ OkrSchema.pre('save', function (next) {
     }
     next()
 })
+
+export function getStatusFromFrequencyAndHorizon(
+    frequency: Frequency,
+    horizon: Horizon
+) {
+    // TODO: determine how many periods and their names based on freq and horizon
+    return {
+        lengthOfPeriods: frequency + horizon,
+        periodName: 'Mes',
+    }
+}
