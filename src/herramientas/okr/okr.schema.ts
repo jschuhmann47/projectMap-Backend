@@ -167,7 +167,7 @@ export function getStatusFromFrequencyAndHorizon(
         }
     }
     return {
-        lengthOfPeriods: Math.floor(horizon / frequency), // check
+        lengthOfPeriods: Math.floor(horizon / frequency),
         periodName: frequencyToPeriodName.get(frequency),
         invalid: false,
     }
