@@ -45,6 +45,12 @@ export class OkrService {
             keyResultDto.frequency,
             okr.horizon
         )
+        if (keyStatusData.invalid) {
+            throw new HttpException(
+                'Invalid frequency or horizon',
+                HttpStatus.BAD_REQUEST
+            )
+        }
         const keyStatus: KeyStatus[] = []
         for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
             keyStatus.push(new KeyStatus(keyStatusData.periodName, i + 1))

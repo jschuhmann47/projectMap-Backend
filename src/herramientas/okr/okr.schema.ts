@@ -154,9 +154,42 @@ export function getStatusFromFrequencyAndHorizon(
     frequency: Frequency,
     horizon: Horizon
 ) {
-    // TODO: determine how many periods and their names based on freq and horizon
+    const validFrequencies = validFrequenciesByHorizon.get(horizon)
+    if (!validFrequencies) {
+        return {
+            invalid: true,
+        }
+    }
+    const validFrequency = validFrequencies.filter((f) => f == frequency)
+    if (!validFrequency) {
+        return {
+            invalid: true,
+        }
+    }
     return {
         lengthOfPeriods: frequency + horizon,
         periodName: 'Mes',
+        invalid: false,
     }
 }
+
+/*
+A 15 dias: diario, semanal
+A 1 mes: semanal, quincenal
+A 3 meses: quincenal, mensual
+A 6 meses: mensual, bimestral, trimestral
+A 1 año: mensual, bimestral, trimestral
+*/
+const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
+    [Horizon.FORTNIGHT, [Frequency.DAILY, Frequency.WEEKLY]],
+    [Horizon.MONTH, [Frequency.WEEKLY, Frequency.TWO_WEEKS]],
+    [Horizon.QUARTER, [Frequency.TWO_WEEKS, Frequency.MONTHLY]],
+    [
+        Horizon.SEMESTER,
+        [Frequency.MONTHLY, Frequency.TWO_MONTHS, Frequency.THREE_MONTHS],
+    ],
+    [
+        Horizon.YEAR,
+        [Frequency.MONTHLY, Frequency.TWO_MONTHS, Frequency.THREE_MONTHS],
+    ],
+])
