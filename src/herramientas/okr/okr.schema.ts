@@ -2,12 +2,12 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose from 'mongoose'
 
 export enum Horizon {
-    YEAR = 0,
-    SEMESTER,
-    QUARTER,
-    BIMESTER,
-    MONTH,
-    FORTNIGHT,
+    YEAR = 360,
+    SEMESTER = 180,
+    QUARTER = 90,
+    BIMESTER = 60,
+    MONTH = 30,
+    FORTNIGHT = 15,
 }
 
 export enum Priority {
@@ -17,13 +17,13 @@ export enum Priority {
 }
 
 export enum Frequency {
-    SIX_MONTHS = 0,
-    THREE_MONTHS,
-    TWO_MONTHS,
-    MONTHLY,
-    TWO_WEEKS,
-    WEEKLY,
-    DAILY,
+    SIX_MONTHS = 120,
+    THREE_MONTHS = 90,
+    TWO_MONTHS = 60,
+    MONTHLY = 30,
+    FIFTEEN_DAYS = 15,
+    WEEKLY = 7,
+    DAILY = 1,
 }
 
 @Schema()
@@ -167,8 +167,8 @@ export function getStatusFromFrequencyAndHorizon(
         }
     }
     return {
-        lengthOfPeriods: frequency + horizon,
-        periodName: 'Mes',
+        lengthOfPeriods: Math.floor(horizon / frequency), // check
+        periodName: frequencyToPeriodName.get(frequency),
         invalid: false,
     }
 }
@@ -182,8 +182,8 @@ A 1 año: mensual, bimestral, trimestral
 */
 const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
     [Horizon.FORTNIGHT, [Frequency.DAILY, Frequency.WEEKLY]],
-    [Horizon.MONTH, [Frequency.WEEKLY, Frequency.TWO_WEEKS]],
-    [Horizon.QUARTER, [Frequency.TWO_WEEKS, Frequency.MONTHLY]],
+    [Horizon.MONTH, [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS]],
+    [Horizon.QUARTER, [Frequency.FIFTEEN_DAYS, Frequency.MONTHLY]],
     [
         Horizon.SEMESTER,
         [Frequency.MONTHLY, Frequency.TWO_MONTHS, Frequency.THREE_MONTHS],
@@ -192,4 +192,14 @@ const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
         Horizon.YEAR,
         [Frequency.MONTHLY, Frequency.TWO_MONTHS, Frequency.THREE_MONTHS],
     ],
+])
+
+const frequencyToPeriodName = new Map<Frequency, string>([
+    [Frequency.SIX_MONTHS, 'Semestre'],
+    [Frequency.THREE_MONTHS, 'Trimestre'],
+    [Frequency.TWO_MONTHS, 'Bimestre'],
+    [Frequency.MONTHLY, 'Mes'],
+    [Frequency.FIFTEEN_DAYS, 'Quincena'],
+    [Frequency.WEEKLY, 'Semana'],
+    [Frequency.DAILY, 'Día'],
 ])
