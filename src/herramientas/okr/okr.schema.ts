@@ -26,7 +26,7 @@ export enum Frequency {
     DAILY = 1,
 }
 
-@Schema()
+@Schema({ _id: false })
 export class KeyStatus {
     _id: mongoose.Types.ObjectId
 
