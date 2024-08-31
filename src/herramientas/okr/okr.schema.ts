@@ -5,12 +5,9 @@ export enum Horizon {
     YEAR = 0,
     SEMESTER,
     QUARTER,
-    TRIMESTER,
     BIMESTER,
     MONTH,
     FORTNIGHT,
-    // WEEK,
-    // DAY,
 }
 
 export enum Priority {
