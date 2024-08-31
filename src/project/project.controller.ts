@@ -23,6 +23,7 @@ import { PestelService } from '../herramientas/pestel/pestel.service'
 import { PorterService } from '../herramientas/porter/porter.service'
 import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service'
 import {
+    ChartDto,
     ProjectDto,
     ShareProjectDto,
     ShareProjectEmailDto,
@@ -31,6 +32,7 @@ import {
 } from './project.dto'
 import { ProjectService } from './project.service'
 import { isValidPermission, isValidStageType, StageType } from './stage.schema'
+import { OrganizationalChart } from './organizationalChart.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -123,6 +125,16 @@ export class ProjectController {
     @Get(':projectId/questionnaires')
     async getQuestionnaires(@Param('projectId') projectId: string) {
         return this.questionnaireService.findByProjectId(projectId)
+    }
+
+    @Post(':id/organizational-chart')
+    async saveOrganizationalChart(@Param('id') projectId: string, @Body() chart: ChartDto) {
+        return this.projectService.addChart(projectId, chart);
+    }
+
+    @Get(':id/organizational-chart')
+    async getOrganizationalChart(@Param('id') projectId: string) {
+        return this.projectService.getChart(projectId);
     }
 
     @Post('')

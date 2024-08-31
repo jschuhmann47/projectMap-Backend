@@ -164,6 +164,18 @@ export class ProjectService {
         return stage
     }
 
+    async addChart(projectId, chart) {
+        const project = await this.projectModel.findById(projectId);
+        console.log({project})
+        project.chart = chart;
+        project.save();
+    }
+
+    async getChart(projectId) {
+        const project = await this.projectModel.findById(projectId);
+        return project.chart;
+    }
+
     async addUserToProject(
         projectId: string,
         userEmail: string,
