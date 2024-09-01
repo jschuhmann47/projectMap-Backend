@@ -17,7 +17,7 @@ export enum Priority {
 }
 
 export enum Frequency {
-    SIX_MONTHS = 120,
+    SIX_MONTHS = 180,
     THREE_MONTHS = 90,
     TWO_MONTHS = 60,
     MONTHLY = 30,

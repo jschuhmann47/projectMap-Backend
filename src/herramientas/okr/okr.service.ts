@@ -53,7 +53,9 @@ export class OkrService {
         }
         const keyStatus: KeyStatus[] = []
         for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
-            keyStatus.push(new KeyStatus(keyStatusData.periodName, i + 1))
+            keyStatus.push(
+                new KeyStatus(keyStatusData.periodName + ' ' + (i + 1), 0)
+            )
         }
 
         const keyResult = new KeyResult(
