@@ -95,7 +95,7 @@ export class OkrService {
 
                 if (keyResultDto.goal) keyResult.goal = keyResultDto.goal
 
-                if (keyResultDto.priority)
+                if (keyResultDto.priority !== undefined)
                     keyResult.priority = keyResultDto.priority
 
                 // frequency cannot be edited
