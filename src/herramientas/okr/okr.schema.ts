@@ -183,6 +183,7 @@ A 1 año: mensual, bimestral, trimestral
 const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
     [Horizon.FORTNIGHT, [Frequency.DAILY, Frequency.WEEKLY]],
     [Horizon.MONTH, [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS]],
+    [Horizon.BIMESTER, [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS]],
     [Horizon.QUARTER, [Frequency.FIFTEEN_DAYS, Frequency.MONTHLY]],
     [
         Horizon.SEMESTER,
