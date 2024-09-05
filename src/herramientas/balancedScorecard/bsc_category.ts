@@ -1,4 +1,4 @@
-export enum Area {
+export enum BSCCategory {
     Financiera = 'Financiera',
     Clientes = 'Clientes',
     ProcesosInternos = 'Procesos Internos',

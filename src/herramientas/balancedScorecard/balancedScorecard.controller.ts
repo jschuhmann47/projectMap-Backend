@@ -13,7 +13,6 @@ import { ApiTags } from '@nestjs/swagger'
 import {
     BalancedScorecardDto,
     CheckpointDto,
-    InitiativeDto,
     ObjectiveDto,
 } from './balancedScorecard.dto'
 import { BalancedScorecardService } from './balancedScorecard.service'
@@ -39,14 +38,6 @@ export class BalancedScorecardController {
         return this.balancedScorecardService.findById(id)
     }
 
-    @Post(':id/initiatives')
-    async addInitiative(
-        @Param('id') id: string,
-        @Body() initiativeDto: InitiativeDto
-    ) {
-        return this.balancedScorecardService.addInitiative(id, initiativeDto)
-    }
-
     @Post(':id/objectives')
     async addObjective(
         @Param('id') id: string,
@@ -66,14 +57,6 @@ export class BalancedScorecardController {
             objectiveId,
             checkpointDto
         )
-    }
-
-    @Delete(':id/initiatives/:initiativeId')
-    async removeInitiative(
-        @Param('id') id: string,
-        @Param('initiativeId') initiativeId: string
-    ) {
-        return this.balancedScorecardService.removeInitiative(id, initiativeId)
     }
 
     @Delete(':id/objectives/:objectiveId')
@@ -103,19 +86,6 @@ export class BalancedScorecardController {
         @Body() balancedScoreCardDto: BalancedScorecardDto
     ) {
         return this.balancedScorecardService.edit(id, balancedScoreCardDto)
-    }
-
-    @Put(':id/initiatives/:initiativeId')
-    async editInitiative(
-        @Param('id') id: string,
-        @Param('initiativeId') initiativeId: string,
-        @Body() initiativeDto: InitiativeDto
-    ) {
-        return this.balancedScorecardService.editInitiative(
-            id,
-            initiativeId,
-            initiativeDto
-        )
     }
 
     @Put(':id/objectives/:objectiveId')

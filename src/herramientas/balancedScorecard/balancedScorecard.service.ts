@@ -1,29 +1,26 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import {
-    BalancedScorecard,
-    BalancedScoreCardDocument,
-    Checkpoint,
-    Initiative,
-    Objective,
-} from './balancedScorecard.schema'
 import { Model } from 'mongoose'
 import {
     BalancedScorecardDto,
     CheckpointDto,
-    InitiativeDto,
     ObjectiveDto,
 } from './balancedScorecard.dto'
-import { Area } from './perspectives'
-import { Trend } from './trends'
+import {
+    BalancedScorecard,
+    Checkpoint,
+    Objective,
+} from './balancedScorecard.schema'
 import { CheckpointMonths } from './checkpointMonths'
 import { Deviation } from './deviations'
+import { BSCCategory } from './bsc_category'
+import { Trend } from './trends'
 
 @Injectable()
 export class BalancedScorecardService {
     constructor(
         @InjectModel(BalancedScorecard.name)
-        private balancedScorecardModel: Model<BalancedScoreCardDocument>
+        private balancedScorecardModel: Model<BalancedScorecard>
     ) {}
 
     async create(balancedScorecardDto: BalancedScorecardDto) {
@@ -31,8 +28,6 @@ export class BalancedScorecardService {
             balancedScorecardDto
         )
         if (!balancedScorecardDto.objectives) balancedScorecard.objectives = []
-        if (!balancedScorecardDto.initiatives)
-            balancedScorecard.initiatives = []
 
         return balancedScorecard.save()
     }
@@ -73,47 +68,7 @@ export class BalancedScorecardService {
     ) {
         const balancedScorecard: BalancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
-        balancedScorecard.titulo = balancedScorecardDto.titulo
-        return new this.balancedScorecardModel(balancedScorecard).save()
-    }
-
-    async addInitiative(
-        balancedScorecardId: string,
-        initiativeDto: InitiativeDto
-    ) {
-        const balancedScorecard: BalancedScorecard =
-            await this.balancedScorecardModel.findById(balancedScorecardId)
-        const initiative = new Initiative(
-            initiativeDto.area as Area,
-            initiativeDto.description
-        )
-        balancedScorecard.initiatives.push(initiative)
-        return new this.balancedScorecardModel(balancedScorecard).save()
-    }
-
-    async removeInitiative(balancedScorecardId: string, initiativeId: string) {
-        const balancedScorecard: BalancedScorecard =
-            await this.balancedScorecardModel.findById(balancedScorecardId)
-        balancedScorecard.initiatives = balancedScorecard.initiatives.filter(
-            (initiative) => initiative._id.toString() != initiativeId
-        )
-
-        return new this.balancedScorecardModel(balancedScorecard).save()
-    }
-
-    async editInitiative(
-        balancedScorecardId: string,
-        initiativeId: string,
-        initiativeDto: InitiativeDto
-    ) {
-        const balancedScorecard: BalancedScorecard =
-            await this.balancedScorecardModel.findById(balancedScorecardId)
-        balancedScorecard.initiatives.forEach((initiative) => {
-            if (initiative._id.toString() == initiativeId) {
-                initiative.area = initiativeDto.area as Area
-                initiative.description = initiativeDto.description
-            }
-        })
+        balancedScorecard.title = balancedScorecardDto.titulo
         return new this.balancedScorecardModel(balancedScorecard).save()
     }
 
@@ -127,12 +82,12 @@ export class BalancedScorecardService {
             objectiveDto.action,
             objectiveDto.measure,
             objectiveDto.target,
-            objectiveDto.area as Area,
+            objectiveDto.category as BSCCategory,
             objectiveDto.responsible
         )
 
         objective.checkpoints = []
-        const targetPerMonth = objective.target / CheckpointMonths.length
+        const targetPerMonth = objective.goal / CheckpointMonths.length
         CheckpointMonths.forEach((month) => {
             const checkpoint = new Checkpoint(month, targetPerMonth, 0)
             objective.checkpoints.push(checkpoint)
@@ -155,8 +110,8 @@ export class BalancedScorecardService {
             if (objective._id.toString() == objectiveId) {
                 objective.action = objectiveDto.action
                 objective.measure = objectiveDto.measure
-                objective.target = objectiveDto.target
-                objective.area = objectiveDto.area as Area
+                objective.goal = objectiveDto.target
+                objective.category = objectiveDto.category as BSCCategory
 
                 objectiveDto.checkpoints.forEach((checkpointDto) => {
                     const objectiveToUpdate = objective.checkpoints.find(
@@ -254,7 +209,7 @@ export class BalancedScorecardService {
         return {
             trend: Object.values(Trend),
             deviation: Object.values(Deviation),
-            area: Object.values(Area),
+            area: Object.values(BSCCategory),
         }
     }
 }

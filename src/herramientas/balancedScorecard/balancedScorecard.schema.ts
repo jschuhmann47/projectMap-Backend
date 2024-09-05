@@ -1,11 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import mongoose, { Document } from 'mongoose'
-import { Completition } from '../completition'
+import mongoose from 'mongoose'
 import { Deviation } from './deviations'
-import { Area } from './perspectives'
+import { BSCCategory as BSCCategory } from './bsc_category'
 import { Trend } from './trends'
-
-export type BalancedScoreCardDocument = BalancedScorecard & Document
 
 @Schema()
 export class Checkpoint {
@@ -33,28 +30,32 @@ export const checkPointSchema = SchemaFactory.createForClass(Checkpoint)
 export class Objective {
     _id: mongoose.Types.ObjectId
 
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     action: string
 
-    @Prop({ required: true })
+    @Prop({ type: String, required: true })
     measure: string
 
-    @Prop({ type: String })
-    target: number
+    @Prop({ type: Number })
+    goal: number
 
-    @Prop({ type: String })
-    area: Area
+    @Prop({ type: Number })
+    baseline: number
 
-    @Prop({ type: [checkPointSchema] })
+    @Prop({ type: String, required: true })
+    category: BSCCategory
+
+    @Prop({ type: [checkPointSchema], default: [] })
     checkpoints: Checkpoint[]
 
     @Prop({ type: Number })
     progress: number
 
-    @Prop({ type: String })
+    // I have my doubts about trend and deviation
+    @Prop({ type: Trend })
     trend: Trend
 
-    @Prop({ type: String })
+    @Prop({ type: Deviation })
     deviation: Deviation
 
     @Prop({ type: String, required: false })
@@ -63,14 +64,14 @@ export class Objective {
     constructor(
         action: string,
         measure: string,
-        target: number,
-        area: Area,
+        goal: number,
+        category: BSCCategory,
         responsible: string
     ) {
         this.action = action
         this.measure = measure
-        this.target = target
-        this.area = area
+        this.goal = goal
+        this.category = category
         this.responsible = responsible
     }
 }
@@ -102,7 +103,7 @@ objectiveSchema.pre('save', function (next) {
             const actual = this.checkpoints
                 .map((k) => k.actual)
                 .reduce((a, b) => a + b, 0)
-            this.progress = (actual / this.target) * 100
+            this.progress = (actual / this.goal) * 100
 
             const progressFromCompletedCheckpoints =
                 completedCheckpoints
@@ -121,72 +122,25 @@ objectiveSchema.pre('save', function (next) {
 })
 
 @Schema()
-export class Initiative {
-    _id: mongoose.Types.ObjectId
-
-    @Prop({ type: String })
-    area: Area
-
-    @Prop({ type: String })
-    description: string
-
-    constructor(area: Area, description: string) {
-        this.area = area
-        this.description = description
-    }
-}
-
-export const initiativesSchema = SchemaFactory.createForClass(Initiative)
-
-@Schema()
 export class BalancedScorecard {
     _id: mongoose.Types.ObjectId
 
     @Prop({ required: true })
     projectId: string
 
-    @Prop({ type: String })
-    titulo: string
+    @Prop({ type: String, required: true })
+    title: string
 
     @Prop({ type: Date, default: Date.now })
     createdAt: Date
 
     @Prop([objectiveSchema])
     objectives: Objective[]
-
-    @Prop([initiativesSchema])
-    initiatives: Initiative[]
-
-    @Prop({ type: String, default: Completition.Vacio })
-    completion: Completition
 }
 
 export const BalanceScorecardSchema =
     SchemaFactory.createForClass(BalancedScorecard)
 
 BalanceScorecardSchema.pre('save', function (next) {
-    const objectiveAprendizaje = this.objectives.find(
-        (objective) => objective.area == Area.Aprendizaje
-    )
-    const objectiveClientes = this.objectives.find(
-        (objective) => objective.area == Area.Clientes
-    )
-    const objectiveFinanciera = this.objectives.find(
-        (objective) => objective.area == Area.Financiera
-    )
-    const objectiveProcesosInternos = this.objectives.find(
-        (objective) => objective.area == Area.ProcesosInternos
-    )
-
-    if (
-        objectiveAprendizaje &&
-        objectiveClientes &&
-        objectiveFinanciera &&
-        objectiveProcesosInternos
-    )
-        this.completion = Completition.Completo
-    else if (this.objectives.length == 0) this.completion = Completition.Vacio
-    else this.completion = Completition.Incompleto
-
     next()
 })
