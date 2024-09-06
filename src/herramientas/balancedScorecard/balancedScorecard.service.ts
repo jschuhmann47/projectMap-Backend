@@ -11,7 +11,6 @@ import {
     Checkpoint,
     Objective,
 } from './balancedScorecard.schema'
-import { CheckpointMonths } from './checkpointMonths'
 import { Deviation } from './deviations'
 import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
@@ -87,9 +86,8 @@ export class BalancedScorecardService {
         )
 
         objective.checkpoints = []
-        const targetPerMonth = objective.goal / CheckpointMonths.length
-        CheckpointMonths.forEach((month) => {
-            const checkpoint = new Checkpoint(month, targetPerMonth, 0)
+        Array.from([1, 2, 3]).forEach((month) => {
+            const checkpoint = new Checkpoint(month, 0, 0)
             objective.checkpoints.push(checkpoint)
         })
 
@@ -121,7 +119,7 @@ export class BalancedScorecardService {
                     )
                     if (objectiveToUpdate) {
                         objectiveToUpdate.actual = checkpointDto.actual
-                        objectiveToUpdate.month = checkpointDto.month
+                        objectiveToUpdate.period = checkpointDto.month
                         objectiveToUpdate.target = checkpointDto.target
                     }
                 })
@@ -179,7 +177,7 @@ export class BalancedScorecardService {
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
                 checkpoint.actual = checkpointDto.actual
-                checkpoint.month = checkpointDto.month
+                checkpoint.period = checkpointDto.month
                 checkpoint.target = checkpointDto.target
             }
         })

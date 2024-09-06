@@ -3,13 +3,15 @@ import mongoose from 'mongoose'
 import { Deviation } from './deviations'
 import { BSCCategory as BSCCategory } from './bsc_category'
 import { Trend } from './trends'
+import { Horizon } from '../horizon'
+import { Frequency } from '../frequency'
 
 @Schema()
 export class Checkpoint {
     _id: mongoose.Types.ObjectId
 
     @Prop({ type: String, required: true })
-    month: string
+    period: string
 
     @Prop({ type: Number, required: true })
     target: number
@@ -17,8 +19,8 @@ export class Checkpoint {
     @Prop({ type: Number, required: false })
     actual: number
 
-    constructor(month: string, target: number, actual: number) {
-        this.month = month
+    constructor(period: string, target: number, actual: number) {
+        this.period = period
         this.target = target
         this.actual = actual
     }
@@ -60,6 +62,9 @@ export class Objective {
 
     @Prop({ type: String, required: false })
     responsible: string
+
+    @Prop({ type: Frequency, required: true })
+    frequency: Frequency
 
     constructor(
         action: string,
@@ -136,6 +141,9 @@ export class BalancedScorecard {
 
     @Prop([objectiveSchema])
     objectives: Objective[]
+
+    @Prop({ type: Horizon, required: true })
+    horizon: Horizon
 }
 
 export const BalanceScorecardSchema =

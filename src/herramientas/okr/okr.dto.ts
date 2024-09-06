@@ -1,4 +1,5 @@
-import { Frequency, Horizon } from './okr.schema'
+import { Frequency } from '../frequency'
+import { Horizon } from '../horizon'
 
 export class OkrDto {
     _id: string
