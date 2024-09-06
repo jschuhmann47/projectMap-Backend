@@ -1,3 +1,4 @@
+import { Frequency } from '../frequency'
 import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
 
@@ -12,12 +13,14 @@ export class ObjectiveDto {
     _id: string
     action: string
     measure: string
-    target: number
+    goal: number
+    baseline: number
     category: BSCCategory
     checkpoints: CheckpointDto[]
     progress: number
     trend: Trend
     responsible: string
+    frequency: Frequency
 }
 
 export class BalancedScorecardDto {

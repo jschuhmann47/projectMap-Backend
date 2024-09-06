@@ -101,6 +101,7 @@ export class BalancedScorecardController {
         )
     }
 
+    // TODO: either remove this and update all from objective, or remove checkpoint update in "edit objective"
     @Put(':id/objectives/:objectiveId/checkpoints/:checkpointId')
     async editCheckpoint(
         @Param('id') id: string,

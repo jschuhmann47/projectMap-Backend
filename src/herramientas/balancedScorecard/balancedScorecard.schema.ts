@@ -32,6 +32,7 @@ export const checkPointSchema = SchemaFactory.createForClass(Checkpoint)
 export class Objective {
     _id: mongoose.Types.ObjectId
 
+    // This would be the title of the objective
     @Prop({ type: String, required: true })
     action: string
 
@@ -71,13 +72,15 @@ export class Objective {
         measure: string,
         goal: number,
         category: BSCCategory,
-        responsible: string
+        responsible: string,
+        frequency: Frequency
     ) {
         this.action = action
         this.measure = measure
         this.goal = goal
         this.category = category
         this.responsible = responsible
+        this.frequency = frequency
     }
 }
 

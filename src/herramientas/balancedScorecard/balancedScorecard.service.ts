@@ -14,6 +14,7 @@ import {
 import { Deviation } from './deviations'
 import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
+import { getStatusFromFrequencyAndHorizon } from '../okr/okr.schema'
 
 @Injectable()
 export class BalancedScorecardService {
@@ -80,16 +81,28 @@ export class BalancedScorecardService {
         const objective = new Objective(
             objectiveDto.action,
             objectiveDto.measure,
-            objectiveDto.target,
+            objectiveDto.goal,
             objectiveDto.category as BSCCategory,
-            objectiveDto.responsible
+            objectiveDto.responsible,
+            objectiveDto.frequency
         )
 
+        const periodCount = getStatusFromFrequencyAndHorizon(
+            objectiveDto.frequency,
+            balancedScorecard.horizon
+        )
+        if (periodCount.invalid) {
+            throw new HttpException(
+                'Invalid frequency or horizon',
+                HttpStatus.BAD_REQUEST
+            )
+        }
         objective.checkpoints = []
-        Array.from([1, 2, 3]).forEach((month) => {
-            const checkpoint = new Checkpoint(month, 0, 0)
-            objective.checkpoints.push(checkpoint)
-        })
+        for (let i = 0; i < periodCount.lengthOfPeriods; i++) {
+            objective.checkpoints.push(
+                new Checkpoint(periodCount.periodName + ' ' + (i + 1), 0, 0)
+            )
+        }
 
         balancedScorecard.objectives.push(objective)
 
@@ -108,7 +121,8 @@ export class BalancedScorecardService {
             if (objective._id.toString() == objectiveId) {
                 objective.action = objectiveDto.action
                 objective.measure = objectiveDto.measure
-                objective.goal = objectiveDto.target
+                objective.goal = objectiveDto.goal
+                objective.baseline = objectiveDto.baseline
                 objective.category = objectiveDto.category as BSCCategory
 
                 objectiveDto.checkpoints.forEach((checkpointDto) => {
