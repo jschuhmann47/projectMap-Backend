@@ -13,6 +13,7 @@ export enum Frequency {
 /*
 A 15 dias: diario, semanal
 A 1 mes: semanal, quincenal
+A 2 mes: semanal, quincenal y mensual
 A 3 meses: quincenal, mensual
 A 6 meses: mensual, bimestral, trimestral
 A 1 año: mensual, bimestral, trimestral
@@ -20,7 +21,10 @@ A 1 año: mensual, bimestral, trimestral
 export const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
     [Horizon.FORTNIGHT, [Frequency.DAILY, Frequency.WEEKLY]],
     [Horizon.MONTH, [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS]],
-    [Horizon.BIMESTER, [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS]],
+    [
+        Horizon.BIMESTER,
+        [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS, Frequency.MONTHLY],
+    ],
     [Horizon.QUARTER, [Frequency.FIFTEEN_DAYS, Frequency.MONTHLY]],
     [
         Horizon.SEMESTER,
