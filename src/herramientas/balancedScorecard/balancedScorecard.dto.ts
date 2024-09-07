@@ -4,7 +4,7 @@ import { Trend } from './trends'
 
 export class CheckpointDto {
     _id: string
-    month: string
+    period: string
     target: number
     actual: number
 }

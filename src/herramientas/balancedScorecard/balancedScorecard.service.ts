@@ -125,18 +125,20 @@ export class BalancedScorecardService {
                 objective.baseline = objectiveDto.baseline
                 objective.category = objectiveDto.category as BSCCategory
 
-                objectiveDto.checkpoints.forEach((checkpointDto) => {
-                    const objectiveToUpdate = objective.checkpoints.find(
-                        (checkpoint) =>
-                            checkpoint._id.toString() ==
-                            checkpointDto._id.toString()
-                    )
-                    if (objectiveToUpdate) {
-                        objectiveToUpdate.actual = checkpointDto.actual
-                        objectiveToUpdate.period = checkpointDto.month
-                        objectiveToUpdate.target = checkpointDto.target
-                    }
-                })
+                if (objectiveDto.checkpoints) {
+                    objectiveDto.checkpoints.forEach((checkpointDto) => {
+                        const objectiveToUpdate = objective.checkpoints.find(
+                            (checkpoint) =>
+                                checkpoint._id.toString() ==
+                                checkpointDto._id.toString()
+                        )
+                        if (objectiveToUpdate) {
+                            objectiveToUpdate.actual = checkpointDto.actual
+                            objectiveToUpdate.period = checkpointDto.period
+                            objectiveToUpdate.target = checkpointDto.target
+                        }
+                    })
+                }
             }
         })
 
@@ -151,27 +153,6 @@ export class BalancedScorecardService {
             (objective) => objective._id.toString() != objectiveId
         )
 
-        return new this.balancedScorecardModel(balancedScorecard).save()
-    }
-
-    async addCheckpoint(
-        balancedScorecardId: string,
-        objectiveId: string,
-        checkpointDto: CheckpointDto
-    ) {
-        const balancedScorecard: BalancedScorecard =
-            await this.balancedScorecardModel.findById(balancedScorecardId)
-
-        const objective = balancedScorecard.objectives.find(
-            (o) => o._id.toString() == objectiveId
-        )
-        const checkpoint = new Checkpoint(
-            checkpointDto.month,
-            checkpointDto.target,
-            checkpointDto.actual
-        )
-
-        objective.checkpoints.push(checkpoint)
         return new this.balancedScorecardModel(balancedScorecard).save()
     }
 
@@ -191,7 +172,7 @@ export class BalancedScorecardService {
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
                 checkpoint.actual = checkpointDto.actual
-                checkpoint.period = checkpointDto.month
+                // checkpoint.period = checkpointDto.period
                 checkpoint.target = checkpointDto.target
             }
         })
