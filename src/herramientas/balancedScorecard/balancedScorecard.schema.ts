@@ -45,7 +45,7 @@ export class Objective {
     @Prop({ type: Number })
     baseline: number
 
-    @Prop({ type: String, required: true })
+    @Prop({ type: String, enum: BSCCategory, required: true })
     category: BSCCategory
 
     @Prop({ type: [checkPointSchema], default: [] })
@@ -55,16 +55,16 @@ export class Objective {
     progress: number
 
     // I have my doubts about trend and deviation
-    @Prop({ type: Trend })
+    @Prop({ type: String, enum: Trend })
     trend: Trend
 
-    @Prop({ type: Deviation })
+    @Prop({ type: String, enum: Deviation })
     deviation: Deviation
 
     @Prop({ type: String, required: false })
     responsible: string
 
-    @Prop({ type: Frequency, required: true })
+    @Prop({ type: Number, enum: Frequency, required: true })
     frequency: Frequency
 
     constructor(
@@ -145,7 +145,7 @@ export class BalancedScorecard {
     @Prop([objectiveSchema])
     objectives: Objective[]
 
-    @Prop({ type: Horizon, required: true })
+    @Prop({ type: Number, enum: Horizon, required: true })
     horizon: Horizon
 }
 
