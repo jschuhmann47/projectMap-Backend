@@ -2,12 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { KeyResultDto, OkrDto } from './okr.dto'
-import {
-    getStatusFromFrequencyAndHorizon,
-    KeyResult,
-    KeyStatus,
-    Okr,
-} from './okr.schema'
+import { KeyResult, KeyStatus, Okr } from './okr.schema'
+import { getStatusFromFrequencyAndHorizon } from '../frequency'
 
 @Injectable()
 export class OkrService {

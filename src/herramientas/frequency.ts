@@ -45,3 +45,26 @@ export const frequencyToPeriodName = new Map<Frequency, string>([
     [Frequency.WEEKLY, 'Semana'],
     [Frequency.DAILY, 'Día'],
 ])
+
+export function getStatusFromFrequencyAndHorizon(
+    frequency: Frequency,
+    horizon: Horizon
+) {
+    const validFrequencies = validFrequenciesByHorizon.get(horizon)
+    if (!validFrequencies) {
+        return {
+            invalid: true,
+        }
+    }
+    const validFrequency = validFrequencies.filter((f) => f == frequency)
+    if (!validFrequency || validFrequency.length == 0) {
+        return {
+            invalid: true,
+        }
+    }
+    return {
+        lengthOfPeriods: Math.floor(horizon / frequency),
+        periodName: frequencyToPeriodName.get(frequency),
+        invalid: false,
+    }
+}

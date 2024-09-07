@@ -14,7 +14,7 @@ import {
 import { Deviation } from './deviations'
 import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
-import { getStatusFromFrequencyAndHorizon } from '../okr/okr.schema'
+import { getStatusFromFrequencyAndHorizon } from '../frequency'
 
 @Injectable()
 export class BalancedScorecardService {
