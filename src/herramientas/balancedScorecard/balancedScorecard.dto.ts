@@ -1,4 +1,5 @@
 import { Frequency } from '../frequency'
+import { Horizon } from '../horizon'
 import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
 
@@ -29,4 +30,5 @@ export class BalancedScorecardDto {
     titulo: string
     createdAt: Date
     objectives: ObjectiveDto[]
+    horizon: Horizon
 }

@@ -15,6 +15,7 @@ import { Deviation } from './deviations'
 import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
+import { Horizon } from '../horizon'
 
 @Injectable()
 export class BalancedScorecardService {
@@ -24,6 +25,9 @@ export class BalancedScorecardService {
     ) {}
 
     async create(balancedScorecardDto: BalancedScorecardDto) {
+        if (balancedScorecardDto.horizon < Horizon.YEAR) {
+            throw new HttpException('Invalid horizon', HttpStatus.BAD_REQUEST)
+        }
         const balancedScorecard = new this.balancedScorecardModel(
             balancedScorecardDto
         )

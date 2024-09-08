@@ -1,6 +1,7 @@
 import { Horizon } from './horizon'
 
 export enum Frequency {
+    YEAR = 360,
     SIX_MONTHS = 180,
     THREE_MONTHS = 90,
     TWO_MONTHS = 60,
@@ -10,14 +11,6 @@ export enum Frequency {
     DAILY = 1,
 }
 
-/*
-A 15 dias: diario, semanal
-A 1 mes: semanal, quincenal
-A 2 mes: semanal, quincenal y mensual
-A 3 meses: quincenal, mensual
-A 6 meses: mensual, bimestral, trimestral
-A 1 año: mensual, bimestral, trimestral
-*/
 export const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
     [Horizon.FORTNIGHT, [Frequency.DAILY, Frequency.WEEKLY]],
     [Horizon.MONTH, [Frequency.WEEKLY, Frequency.FIFTEEN_DAYS]],
@@ -34,9 +27,20 @@ export const validFrequenciesByHorizon = new Map<Horizon, Array<Frequency>>([
         Horizon.YEAR,
         [Frequency.MONTHLY, Frequency.TWO_MONTHS, Frequency.THREE_MONTHS],
     ],
+    [
+        Horizon.TWO_YEARS,
+        [Frequency.TWO_MONTHS, Frequency.THREE_MONTHS, Frequency.SIX_MONTHS],
+    ],
+    [
+        Horizon.THREE_YEARS,
+        [Frequency.THREE_MONTHS, Frequency.SIX_MONTHS, Frequency.YEAR],
+    ],
+    [Horizon.FOUR_YEARS, [Frequency.SIX_MONTHS, Frequency.YEAR]],
+    [Horizon.FIVE_YEARS, [Frequency.SIX_MONTHS, Frequency.YEAR]],
 ])
 
 export const frequencyToPeriodName = new Map<Frequency, string>([
+    [Frequency.YEAR, 'Año'],
     [Frequency.SIX_MONTHS, 'Semestre'],
     [Frequency.THREE_MONTHS, 'Trimestre'],
     [Frequency.TWO_MONTHS, 'Bimestre'],
