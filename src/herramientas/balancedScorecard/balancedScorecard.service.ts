@@ -153,6 +153,22 @@ export class BalancedScorecardService {
                 }
             }
         })
+        balancedScorecard.objectives.forEach((o) => {
+            let checkpointTotalTarget = 0
+            o.checkpoints.forEach((c) => {
+                checkpointTotalTarget += c.target
+            })
+            // math functions are to have some grace range because of decimals
+            if (
+                checkpointTotalTarget < Math.floor(o.goal) ||
+                checkpointTotalTarget > Math.ceil(o.goal)
+            ) {
+                throw new HttpException(
+                    "Sum of objectives don't match goal",
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+        })
 
         return new this.balancedScorecardModel(balancedScorecard).save()
     }
@@ -181,10 +197,10 @@ export class BalancedScorecardService {
             (o) => o._id.toString() == objectiveId
         )
 
+        // TODO: check here the sum if this endpoint is used
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
                 checkpoint.actual = checkpointDto.actual
-                // checkpoint.period = checkpointDto.period
                 checkpoint.target = checkpointDto.target
             }
         })
