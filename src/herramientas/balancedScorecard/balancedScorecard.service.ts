@@ -97,10 +97,18 @@ export class BalancedScorecardService {
                 HttpStatus.BAD_REQUEST
             )
         }
+        const defaultObjective =
+            Math.round(
+                (objectiveDto.goal / periodCount.lengthOfPeriods) * 100
+            ) / 100
         objective.checkpoints = []
         for (let i = 0; i < periodCount.lengthOfPeriods; i++) {
             objective.checkpoints.push(
-                new Checkpoint(periodCount.periodName + ' ' + (i + 1), 0, 0)
+                new Checkpoint(
+                    periodCount.periodName + ' ' + (i + 1),
+                    defaultObjective,
+                    0
+                )
             )
         }
 
