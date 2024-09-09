@@ -34,7 +34,7 @@ export class Objective {
 
     // This would be the title of the objective
     @Prop({ type: String, required: true })
-    action: string
+    description: string
 
     @Prop({ type: String, required: true })
     measure: string
@@ -75,7 +75,7 @@ export class Objective {
         responsible: string,
         frequency: Frequency
     ) {
-        this.action = action
+        this.description = action
         this.measure = measure
         this.goal = goal
         this.category = category

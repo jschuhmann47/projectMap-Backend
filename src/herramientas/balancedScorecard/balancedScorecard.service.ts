@@ -83,7 +83,7 @@ export class BalancedScorecardService {
         const balancedScorecard: BalancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
         const objective = new Objective(
-            objectiveDto.action,
+            objectiveDto.description,
             objectiveDto.measure,
             objectiveDto.goal,
             objectiveDto.category as BSCCategory,
@@ -131,7 +131,7 @@ export class BalancedScorecardService {
 
         balancedScorecard.objectives.forEach((objective) => {
             if (objective._id.toString() == objectiveId) {
-                objective.action = objectiveDto.action
+                objective.description = objectiveDto.description
                 objective.measure = objectiveDto.measure
                 objective.goal = objectiveDto.goal
                 objective.baseline = objectiveDto.baseline

@@ -12,7 +12,7 @@ export class CheckpointDto {
 
 export class ObjectiveDto {
     _id: string
-    action: string
+    description: string
     measure: string
     goal: number
     baseline: number
