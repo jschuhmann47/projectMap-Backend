@@ -34,7 +34,7 @@ export class Objective {
 
     // This would be the title of the objective
     @Prop({ type: String, required: true })
-    description: string
+    action: string
 
     @Prop({ type: String, required: true })
     measure: string
@@ -75,7 +75,7 @@ export class Objective {
         responsible: string,
         frequency: Frequency
     ) {
-        this.description = action
+        this.action = action
         this.measure = measure
         this.goal = goal
         this.category = category
@@ -137,7 +137,7 @@ export class BalancedScorecard {
     projectId: string
 
     @Prop({ type: String, required: true })
-    title: string
+    description: string
 
     @Prop({ type: Date, default: Date.now })
     createdAt: Date

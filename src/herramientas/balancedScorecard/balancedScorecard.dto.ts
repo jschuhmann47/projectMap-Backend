@@ -12,7 +12,7 @@ export class CheckpointDto {
 
 export class ObjectiveDto {
     _id: string
-    description: string
+    action: string
     measure: string
     goal: number
     baseline: number
@@ -27,7 +27,7 @@ export class ObjectiveDto {
 export class BalancedScorecardDto {
     _id: string
     projectId: string
-    titulo: string
+    description: string
     createdAt: Date
     objectives: ObjectiveDto[]
     horizon: Horizon
