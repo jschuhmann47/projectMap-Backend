@@ -36,7 +36,7 @@ export class Objective {
     @Prop({ type: String, required: true })
     action: string
 
-    @Prop({ type: String, required: false, default: "" })
+    @Prop({ type: String, required: false, default: '' })
     measure: string
 
     @Prop({ type: Number })
