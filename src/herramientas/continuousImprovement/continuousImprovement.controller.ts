@@ -11,7 +11,7 @@ import { PorterService } from '../porter/porter.service'
 import { QuestionnaireService } from '../questionnaire/questionnaire.service'
 
 @UseGuards(AuthGuard('jwt'))
-@ApiTags('continuous-improvements"')
+@ApiTags('continuous-improvements')
 @Controller('continuous-improvements')
 export class ContinuousImprovementController {
     constructor(
