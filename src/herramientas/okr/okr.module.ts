@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { OkrController } from './okr.controller'
-import { OkrProject, okrProjectSchema } from './okr.schema'
+import { Okr, OkrSchema } from './okr.schema'
 import { OkrService } from './okr.service'
 
 @Module({
     imports: [
-        MongooseModule.forFeature([
-            { name: OkrProject.name, schema: okrProjectSchema },
-        ]),
+        MongooseModule.forFeature([{ name: Okr.name, schema: OkrSchema }]),
     ],
     providers: [OkrService],
     controllers: [OkrController],

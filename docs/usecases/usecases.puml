@@ -1,12 +1,18 @@
-@startuml projectMap
+@startuml
 skinparam componentStyle uml2
 
 :Alumno:
+:Docente administrador:
 
 [ProjectMap]
 
-:Alumno: ---> [ProjectMap] : Carga de proyectos
-:Alumno: ---> [ProjectMap] : Datos del alumno
-[ProjectMap] ---> :Alumno: : Estado del proyecto
+:Docente administrador: ---> [ProjectMap] : Carga de proyectos
+:Docente administrador: ---> [ProjectMap] : Permisos de usuarios
+:Docente administrador: ---> [ProjectMap] : Herramientas de proyecto
 
+:Alumno: ---> [ProjectMap] : Herramientas de proyecto
+:Alumno: ---> [ProjectMap] : Datos del alumno
+
+[ProjectMap] ---> :Alumno: : Proyectos asignados
+[ProjectMap] ---> :Docente administrador: : Proyectos
 @enduml

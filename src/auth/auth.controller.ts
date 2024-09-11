@@ -50,7 +50,7 @@ export class AuthController {
             email,
         }
         const token = await this.authService.signPayload(payload)
-        const { email: userEmail, firstName, lastName, isAdmin } = req.user
+        const { email: userEmail, firstName, lastName, isAdmin, _id } = req.user
 
         return {
             user: {
@@ -58,6 +58,7 @@ export class AuthController {
                 firstName,
                 lastName,
                 isAdmin,
+                _id,
             },
             token,
         }

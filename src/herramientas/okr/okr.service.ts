@@ -1,44 +1,25 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { KeyResultDto, OkrDto } from './okr.dto'
 import {
-    GlobalOkrDto,
-    KeyResultDto,
-    KeyStatusDto,
-    OkrDto,
-    OkrProjectDto,
-} from './okr.dto'
-import {
+    getStatusFromFrequencyAndHorizon,
     KeyResult,
     KeyStatus,
     Okr,
-    OkrDocument,
-    OkrProject,
 } from './okr.schema'
 
 @Injectable()
 export class OkrService {
-    constructor(
-        @InjectModel(OkrProject.name) private okrModel: Model<OkrDocument>
-    ) {}
+    constructor(@InjectModel(Okr.name) private okrModel: Model<Okr>) {}
 
-    async create(okrProjectDto: OkrProjectDto) {
-        const okrProject = new this.okrModel(okrProjectDto)
-        return okrProject.save()
+    async create(okrDto: OkrDto) {
+        const okr = new this.okrModel(okrDto)
+        return okr.save()
     }
 
-    async findById(okrProjectId: string) {
-        return this.okrModel.findById(okrProjectId).exec()
-    }
-
-    async findOkrById(okrProjectId: string, okrId: string) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-
-        return okr
+    async findById(okrId: string) {
+        return this.okrModel.findById(okrId).exec()
     }
 
     async getAllByProjectId(projectId: string) {
@@ -48,161 +29,77 @@ export class OkrService {
             .exec()
     }
 
-    async findGlobalOkrById(okrProjectId: string, okrId: string) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
+    async editOkr(okrId: string, okrDto: OkrDto) {
+        const okr: Okr = await this.okrModel.findById(okrId).exec()
 
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
+        okr.area = okrDto.area
+        okr.description = okrDto.description
 
-        const relatedOkrs = okrProject.okrs.filter(
-            (okr) => okr.globalOkr == okrId
-        )
-
-        const progress =
-            relatedOkrs.map((okr) => okr.progress).reduce((x, y) => x + y) /
-            relatedOkrs.length
-
-        const statusPerMonth: Map<string, number> = new Map()
-
-        relatedOkrs.forEach((okr) =>
-            okr.keyResults.forEach((kr) =>
-                kr.keyStatus.forEach((ks) => {
-                    const status = statusPerMonth.get(ks.month)
-                    if (status) statusPerMonth.set(ks.month, status + ks.value)
-                    else statusPerMonth.set(ks.month, ks.value)
-                })
-            )
-        )
-
-        const keyStatus = []
-        statusPerMonth.forEach((progress, month) =>
-            keyStatus.push(new KeyStatusDto(month, progress))
-        )
-
-        return new GlobalOkrDto(
-            okrId,
-            okr.description,
-            keyStatus,
-            progress,
-            okr.area
-        )
+        return new this.okrModel(okr).save()
     }
 
-    async addOkr(okrProjectId: string, okrDto: OkrDto) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
+    async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
+        const okr: Okr = await this.okrModel.findById(okrId).exec()
 
-        const okr = new Okr(
-            okrDto.description,
-            okrDto.globalOkr,
-            okrDto.area,
-            okrDto.quarter
+        const keyStatusData = getStatusFromFrequencyAndHorizon(
+            keyResultDto.frequency,
+            okr.horizon
         )
-
-        if (okrDto.keyResults) {
-            const keyResults = okrDto.keyResults.map((keyResultDto) => {
-                const keyStatuses = keyResultDto.keyStatus.map(
-                    (keyStatusDto) =>
-                        new KeyStatus(keyStatusDto.month, keyStatusDto.value)
-                )
-                const keyResult = new KeyResult(
-                    keyResultDto.description,
-                    keyResultDto.goal,
-                    keyResultDto.responsible,
-                    keyResultDto.priority
-                )
-                keyResult.keyStatus = keyStatuses
-                return keyResult
-            })
-            okr.keyResults = keyResults
+        if (keyStatusData.invalid) {
+            throw new HttpException(
+                'Invalid frequency or horizon',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        const keyStatus: KeyStatus[] = []
+        for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
+            keyStatus.push(
+                new KeyStatus(keyStatusData.periodName + ' ' + (i + 1), 0)
+            )
         }
 
-        okrProject.okrs.push(okr)
-
-        return new this.okrModel(okrProject).save()
-    }
-
-    async editOkr(okrProjectId: string, okrId: string, okrDto: OkrDto) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        okrProject.okrs.forEach((okr) => {
-            if (okr._id.toString() == okrId) {
-                okr.area = okrDto.area
-                okr.description = okrDto.description
-            }
-        })
-
-        return new this.okrModel(okrProject).save()
-    }
-
-    async removeOkr(okrProjectId: string, okrId: string) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        okrProject.okrs = okrProject.okrs.filter(
-            (okr) => okr._id.toString() != okrId
-        )
-
-        return new this.okrModel(okrProject).save()
-    }
-
-    async addKeyResult(
-        okrProjectId: string,
-        okrId: string,
-        keyResultDto: KeyResultDto
-    ) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-        if (!okr) throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
-
-        const keyStatuses = keyResultDto.keyStatus.map(
-            (keyStatusDto) =>
-                new KeyStatus(keyStatusDto.month, keyStatusDto.value)
-        )
         const keyResult = new KeyResult(
             keyResultDto.description,
-            keyResultDto.goal,
             keyResultDto.responsible,
-            keyResultDto.priority
+            keyResultDto.baseline,
+            keyResultDto.goal,
+            keyResultDto.frequency,
+            keyResultDto.priority,
+            keyStatus
         )
 
-        keyResult.keyStatus = keyStatuses
+        keyResult.keyStatus = keyStatus
 
         okr.keyResults.push(keyResult)
 
-        return new this.okrModel(okrProject).save()
+        return new this.okrModel(okr).save()
     }
 
     async editKeyResult(
-        okrProjectId: string,
         okrId: string,
         keyResultId: string,
         keyResultDto: KeyResultDto
     ) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-        if (!okr) throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
+        const okr: Okr = await this.okrModel.findById(okrId).exec()
 
         okr.keyResults.forEach((keyResult) => {
             if (keyResult._id.toString() == keyResultId) {
                 if (keyResultDto.description)
                     keyResult.description = keyResultDto.description
-                if (keyResultDto.goal) keyResult.goal = keyResultDto.goal
+
                 if (keyResultDto.responsible)
                     keyResult.responsible = keyResultDto.responsible
-                if (keyResultDto.priority)
+
+                if (keyResultDto.baseline)
+                    keyResult.baseline = keyResultDto.baseline
+
+                if (keyResultDto.goal) keyResult.goal = keyResultDto.goal
+
+                if (keyResultDto.priority !== undefined)
                     keyResult.priority = keyResultDto.priority
+
+                // frequency cannot be edited
+
                 if (keyResultDto.keyStatus)
                     keyResultDto.keyStatus.forEach(
                         (status, index) =>
@@ -211,107 +108,25 @@ export class OkrService {
             }
         })
 
-        return new this.okrModel(okrProject).save()
+        return new this.okrModel(okr).save()
     }
 
-    async removeKeyResult(
-        okrProjectId: string,
-        okrId: string,
-        keyResultId: string
-    ) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-        if (!okr) throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
+    async removeKeyResult(okrId: string, keyResultId: string) {
+        const okr: Okr = await this.okrModel.findById(okrId).exec()
 
         okr.keyResults = okr.keyResults.filter(
             (keyResult) => keyResult._id.toString() != keyResultId
         )
 
-        return new this.okrModel(okrProject).save()
-    }
-
-    async addKeyStatus(
-        okrProjectId: string,
-        okrId: string,
-        keyResultId: string,
-        keyStatusDto: KeyStatusDto
-    ) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-        if (!okr) throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
-
-        const keyResult = okr.keyResults.find(
-            (kr) => kr._id.toString() == keyResultId
-        )
-
-        const keystatus = new KeyStatus(keyStatusDto.month, keyStatusDto.value)
-        keyResult.keyStatus.push(keystatus)
-
-        return new this.okrModel(okrProject).save()
-    }
-
-    async editKeyStatus(
-        okrProjectId: string,
-        okrId: string,
-        keyResultId: string,
-        keyStatusId: string,
-        keyStatusDto: KeyStatusDto
-    ) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-        if (!okr) throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
-        const keyResult = okr.keyResults.find(
-            (kr) => kr._id.toString() == keyResultId
-        )
-
-        keyResult.keyStatus.forEach((keyStatus) => {
-            if (keyStatus._id.toString() == keyStatusId) {
-                keyStatus.month = keyStatusDto.month
-                keyStatus.value = keyStatusDto.value
-            }
-        })
-
-        return new this.okrModel(okrProject).save()
-    }
-
-    async removeKeyStatus(
-        okrProjectId: string,
-        okrId: string,
-        keyResultId: string,
-        keyStatusId: string
-    ) {
-        const okrProject: OkrProject = await this.okrModel
-            .findById(okrProjectId)
-            .exec()
-
-        const okr = okrProject.okrs.find((okr) => okr._id.toString() == okrId)
-        if (!okr) throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
-
-        const keyResult = okr.keyResults.find(
-            (kr) => kr._id.toString() == keyResultId
-        )
-
-        keyResult.keyStatus.filter((ks) => ks._id.toString() != keyStatusId)
-
-        return new this.okrModel(okrProject).save()
+        return new this.okrModel(okr).save()
     }
 
     async delete(id: string) {
         const result = await this.okrModel.deleteOne({ _id: id })
-        if (result.deletedCount) return id
-        else
-            throw new HttpException(
-                'Okr Project not found',
-                HttpStatus.NOT_FOUND
-            )
+        if (result.deletedCount) {
+            return id
+        } else {
+            throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
+        }
     }
 }

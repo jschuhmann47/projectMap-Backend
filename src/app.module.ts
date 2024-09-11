@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
-import { AppService } from './app.service'
 
 import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from './user/user.module'
@@ -12,9 +11,7 @@ import { AnsoffModule } from './herramientas/ansoff/ansoff.module'
 import { ProjectModule } from './project/project.module'
 import { PorterModule } from './herramientas/porter/porter.module'
 import { MckinseyModule } from './herramientas/mckinsey/mckinsey.module'
-import { ConsultoraModule } from './consultora/consultora.module'
 import { BalancedScorecardModule } from './herramientas/balancedScorecard/balanceScorecard.module'
-import { StickyNoteModule } from './sticky-notes/stickyNote.module'
 import { QuestionnaireModule } from './herramientas/questionnaire/questionnaire.module'
 import { ContinuousImprovementModule } from './herramientas/continuousImprovement/continuousImprovement.module'
 import { ProjectStageUserEditionMiddleware } from './middleware/project.middleware'
@@ -26,7 +23,6 @@ dotenv.config()
         MongooseModule.forRoot(process.env.MONGO_URI),
         ProjectModule,
         UserModule,
-        ConsultoraModule,
         AuthModule,
         FodaModule,
         PestelModule,
@@ -35,11 +31,10 @@ dotenv.config()
         MckinseyModule,
         BalancedScorecardModule,
         QuestionnaireModule,
-        StickyNoteModule,
         ContinuousImprovementModule,
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {

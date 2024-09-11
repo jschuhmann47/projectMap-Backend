@@ -1,13 +1,13 @@
-import { Prop, Schema } from "@nestjs/mongoose"
+import { Prop, Schema } from '@nestjs/mongoose'
 
 @Schema()
 export class Edge {
     @Prop({})
-    id: string;
+    id: string
 
     @Prop()
     source: string
-    
+
     @Prop()
-    target: string   
+    target: string
 }

@@ -32,7 +32,6 @@ import {
 } from './project.dto'
 import { ProjectService } from './project.service'
 import { isValidPermission, isValidStageType, StageType } from './stage.schema'
-import { OrganizationalChart } from './organizationalChart.schema'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -61,12 +60,6 @@ export class ProjectController {
     async searchProjects(@Query() query) {
         const name = query['name']
         const projects = await this.projectService.findProjectsByName(name)
-        return projects
-    }
-
-    @Get('shared')
-    async getAllSharedProjects() {
-        const projects = await this.projectService.findSharedProjects()
         return projects
     }
 
@@ -128,13 +121,16 @@ export class ProjectController {
     }
 
     @Post(':id/organizational-chart')
-    async saveOrganizationalChart(@Param('id') projectId: string, @Body() chart: ChartDto) {
-        return this.projectService.addChart(projectId, chart);
+    async saveOrganizationalChart(
+        @Param('id') projectId: string,
+        @Body() chart: ChartDto
+    ) {
+        return this.projectService.addChart(projectId, chart)
     }
 
     @Get(':id/organizational-chart')
     async getOrganizationalChart(@Param('id') projectId: string) {
-        return this.projectService.getChart(projectId);
+        return this.projectService.getChart(projectId)
     }
 
     @Post('')

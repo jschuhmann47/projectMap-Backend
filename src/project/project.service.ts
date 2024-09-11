@@ -4,7 +4,7 @@ import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
-import { defaultStages, Stage } from './stage.schema'
+import { defaultStages, Permission, Stage, StageType } from './stage.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
 
@@ -69,10 +69,18 @@ export class ProjectService {
         return this.getSharedUsers(id)
     }
 
-    // eslint-disable-next-line
-    async findUserProjects(owner: string) {
-        //return this.projectModel.find({ owner })
-        return this.projectModel.find({})
+    async findUserProjects(requestorId: string) {
+        const isAdmin = await this.userService.isAdmin(requestorId)
+        if (isAdmin) {
+            return this.projectModel.find({})
+        } else {
+            return this.projectModel.find({
+                $or: [
+                    { 'participants.user': requestorId },
+                    { 'coordinators.user': requestorId },
+                ],
+            })
+        }
     }
 
     async findProjectsByName(name: string) {
@@ -81,10 +89,6 @@ export class ProjectService {
         })
     }
 
-    async findSharedProjects() {
-        //const user = await this.userService.findById(userId)
-        return [] // user.sharedProjects TODO: borrar
-    }
     async update(id: string, updated: ProjectDto) {
         return this.projectModel.findOneAndUpdate({ _id: id }, updated)
     }
@@ -103,7 +107,6 @@ export class ProjectService {
         projectId: string,
         req: UpdateUserRolesDto
     ) {
-        mongoose.set('debug', true)
         const project = await this.projectModel.findById(projectId)
         if (!project) {
             throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
@@ -148,6 +151,18 @@ export class ProjectService {
         userEmail: string,
         stageId: string
     ): Promise<Stage> {
+        const user = await this.userService.findByEmail(userEmail)
+        const canEdit = new Stage(
+            // StageType can be anything here since we are checking only for the permission
+            StageType.CompetitiveStrategy,
+            Permission.Edit
+        )
+        if (!user) {
+            return null
+        }
+        if (user.isAdmin) {
+            return canEdit
+        }
         const project = await this.getOne(projectId)
         let stage = null
 
@@ -159,21 +174,27 @@ export class ProjectService {
             if (matchedUser) {
                 stage = matchedUser.stages.find((stage) => stage.id == stageId)
             }
+            const isCoordinator = project.coordinators.some(
+                (c) => c.email == userEmail
+            )
+            if (isCoordinator) {
+                return canEdit
+            }
         }
 
         return stage
     }
 
-    async addChart(projectId, chart) {
-        const project = await this.projectModel.findById(projectId);
-        console.log({project})
-        project.chart = chart;
-        project.save();
+    async addChart(projectId, chart) {
+        const project = await this.projectModel.findById(projectId)
+        console.log({ project })
+        project.chart = chart
+        project.save()
     }
 
-    async getChart(projectId) {
-        const project = await this.projectModel.findById(projectId);
-        return project.chart;
+    async getChart(projectId) {
+        const project = await this.projectModel.findById(projectId)
+        return project.chart
     }
 
     async addUserToProject(

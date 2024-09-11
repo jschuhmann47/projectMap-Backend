@@ -20,43 +20,43 @@ export class ProjectDto {
 
 export class Node {
     @ApiProperty()
-    id: string;
+    id: string
 
     @ApiProperty()
-    height: number;
-  
+    height: number
+
     @ApiProperty()
-    width: string;
-  
+    width: string
+
     @ApiProperty()
-    type: string;
-  
+    type: string
+
     @ApiProperty()
     data: {
-      label: string
+        label: string
     }
-  
+
     @ApiProperty()
-    source: string;
+    source: string
 }
 
 export class Edge {
     @ApiProperty()
-    id: string;
+    id: string
 
     @ApiProperty()
     source: string
-    
+
     @ApiProperty()
-    target: string  
+    target: string
 }
 
 export class ChartDto {
     @ApiProperty()
-    nodes: Node[];
+    nodes: Node[]
 
     @ApiProperty()
-    edges: Edge[];
+    edges: Edge[]
 }
 
 export class ShareProjectDto {
