@@ -187,7 +187,6 @@ export class ProjectService {
 
     async addChart(projectId, chart) {
         const project = await this.projectModel.findById(projectId)
-        console.log({ project })
         project.chart = chart
         project.save()
     }
