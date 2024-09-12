@@ -1,17 +1,17 @@
 import { Prop, Schema } from '@nestjs/mongoose'
 
-@Schema({_id: false})
+@Schema({ _id: false })
 export class Node {
-    @Prop({type: String})
+    @Prop({ type: String })
     id: string
 
-    @Prop({type: Number})
+    @Prop({ type: Number })
     height: number
 
-    @Prop({type: String})
+    @Prop({ type: String })
     width: string
 
-    @Prop({type: String})
+    @Prop({ type: String })
     type: string
 
     @Prop()
@@ -19,6 +19,6 @@ export class Node {
         label: string
     }
 
-    @Prop({type: String})
+    @Prop({ type: String })
     source: string
 }
