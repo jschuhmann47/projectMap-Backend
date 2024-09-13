@@ -105,15 +105,17 @@ export class BalancedScorecardService {
             Math.round(
                 (objectiveDto.goal / periodCount.lengthOfPeriods) * 100
             ) / 100
+        let startingObjective = defaultObjective
         objective.checkpoints = []
         for (let i = 0; i < periodCount.lengthOfPeriods; i++) {
             objective.checkpoints.push(
                 new Checkpoint(
                     periodCount.periodName + ' ' + (i + 1),
-                    defaultObjective,
+                    startingObjective,
                     0
                 )
             )
+            startingObjective += defaultObjective
         }
 
         balancedScorecard.objectives.push(objective)
