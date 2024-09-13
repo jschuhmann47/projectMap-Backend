@@ -7,6 +7,7 @@ export class CheckpointDto {
     _id: string
     period: string
     target: number
+    // actually it should be called 'current', no pun intended
     actual: number
 }
 

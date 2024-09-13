@@ -150,7 +150,7 @@ export class BalancedScorecardService {
                                 checkpointDto._id.toString()
                         )
                         if (objectiveToUpdate) {
-                            objectiveToUpdate.actual = checkpointDto.actual
+                            objectiveToUpdate.current = checkpointDto.actual
                             objectiveToUpdate.period = checkpointDto.period
                             objectiveToUpdate.target = checkpointDto.target
                         }
@@ -205,7 +205,7 @@ export class BalancedScorecardService {
         // TODO: check here the sum if this endpoint is used
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
-                checkpoint.actual = checkpointDto.actual
+                checkpoint.current = checkpointDto.actual
                 checkpoint.target = checkpointDto.target
             }
         })

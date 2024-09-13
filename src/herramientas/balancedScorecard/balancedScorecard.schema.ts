@@ -17,12 +17,12 @@ export class Checkpoint {
     target: number
 
     @Prop({ type: Number, required: false })
-    actual: number
+    current: number
 
-    constructor(period: string, target: number, actual: number) {
+    constructor(period: string, target: number, current: number) {
         this.period = period
         this.target = target
-        this.actual = actual
+        this.current = current
     }
 }
 
@@ -89,12 +89,12 @@ export const objectiveSchema = SchemaFactory.createForClass(Objective)
 objectiveSchema.pre('save', function (next) {
     if (this.checkpoints.length) {
         const completedCheckpoints = this.checkpoints.filter(
-            (checkpoint) => checkpoint.actual && checkpoint.actual != 0
+            (checkpoint) => checkpoint.current && checkpoint.current != 0
         )
         if (completedCheckpoints.length) {
             const historicProgress = completedCheckpoints
                 .slice(0, completedCheckpoints.length - 1)
-                .map((k) => (k.actual / k.target) * 100)
+                .map((k) => (k.current / k.target) * 100)
             const avgHistoricProgress =
                 historicProgress.reduce((a, b) => a + b, 0) /
                 historicProgress.length
@@ -102,21 +102,21 @@ objectiveSchema.pre('save', function (next) {
             const lastCheckpoint =
                 completedCheckpoints[completedCheckpoints.length - 1]
             const lastProgress =
-                (lastCheckpoint.actual / lastCheckpoint.target) * 100
+                (lastCheckpoint.current / lastCheckpoint.target) * 100
 
             if (lastProgress > avgHistoricProgress) this.trend = Trend.Upwards
             else if (lastProgress < avgHistoricProgress)
                 this.trend = Trend.Downwards
             else this.trend = Trend.Stable
 
-            const actual = this.checkpoints
-                .map((k) => k.actual)
+            const current = this.checkpoints
+                .map((k) => k.current)
                 .reduce((a, b) => a + b, 0)
-            this.progress = (actual / (this.goal - this.baseline)) * 100
+            this.progress = (current / (this.goal - this.baseline)) * 100
 
             const progressFromCompletedCheckpoints =
                 completedCheckpoints
-                    .map((k) => (k.actual / k.target) * 100)
+                    .map((k) => (k.current / k.target) * 100)
                     .reduce((a, b) => a + b, 0) / completedCheckpoints.length
 
             if (progressFromCompletedCheckpoints > 95)
