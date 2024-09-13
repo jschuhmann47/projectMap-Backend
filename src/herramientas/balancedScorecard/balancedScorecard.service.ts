@@ -86,6 +86,7 @@ export class BalancedScorecardService {
             objectiveDto.action,
             objectiveDto.measure,
             objectiveDto.goal,
+            objectiveDto.baseline,
             objectiveDto.category as BSCCategory,
             objectiveDto.responsible,
             objectiveDto.frequency
@@ -103,7 +104,9 @@ export class BalancedScorecardService {
         }
         const defaultObjective =
             Math.round(
-                (objectiveDto.goal / periodCount.lengthOfPeriods) * 100
+                ((objectiveDto.goal - objectiveDto.baseline) /
+                    periodCount.lengthOfPeriods) *
+                    100
             ) / 100
         let startingObjective = defaultObjective
         objective.checkpoints = []

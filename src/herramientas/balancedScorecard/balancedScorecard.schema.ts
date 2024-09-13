@@ -54,7 +54,6 @@ export class Objective {
     @Prop({ type: Number })
     progress: number
 
-    // I have my doubts about trend and deviation
     @Prop({ type: String, enum: Trend })
     trend: Trend
 
@@ -71,6 +70,7 @@ export class Objective {
         action: string,
         measure: string,
         goal: number,
+        baseline: number,
         category: BSCCategory,
         responsible: string,
         frequency: Frequency
@@ -78,6 +78,7 @@ export class Objective {
         this.action = action
         this.measure = measure
         this.goal = goal
+        this.baseline = baseline
         this.category = category
         this.responsible = responsible
         this.frequency = frequency
@@ -111,7 +112,7 @@ objectiveSchema.pre('save', function (next) {
             const actual = this.checkpoints
                 .map((k) => k.actual)
                 .reduce((a, b) => a + b, 0)
-            this.progress = (actual / this.goal) * 100
+            this.progress = (actual / (this.goal - this.baseline)) * 100
 
             const progressFromCompletedCheckpoints =
                 completedCheckpoints
