@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { MongooseModule } from '@nestjs/mongoose'
 import { FodaModule } from '../herramientas/foda/foda.module'
 import { PestelModule } from '../herramientas/pestel/pestel.module'
@@ -21,7 +21,7 @@ import { ProjectService } from './project.service'
         AnsoffModule,
         PorterModule,
         MckinseyModule,
-        OkrModule,
+        forwardRef(() => OkrModule),
         BalancedScorecardModule,
         QuestionnaireModule,
         UserModule,

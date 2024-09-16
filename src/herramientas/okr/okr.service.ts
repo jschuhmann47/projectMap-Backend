@@ -5,15 +5,33 @@ import { KeyResultDto, OkrDto } from './okr.dto'
 import { KeyResult, KeyStatus, Okr } from './okr.schema'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
 import { Horizon } from '../horizon'
+import { ProjectService } from 'src/project/project.service'
 
 @Injectable()
 export class OkrService {
-    constructor(@InjectModel(Okr.name) private okrModel: Model<Okr>) {}
+    constructor(
+        @InjectModel(Okr.name) private okrModel: Model<Okr>,
+        private projectService: ProjectService
+    ) {}
 
     async create(okrDto: OkrDto) {
         if (okrDto.horizon > Horizon.YEAR) {
             throw new HttpException('Invalid horizon', HttpStatus.BAD_REQUEST)
         }
+        const orgChart = await this.projectService.getChart(okrDto.projectId)
+        if (!orgChart) {
+            throw new HttpException(
+                'Invalid project id',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        const areasWithMatchingId = orgChart.nodes.filter(
+            (a) => a.id === okrDto.areaId
+        )
+        if (areasWithMatchingId.length == 0) {
+            throw new HttpException('Invalid area', HttpStatus.BAD_REQUEST)
+        }
+        okrDto.area = areasWithMatchingId[0].data.label
         const okr = new this.okrModel(okrDto)
         return okr.save()
     }

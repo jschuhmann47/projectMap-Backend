@@ -6,6 +6,7 @@ export class OkrDto {
     projectId: string
     description: string
     area: string
+    areaId: string
     horizon: Horizon
     priority: number
     progress: number
