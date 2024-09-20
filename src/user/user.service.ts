@@ -53,7 +53,11 @@ export class UserService {
                 email: insensitiveRegExp(email),
             })
             .select('-password')
-
+        if (!user)
+            throw new HttpException(
+                'Usuario no encontrado',
+                HttpStatus.NOT_FOUND
+            )
         return user
     }
 
