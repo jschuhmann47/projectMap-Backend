@@ -2,50 +2,15 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { FactorDto, PestelDto } from './pestel.dto'
-import { PestelPreSeed } from './pestel.type'
 import { Area, Importancia, Intensidad, Tendencia } from './enums'
 import { Factor, Pestel } from './pestel.schema'
 
 @Injectable()
 export class PestelService {
-    constructor(
-        @InjectModel(Pestel.name) private pestelModel: Model<Pestel>,
-        @InjectModel('PESTELPreSeed') private preSeedModel: Model<PestelPreSeed>
-    ) {}
+    constructor(@InjectModel(Pestel.name) private pestelModel: Model<Pestel>) {}
 
     async getAll() {
         return this.pestelModel.find()
-    }
-
-    async getPreSeeds() {
-        const preSeeds = await this.preSeedModel.find({})
-        const preSeedsFormated = {}
-
-        preSeeds.forEach((preSeed) => {
-            const {
-                area,
-                descripcion,
-                consejoPositivo,
-                consejoNegativo,
-                puntaje,
-            } = preSeed
-            const list = preSeedsFormated[area]
-            if (!list) preSeedsFormated[area] = []
-            preSeedsFormated[area].push({
-                descripcion,
-                consejoPositivo,
-                consejoNegativo,
-                puntaje,
-            })
-        })
-
-        return preSeedsFormated
-    }
-
-    async insertPreSeed(preSeedDTO) {
-        const preSeed = new this.preSeedModel(preSeedDTO)
-        const preSeedCreated = await preSeed.save()
-        return preSeedCreated
     }
 
     async getAllByProjectId(projectId: string) {
