@@ -9,6 +9,7 @@ export class OkrDto {
     horizon: Horizon
     priority: number
     progress: number
+    startingDate: Date
     keyResults: KeyResultDto[]
 }
 
