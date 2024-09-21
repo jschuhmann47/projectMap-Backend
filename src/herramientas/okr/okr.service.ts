@@ -53,9 +53,16 @@ export class OkrService {
         }
         const keyStatus: KeyStatus[] = []
         for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
-            keyStatus.push(
-                new KeyStatus(keyStatusData.periodName + ' ' + (i + 1), 0)
+            const newDate = addDays(
+                okr.startingDate,
+                keyResultDto.frequency * i
             )
+            const stringDate = [
+                newDate.getUTCDate(),
+                newDate.getUTCMonth() + 1,
+                newDate.getUTCFullYear(),
+            ].join('/')
+            keyStatus.push(new KeyStatus(stringDate, 0))
         }
 
         const keyResult = new KeyResult(
@@ -129,4 +136,10 @@ export class OkrService {
             throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
         }
     }
+}
+
+function addDays(date: Date, days: number): Date {
+    const result = new Date(date)
+    result.setDate(result.getDate() + days)
+    return result
 }
