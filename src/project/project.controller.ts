@@ -207,7 +207,7 @@ export class ProjectController {
     }
 
     @Put(':id/roles')
-      async updateUserRoles(
+    async updateUserRoles(
         @Req() header: { user: { id: string } },
         @Param('id') projectId: string,
         @Body() req: UpdateUserRolesDto
