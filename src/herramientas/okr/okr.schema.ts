@@ -103,6 +103,9 @@ export class Okr {
     @Prop({ type: Number, required: true, enum: Horizon })
     horizon: Horizon
 
+    @Prop({ type: Date, required: true })
+    startingDate: Date
+
     @Prop({ type: Number, enum: Priority })
     priority: Priority
 

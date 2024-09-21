@@ -97,15 +97,6 @@ export class ProjectService {
                 user._id = new mongoose.mongo.ObjectId(u.userId)
                 return user
             })
-        if (
-            participants.length + coordinators.length !=
-            project.coordinators.length + project.participants.length
-        ) {
-            throw new HttpException(
-                'Wrong amount of users',
-                HttpStatus.BAD_REQUEST
-            )
-        }
 
         project.participants = participants
         project.coordinators = coordinators
@@ -180,7 +171,7 @@ export class ProjectService {
             throw new HttpException('Rol invalido', HttpStatus.BAD_REQUEST)
         }
 
-        const project = await this.projectModel.findById(projectId)
+        const project = await this.getPopulatedProject(projectId)
         if (!project) {
             throw new HttpException(
                 'Proyecto no encontrado',

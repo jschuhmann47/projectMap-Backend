@@ -42,6 +42,11 @@ export class ProjectController {
         private questionnaireService: QuestionnaireService
     ) {}
 
+    @Get('/shared')
+    async goAway() {
+        throw new HttpException('Go away son', HttpStatus.I_AM_A_TEAPOT)
+    }
+
     @Get('')
     async getAllUserProjects(@Req() req: { user: { id: string } }) {
         const { id } = req.user
