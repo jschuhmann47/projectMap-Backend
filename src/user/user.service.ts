@@ -61,9 +61,7 @@ export class UserService {
     }
 
     async findById(id: string) {
-        return this.userModel
-            .findById(id)
-            .populate(['sharedProjects', 'consultora'])
+        return this.userModel.findById(id)
     }
 
     async update(userId: string, updateUserDto: UpdateUserDto) {
@@ -82,22 +80,6 @@ export class UserService {
             )
 
         return user
-    }
-
-    async assignConsultora(userId: string, consultoraId: string) {
-        await this.userModel
-            .findByIdAndUpdate(userId, {
-                consultora: consultoraId,
-            })
-            .exec()
-
-        return this.userModel.findById(userId)
-    }
-
-    async removeConsultant(userId: string) {
-        return this.userModel.findByIdAndUpdate(userId, {
-            $unset: { consultora: 1 },
-        })
     }
 
     async findUsersBySharedProject(projectId: string) {
@@ -133,17 +115,12 @@ export class UserService {
         if (!user) {
             throw new HttpException('Email no existente', HttpStatus.NOT_FOUND)
         }
-        new RecoverPasswordNotification(
-            user.email,
-            generateRandomSixDigitVerificationCode()
-        )
-            .notifyUser()
-            .catch((_error) => {
-                throw new HttpException(
-                    'Error al enviar email de verificación',
-                    HttpStatus.INTERNAL_SERVER_ERROR
-                )
-            })
+        const code = generateRandomSixDigitVerificationCode()
+        user.verificationCode = code
+
+        user.save()
+        new RecoverPasswordNotification(user.email, code).notifyUser()
+
         return
     }
 }
