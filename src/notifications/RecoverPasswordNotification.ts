@@ -1,18 +1,16 @@
 import { EmailNotification } from './EmailNotification'
-import { User } from 'src/user/user.schema'
 
 export class RecoverPasswordNotification extends EmailNotification {
-    user: User
-    code: number
+    email: string
 
-    constructor(user: User) {
+    constructor(email: string, code: number) {
         super()
-        this.user = user
-        this.bodyText = `Tu código de recuperación es: ` + this.code
+        this.email = email
+        this.bodyText = `Tu código de recuperación es: ` + code
         this.subject = `Recupero de contraseña - ProjectMap 🧭`
     }
 
     async notifyUser() {
-        return super.send(this.user.email)
+        return super.send(this.email)
     }
 }

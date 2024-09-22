@@ -70,9 +70,6 @@ export class UserService {
         const user: User = await this.userModel.findById(userId)
         if (updateUserDto.firstName) user.firstName = updateUserDto.firstName
         if (updateUserDto.lastName) user.lastName = updateUserDto.lastName
-        //if (updateUserDto.biography) user.biography = updateUserDto.biography
-        /*if (updateUserDto.calendlyUser)
-            user.calendlyUser = updateUserDto.calendlyUser*/
         return new this.userModel(user).save()
     }
 
@@ -136,7 +133,21 @@ export class UserService {
         if (!user) {
             throw new HttpException('Email no existente', HttpStatus.NOT_FOUND)
         }
-        new RecoverPasswordNotification(user).notifyUser()
+        new RecoverPasswordNotification(
+            user.email,
+            generateRandomSixDigitVerificationCode()
+        )
+            .notifyUser()
+            .catch((_error) => {
+                throw new HttpException(
+                    'Error al enviar email de verificación',
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            })
         return
     }
+}
+
+function generateRandomSixDigitVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000)
 }

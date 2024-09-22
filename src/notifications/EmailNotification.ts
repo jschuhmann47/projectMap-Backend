@@ -22,12 +22,8 @@ export abstract class EmailNotification {
                 subject: this.subject,
                 html: '<p>' + this.bodyText + '</p>',
             },
-            (err, info) => {
-                if (err) {
-                    console.log(`Error: ${err}`)
-                } else {
-                    console.log(`Email sent: ${info.response}`)
-                }
+            (err, _info) => {
+                return err ? Promise.resolve() : Promise.reject(err)
             }
         )
     }
