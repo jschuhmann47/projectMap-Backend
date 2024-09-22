@@ -1,27 +1,34 @@
-import * as SgMail from '@sendgrid/mail'
+import * as nodemailer from 'nodemailer'
 
 export abstract class EmailNotification {
     bodyText: string
     subject: string
 
     async send(destination: string) {
-        try {
-            SgMail.setApiKey(process.env.SENDGRID_API_KEY)
-            const msg = {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'projectmaputnba@gmail.com',
+                pass: process.env.NODEMAILER_GOOGLE_APP_PASSWORD,
+            },
+        })
+        console.log(process.env.NODEMAILER_GOOGLE_APP_PASSWORD)
+        transporter.sendMail(
+            {
                 to: destination,
-                from: 'projectmap.utn@gmail.com',
                 subject: this.subject,
-                text: this.bodyText,
+                html: '<p>Hello</p>',
+            },
+            (err, info) => {
+                if (err) {
+                    console.log(`Error: ${err}`)
+                } else {
+                    console.log(`Email sent: ${info.response}`)
+                }
             }
-            SgMail.send(msg)
-                .then(() => {
-                    console.log('Email sent')
-                })
-                .catch((reason) =>
-                    console.log(`Failed to send email. Reason ${reason}`)
-                )
-        } catch (e) {
-            console.log(`Failed to send email. Reason ${e}`)
-        }
+        )
     }
 }
