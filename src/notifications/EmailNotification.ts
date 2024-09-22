@@ -11,7 +11,7 @@ export abstract class EmailNotification {
             port: 465,
             secure: true,
             auth: {
-                user: 'projectmaputnba@gmail.com',
+                user: process.env.NODEMAILER_GOOGLE_APP_USER,
                 pass: process.env.NODEMAILER_GOOGLE_APP_PASSWORD,
             },
         })
