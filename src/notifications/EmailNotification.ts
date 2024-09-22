@@ -19,7 +19,7 @@ export abstract class EmailNotification {
             {
                 to: destination,
                 subject: this.subject,
-                html: '<p>' + this.bodyText + '</p>',
+                html: this.bodyText,
             },
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             (err, _) => {
