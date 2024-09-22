@@ -20,7 +20,7 @@ export abstract class EmailNotification {
             {
                 to: destination,
                 subject: this.subject,
-                html: '<p>Hello</p>',
+                html: '<p>' + this.bodyText + '</p>',
             },
             (err, info) => {
                 if (err) {
