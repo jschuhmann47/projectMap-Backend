@@ -32,4 +32,9 @@ export class UserController {
         const email = body.email
         return this.userService.sendPasswordRecoverEmail(email)
     }
+
+    @Post('user/password/code')
+    async verifyPasswordRecoveryCode(@Body() body: { email: string, code: number }) {
+        return this.userService.verifyPasswordRecoveryCode(body.email, body.code)
+    }
 }

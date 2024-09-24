@@ -123,6 +123,23 @@ export class UserService {
 
         return
     }
+
+    async verifyPasswordRecoveryCode(email: string, code: number) {
+        const user = await this.findByEmail(email)
+        if (!user) {
+            throw new HttpException('Email no existente', HttpStatus.NOT_FOUND)
+        }
+        if (user.verificationCode !== code) {
+            throw new HttpException('Código inválido', HttpStatus.FORBIDDEN)
+        }
+        // todo: either call authservice or move the logic there
+        // now user has valid code
+        user.verificationCode = null
+        user.save()
+
+        const token = 'hello'
+        return { user, token }
+    }
 }
 
 function generateRandomSixDigitVerificationCode() {
