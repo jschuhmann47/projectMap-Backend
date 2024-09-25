@@ -112,12 +112,11 @@ export class UserService {
     }
 
     async verifyPasswordRecoveryCode(code: number) {
-        const user = await this.userModel.findOne({ verificationCode: code })
+        const user = await this.userModel
+            .findOne({ verificationCode: code })
+            .select('-password')
         if (!user) {
             throw new HttpException('Código inválido', HttpStatus.BAD_REQUEST)
-        }
-        if (user.verificationCode !== code) {
-            throw new HttpException('Código incorrecto', HttpStatus.FORBIDDEN)
         }
         user.verificationCode = null
         user.save()
