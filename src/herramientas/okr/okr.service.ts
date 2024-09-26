@@ -6,6 +6,7 @@ import { KeyResult, KeyStatus, Okr } from './okr.schema'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
 import { Horizon } from '../horizon'
 import { ProjectService } from 'src/project/project.service'
+import { addDateByFrequency, dateToString } from './dates'
 
 @Injectable()
 export class OkrService {
@@ -71,9 +72,13 @@ export class OkrService {
         }
         const keyStatus: KeyStatus[] = []
         for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
-            keyStatus.push(
-                new KeyStatus(keyStatusData.periodName + ' ' + (i + 1), 0)
+            const newDate = addDateByFrequency(
+                okr.startingDate,
+                keyResultDto.frequency,
+                i
             )
+            const stringDate = dateToString(newDate)
+            keyStatus.push(new KeyStatus(stringDate, 0))
         }
 
         const keyResult = new KeyResult(

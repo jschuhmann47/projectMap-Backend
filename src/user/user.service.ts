@@ -3,10 +3,9 @@ import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
 import { Model } from 'mongoose'
 import { insensitiveRegExp } from 'src/project/utils/escape_string'
-import { ProjectAssignedNotification } from '../notifications/ProjectAssignedNotification'
-import { Project } from '../project/project.schema'
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
 import { User } from './user.schema'
+import { RecoverPasswordNotification } from 'src/notifications/RecoverPasswordNotification'
 
 @Injectable()
 export class UserService {
@@ -53,23 +52,22 @@ export class UserService {
                 email: insensitiveRegExp(email),
             })
             .select('-password')
-
+        if (!user)
+            throw new HttpException(
+                'Usuario no encontrado',
+                HttpStatus.NOT_FOUND
+            )
         return user
     }
 
     async findById(id: string) {
-        return this.userModel
-            .findById(id)
-            .populate(['sharedProjects', 'consultora'])
+        return this.userModel.findById(id)
     }
 
     async update(userId: string, updateUserDto: UpdateUserDto) {
         const user: User = await this.userModel.findById(userId)
         if (updateUserDto.firstName) user.firstName = updateUserDto.firstName
         if (updateUserDto.lastName) user.lastName = updateUserDto.lastName
-        //if (updateUserDto.biography) user.biography = updateUserDto.biography
-        /*if (updateUserDto.calendlyUser)
-            user.calendlyUser = updateUserDto.calendlyUser*/
         return new this.userModel(user).save()
     }
 
@@ -82,62 +80,6 @@ export class UserService {
             )
 
         return user
-    }
-
-    async assignConsultora(userId: string, consultoraId: string) {
-        await this.userModel
-            .findByIdAndUpdate(userId, {
-                consultora: consultoraId,
-            })
-            .exec()
-
-        return this.userModel.findById(userId)
-    }
-
-    async assignProjects(userId: string, projects: Project[]) {
-        const user = await this.userModel.findById(userId)
-
-        //user.sharedProjects.push(...projects)
-
-        /*user.sharedProjects = user.sharedProjects.filter(
-            (value, index) => user.sharedProjects.indexOf(value) === index
-        )
-*/
-        const userUpdated = await new this.userModel(user).save()
-
-        projects.forEach((project) =>
-            new ProjectAssignedNotification(project).notifyUsers([user.email])
-        )
-
-        return userUpdated
-    }
-
-    async replaceAssignProjects(userId: string, projects: Project[]) {
-        const user = await this.userModel.findById(userId)
-
-        //user.sharedProjects = projects
-
-        const userUpdated = await new this.userModel(user).save()
-
-        projects.forEach((project) =>
-            new ProjectAssignedNotification(project).notifyUsers([user.email])
-        )
-
-        return userUpdated
-    }
-
-    async removeProjects() {
-        // const user = await this.findById(userId)
-        // user.sharedProjects = user.sharedProjects.filter(
-        //     (project) => !projectIds.includes(project._id.toString())
-        // )
-        // return new this.userModel(user).save()
-    }
-
-    async removeConsultant(userId: string) {
-        return this.userModel.findByIdAndUpdate(userId, {
-            $unset: { consultora: 1 },
-        })
     }
 
     async findUsersBySharedProject(projectId: string) {
@@ -167,4 +109,22 @@ export class UserService {
         }
         return user.isAdmin
     }
+
+    async sendPasswordRecoverEmail(email: string) {
+        const user = await this.findByEmail(email)
+        if (!user) {
+            throw new HttpException('Email no existente', HttpStatus.NOT_FOUND)
+        }
+        const code = generateRandomSixDigitVerificationCode()
+        user.verificationCode = code
+
+        user.save()
+        new RecoverPasswordNotification(user.email, code).notifyUser()
+
+        return
+    }
+}
+
+function generateRandomSixDigitVerificationCode() {
+    return Math.floor(100000 + Math.random() * 900000)
 }

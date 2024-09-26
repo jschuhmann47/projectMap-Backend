@@ -9,7 +9,7 @@ export type MckinseyDocument = McKinsey & Document
 export class UnidadDeNegocio {
     _id: mongoose.Types.ObjectId
 
-    @Prop({ type: String, required: true, unique: true })
+    @Prop({ type: String, required: true })
     nombre: string
 
     @Prop({ type: Number, required: true })

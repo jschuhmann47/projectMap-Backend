@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { UserService } from './user.service'
 import { UpdateUserDto } from './user.dto'
@@ -25,5 +25,11 @@ export class UserController {
         @Body() updateUserDto: UpdateUserDto
     ) {
         return this.userService.update(userId, updateUserDto)
+    }
+
+    @Post('user/password/recovery')
+    async sendPasswordRecoverEmail(@Body() body: { email: string }) {
+        const email = body.email
+        return this.userService.sendPasswordRecoverEmail(email)
     }
 }
