@@ -39,36 +39,6 @@ export class ProjectService {
         return this.projectModel.create(projectToCreate)
     }
 
-    async shareProject(id: string, userIds: string[]) {
-        const project = await this.getOne(id)
-        await Promise.all(
-            userIds.map((userId) =>
-                this.userService.assignProjects(userId, [project])
-            )
-        )
-        return this.getSharedUsers(id)
-    }
-
-    async shareProjectByEmail(id: string, email: string) {
-        const project = await this.getOne(id)
-        const user = await this.userService.findUserByEmail(email)
-        await this.userService.assignProjects(user._id.toString(), [project])
-        return this.getSharedUsers(id)
-    }
-
-    async removeUserFromProjectByEmail(id: string, emails: string[]) {
-        const users = await Promise.all(
-            emails.map((email) => this.userService.findUserByEmail(email))
-        )
-        await Promise.all(users.map(() => this.userService.removeProjects()))
-        return this.getSharedUsers(id)
-    }
-
-    async removeUserFromProject(id: string) {
-        await this.userService.removeProjects()
-        return this.getSharedUsers(id)
-    }
-
     async findUserProjects(requestorId: string) {
         const isAdmin = await this.userService.isAdmin(requestorId)
         if (isAdmin) {
@@ -94,9 +64,6 @@ export class ProjectService {
     }
 
     async delete(id: string) {
-        const users = await this.getSharedUsers(id)
-
-        await Promise.all(users.map(() => this.userService.removeProjects()))
         const result = await this.projectModel.deleteOne({ _id: id })
         if (result.deletedCount) return id
         else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)

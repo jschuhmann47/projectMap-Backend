@@ -19,5 +19,8 @@ export class User {
 
     @Prop({ type: Boolean, required: true, default: false })
     isAdmin: boolean
+
+    @Prop({ type: Number, required: false, default: null })
+    verificationCode: number
 }
 export const UserSchema = SchemaFactory.createForClass(User)

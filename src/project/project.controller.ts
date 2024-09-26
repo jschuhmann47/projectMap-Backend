@@ -22,14 +22,7 @@ import { OkrService } from '../herramientas/okr/okr.service'
 import { PestelService } from '../herramientas/pestel/pestel.service'
 import { PorterService } from '../herramientas/porter/porter.service'
 import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service'
-import {
-    ChartDto,
-    ProjectDto,
-    ShareProjectDto,
-    ShareProjectEmailDto,
-    StopSharingProjectEmailDto,
-    UpdateUserRolesDto,
-} from './project.dto'
+import { ChartDto, ProjectDto, UpdateUserRolesDto } from './project.dto'
 import { ProjectService } from './project.service'
 import { isValidPermission, isValidStageType, StageType } from './stage.schema'
 
@@ -149,47 +142,6 @@ export class ProjectController {
 
         const project = await this.projectService.create(projectDTO)
         return project
-    }
-
-    @Post(':projectId/share')
-    async shareProject(
-        @Param('projectId') projectId: string,
-        @Body() shareProjectDto: ShareProjectDto
-    ) {
-        const project = await this.projectService.shareProject(
-            projectId,
-            shareProjectDto.users
-        )
-        return project
-    }
-
-    @Post(':projectId/share/email')
-    async shareProjectEmail(
-        @Param('projectId') projectId: string,
-        @Body() shareProjectDto: ShareProjectEmailDto
-    ) {
-        return this.projectService.shareProjectByEmail(
-            projectId,
-            shareProjectDto.email
-        )
-    }
-
-    @Delete(':projectId/share')
-    async stopSharing(@Param('projectId') projectId: string) {
-        const project =
-            await this.projectService.removeUserFromProject(projectId)
-        return project
-    }
-
-    @Put(':projectId/share/email/stop')
-    async stopSharingEmail(
-        @Param('projectId') projectId: string,
-        @Body() stopSharingProjectEmailDto: StopSharingProjectEmailDto
-    ) {
-        return this.projectService.removeUserFromProjectByEmail(
-            projectId,
-            stopSharingProjectEmailDto.emails
-        )
     }
 
     @Put(':id')
