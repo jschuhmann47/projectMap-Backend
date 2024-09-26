@@ -102,6 +102,7 @@ export class UserService {
 
     async sendPasswordRecoverEmail(email: string) {
         const user = await this.mustGetUserByEmail(email)
+
         const code = generateRandomSixDigitVerificationCode()
         user.verificationCode = code
 
