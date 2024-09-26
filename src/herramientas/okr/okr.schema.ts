@@ -77,11 +77,11 @@ export class KeyResult {
 }
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
 KeyResultSchema.pre('save', function (next) {
+    const lastValue = getLastNonZeroValue(this.keyStatus)
     this.progress = Math.round(
-        ((getLastNonZeroValue(this.keyStatus) - this.baseline) * 100) /
-            (this.goal - this.baseline)
+        ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
     )
-    this.currentScore = getLastNonZeroValue(this.keyStatus)
+    this.currentScore = lastValue
     next()
 })
 
