@@ -45,7 +45,7 @@ export class KeyResult {
     @Prop({ type: Number, required: true })
     goal: number
 
-    @Prop({ type: Number, required: false })
+    @Prop({ type: Number, required: false, default: 0 })
     progress: number
 
     @Prop({ type: Number, required: true, enum: Frequency })
@@ -77,13 +77,11 @@ export class KeyResult {
 }
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
 KeyResultSchema.pre('save', function (next) {
+    const lastValue = getLastNonZeroValue(this.keyStatus)
     this.progress = Math.round(
-        (this.keyStatus.map((k) => k.value).reduce((a, b) => a + b) * 100) /
-            this.goal
+        ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
     )
-    this.currentScore = this.keyStatus
-        .map((k) => k.value)
-        .reduce((a, b) => a + b, 0)
+    this.currentScore = lastValue
     next()
 })
 
@@ -143,3 +141,10 @@ OkrSchema.pre('save', function (next) {
     }
     next()
 })
+
+function getLastNonZeroValue(keyStatus: KeyStatus[]) {
+    if (!keyStatus.some((ks) => ks.value !== 0)) {
+        return 0
+    }
+    return keyStatus.filter((ks) => ks.value !== 0).at(-1).value
+}
