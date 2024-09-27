@@ -6,6 +6,7 @@ import {
     Post,
     Put,
     Query,
+    Req,
     UseGuards,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
@@ -49,8 +50,9 @@ export class UserController {
     @Post('user/password')
     @UseGuards(AuthGuard('jwt'))
     async updatePassword(
-        @Body() body: { newPassword: string; userId: string }
+        @Body() body: { newPassword: string },
+        @Req() req: { user: { id: string } }
     ) {
-        return this.userService.updatePassword(body.userId, body.newPassword)
+        return this.userService.updatePassword(req.user.id, body.newPassword)
     }
 }
