@@ -133,6 +133,16 @@ export class UserService {
         }
         return user
     }
+
+    async updatePassword(userId: string, newPassword: string) {
+        const user = await this.findById(userId)
+        if (!user) {
+            throw new HttpException('Usuario inexistente', HttpStatus.NOT_FOUND)
+        }
+        user.password = await bcrypt.hash(newPassword, 10)
+        await user.save()
+        return {}
+    }
 }
 
 function generateRandomSixDigitVerificationCode() {
