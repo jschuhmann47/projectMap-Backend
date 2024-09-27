@@ -14,14 +14,13 @@ export class UserController {
     }
 
     @Get('user/search')
-    async findByEmail(@Query() query) {
-        const email = query['email']
-        return this.userService.findByEmail(email)
+    async findByEmail(@Query() query: { email: string }) {
+        return this.userService.findByEmail(query.email)
     }
 
     @Put(':userId') // TODO change this route since conflicts with everything
     async update(
-        @Param('userId') userId,
+        @Param('userId') userId: string,
         @Body() updateUserDto: UpdateUserDto
     ) {
         return this.userService.update(userId, updateUserDto)
@@ -29,7 +28,11 @@ export class UserController {
 
     @Post('user/password/recovery')
     async sendPasswordRecoverEmail(@Body() body: { email: string }) {
-        const email = body.email
-        return this.userService.sendPasswordRecoverEmail(email)
+        return this.userService.sendPasswordRecoverEmail(body.email)
+    }
+
+    @Post('user/password/code')
+    async verifyPasswordRecoveryCode(@Body() body: { code: number }) {
+        return this.userService.verifyPasswordRecoveryCode(body.code)
     }
 }

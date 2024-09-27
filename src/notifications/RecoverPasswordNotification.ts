@@ -33,7 +33,7 @@ const htmlTemplate = `<!DOCTYPE html>
         <h2>Código de verificación</h2>
         <p>Hola! Este es tu código para recuperar la contraseña:</p>
         <div class="code">CODE</div>
-        <p>Por favor ingresalo para completar el proceso</p>
+        <p>Por favor ingresá <a href="PROJECTMAP_WEBPAGE">aquí</a> para completar el proceso</p>
     </div>
 </body>
 </html>
@@ -45,7 +45,9 @@ export class RecoverPasswordNotification extends EmailNotification {
     constructor(email: string, code: number) {
         super()
         this.email = email
-        this.bodyText = htmlTemplate.replace('CODE', code.toString())
+        this.bodyText = htmlTemplate
+            .replace('CODE', code.toString())
+            .replace('PROJECTMAP_WEBPAGE', process.env.PROJECTMAP_WEBPAGE)
         this.subject = `Recupero de contraseña - ProjectMap 🧭`
     }
 
