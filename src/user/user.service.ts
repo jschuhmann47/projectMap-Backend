@@ -6,6 +6,7 @@ import { insensitiveRegExp } from 'src/project/utils/escape_string'
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
 import { User } from './user.schema'
 import { RecoverPasswordNotification } from 'src/notifications/RecoverPasswordNotification'
+import { signPayloadHelper } from 'src/auth/sign'
 
 @Injectable()
 export class UserService {
@@ -23,11 +24,6 @@ export class UserService {
     async findByLogin(UserDTO: UserDto) {
         const { email, password } = UserDTO
         const user = await this.userModel.findOne({ email })
-        if (!user)
-            throw new HttpException(
-                'El mail ingresado no se encuentra registrado',
-                HttpStatus.BAD_REQUEST
-            )
 
         const passwordMatch = await bcrypt.compare(password, user.password)
         if (passwordMatch) return this.sanitizeUser(user)
@@ -72,13 +68,7 @@ export class UserService {
     }
 
     async findUserByEmail(email: string) {
-        const user = await this.userModel.findOne({ email: email }).exec()
-        if (!user)
-            throw new HttpException(
-                'Usuario no encontrado',
-                HttpStatus.NOT_FOUND
-            )
-
+        const user = await this.mustGetUserByEmail(email)
         return user
     }
 
@@ -111,10 +101,8 @@ export class UserService {
     }
 
     async sendPasswordRecoverEmail(email: string) {
-        const user = await this.findByEmail(email)
-        if (!user) {
-            throw new HttpException('Email no existente', HttpStatus.NOT_FOUND)
-        }
+        const user = await this.mustGetUserByEmail(email)
+
         const code = generateRandomSixDigitVerificationCode()
         user.verificationCode = code
 
@@ -122,6 +110,28 @@ export class UserService {
         new RecoverPasswordNotification(user.email, code).notifyUser()
 
         return
+    }
+
+    async verifyPasswordRecoveryCode(code: number) {
+        const user = await this.userModel
+            .findOne({ verificationCode: code })
+            .select('-password')
+        if (!user) {
+            throw new HttpException('Código inválido', HttpStatus.BAD_REQUEST)
+        }
+        user.verificationCode = null
+        user.save()
+
+        const token = signPayloadHelper({ email: user.email })
+        return { user, token }
+    }
+
+    private async mustGetUserByEmail(email: string) {
+        const user = await this.findByEmail(email)
+        if (!user) {
+            throw new HttpException('Email no existente', HttpStatus.NOT_FOUND)
+        }
+        return user
     }
 }
 
