@@ -85,7 +85,7 @@ export class OkrService {
         keyResultId: string,
         keyResultDto: KeyResultDto
     ) {
-        const okr = await this.okrModel.findById(okrId)
+        const okr = await this.okrModel.findById(okrId).exec()
 
         okr.keyResults.forEach((keyResult) => {
             if (keyResult._id.toString() == keyResultId) {
