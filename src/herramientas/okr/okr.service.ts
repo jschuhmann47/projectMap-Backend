@@ -58,7 +58,7 @@ export class OkrService {
     }
 
     async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
+        const okr = await this.okrModel.findById(okrId).exec()
 
         const keyStatusData = getStatusFromFrequencyAndHorizon(
             keyResultDto.frequency,
@@ -95,7 +95,7 @@ export class OkrService {
 
         okr.keyResults.push(keyResult)
 
-        return new this.okrModel(okr).save()
+        return okr.save()
     }
 
     async editKeyResult(
@@ -103,7 +103,7 @@ export class OkrService {
         keyResultId: string,
         keyResultDto: KeyResultDto
     ) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
+        const okr = await this.okrModel.findById(okrId).exec()
 
         okr.keyResults.forEach((keyResult) => {
             if (keyResult._id.toString() == keyResultId) {
@@ -113,10 +113,11 @@ export class OkrService {
                 if (keyResultDto.responsible)
                     keyResult.responsible = keyResultDto.responsible
 
-                if (keyResultDto.baseline)
+                if (keyResultDto.baseline !== undefined)
                     keyResult.baseline = keyResultDto.baseline
 
-                if (keyResultDto.goal) keyResult.goal = keyResultDto.goal
+                if (keyResultDto.goal !== undefined)
+                    keyResult.goal = keyResultDto.goal
 
                 if (keyResultDto.priority !== undefined)
                     keyResult.priority = keyResultDto.priority
@@ -131,17 +132,17 @@ export class OkrService {
             }
         })
 
-        return new this.okrModel(okr).save()
+        return okr.save()
     }
 
     async removeKeyResult(okrId: string, keyResultId: string) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
+        const okr = await this.okrModel.findById(okrId).exec()
 
         okr.keyResults = okr.keyResults.filter(
             (keyResult) => keyResult._id.toString() != keyResultId
         )
 
-        return new this.okrModel(okr).save()
+        return okr.save()
     }
 
     async delete(id: string) {
