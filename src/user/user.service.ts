@@ -23,7 +23,7 @@ export class UserService {
 
     async findByLogin(UserDTO: UserDto) {
         const { email, password } = UserDTO
-        const user = await this.mustGetUserByEmail(email)
+        const user = await this.userModel.findOne({ email })
 
         const passwordMatch = await bcrypt.compare(password, user.password)
         if (passwordMatch) return this.sanitizeUser(user)
