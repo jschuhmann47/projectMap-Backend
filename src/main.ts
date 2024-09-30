@@ -9,12 +9,13 @@ import {
 async function bootstrap() {
     const app = await NestFactory.create(AppModule)
     app.enableCors({
-        origin: "*",
-        methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-        allowedHeaders: "Content-Type,Authorization,X-Requested-With,Accept-Language",
+        origin: '*',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders:
+            'Content-Type,Authorization,X-Requested-With,Accept-Language',
         optionsSuccessStatus: 204,
         credentials: true,
-      })
+    })
 
     const config = new DocumentBuilder().setTitle('ProjectMap API').build()
     const options: SwaggerDocumentOptions = {
