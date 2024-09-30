@@ -5,7 +5,7 @@ import { Model } from 'mongoose'
 import { insensitiveRegExp } from 'src/project/utils/escape_string'
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
 import { User } from './user.schema'
-import { RecoverPasswordNotification } from 'src/notifications/RecoverPasswordNotification'
+import { RecoverPasswordNotification } from './../notifications/RecoverPasswordNotification'
 import { signPayloadHelper } from 'src/auth/sign'
 
 @Injectable()
