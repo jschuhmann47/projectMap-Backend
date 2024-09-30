@@ -45,7 +45,7 @@ export class KeyResult {
     @Prop({ type: Number, required: true })
     goal: number
 
-    @Prop({ type: Number, required: false, default: 0 })
+    @Prop({ type: Number, required: false, default: 0, min: 0, max: 100 })
     progress: number
 
     @Prop({ type: Number, required: true, enum: Frequency })
@@ -78,9 +78,10 @@ export class KeyResult {
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
 KeyResultSchema.pre('save', function (next) {
     const lastValue = getLastNonZeroValue(this.keyStatus)
-    this.progress = Math.round(
+    const progress = Math.round(
         ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
     )
+    this.progress = Math.max(0, Math.min(100, progress))
     this.currentScore = lastValue
     next()
 })
@@ -107,7 +108,7 @@ export class Okr {
     @Prop({ type: Number, enum: Priority })
     priority: Priority
 
-    @Prop({ type: Number, default: 0 })
+    @Prop({ type: Number, default: 0, min: 0, max: 100 })
     progress: number
 
     @Prop({ type: [KeyResultSchema], default: [] })
@@ -133,11 +134,12 @@ OkrSchema.pre('save', function (next) {
                 .map((kr) => kr.priority)
                 .reduce((a, b) => a + b, 0) / this.keyResults.length
         )
-        this.progress = Math.round(
+        const progress = Math.round(
             this.keyResults
                 .map((kr) => kr.progress)
                 .reduce((a, b) => a + b, 0) / this.keyResults.length
         )
+        this.progress = Math.max(0, Math.min(100, progress))
     }
     next()
 })
