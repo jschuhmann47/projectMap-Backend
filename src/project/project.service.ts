@@ -7,6 +7,7 @@ import { Project } from './project.schema'
 import { defaultStages, Permission, Stage, StageType } from './stage.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
+import { OrganizationalChart } from './organizationalChart.schema'
 
 @Injectable()
 export class ProjectService {
@@ -143,13 +144,13 @@ export class ProjectService {
         return stage
     }
 
-    async addChart(projectId, chart) {
+    async addChart(projectId: string, chart: OrganizationalChart) {
         const project = await this.projectModel.findById(projectId)
         project.chart = chart
         project.save()
     }
 
-    async getChart(projectId) {
+    async getChart(projectId: string) {
         const project = await this.projectModel.findById(projectId)
         return project.chart
     }

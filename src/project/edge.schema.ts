@@ -1,7 +1,7 @@
 import { Prop, Schema } from '@nestjs/mongoose'
 
 @Schema({ _id: false })
-export class Edge {
+export class DiagramEdge {
     @Prop({ type: String })
     id: string
 

@@ -1,7 +1,7 @@
 import { Prop, Schema } from '@nestjs/mongoose'
 
 @Schema({ _id: false })
-export class Node {
+export class DiagramNode {
     @Prop({ type: String })
     id: string
 
@@ -9,12 +9,12 @@ export class Node {
     height: number
 
     @Prop({ type: String })
-    width: string
+    width: string // CHECK
 
     @Prop({ type: String })
     type: string
 
-    @Prop()
+    @Prop({ type: { label: String } })
     data: {
         label: string
     }
