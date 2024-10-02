@@ -1,56 +1,51 @@
-import { OrgDiagramEdge } from './edge.schema'
-import { OrgDiagramNode } from './node.schema'
-import { OrganizationalChart } from './organizationalChart.schema'
+import { DiagramEdge, DiagramNode, OrganizationChart } from './orgChart'
 
 // Create example nodes
-const nodeA = new OrgDiagramNode()
+const nodeA = new DiagramNode()
 nodeA.id = 'nodeA'
 nodeA.height = 100
-nodeA.width = '150px'
+nodeA.width = 150
 nodeA.type = 'employee'
-nodeA.source = ''
 
-const nodeB = new OrgDiagramNode()
+const nodeB = new DiagramNode()
 nodeB.id = 'nodeB'
 nodeB.height = 100
-nodeB.width = '150px'
+nodeB.width = 150
 nodeB.type = 'employee'
-nodeB.source = 'nodeA'
 
-const nodeC = new OrgDiagramNode()
+const nodeC = new DiagramNode()
 nodeC.id = 'nodeC'
 nodeC.height = 100
-nodeC.width = '150px'
+nodeC.width = 150
 nodeC.type = 'employee'
-nodeC.source = 'nodeA'
 
-const nodeD = new OrgDiagramNode()
+const nodeD = new DiagramNode()
 nodeD.id = 'nodeD'
 nodeD.height = 100
-nodeD.width = '150px'
+nodeD.width = 150
 nodeD.type = 'manager'
-nodeD.source = 'nodeB'
 
 // Create example edges
-const edge1 = new OrgDiagramEdge()
+const edge1 = new DiagramEdge()
 edge1.id = 'edge1'
 edge1.source = 'nodeA'
 edge1.target = 'nodeB'
 
-const edge2 = new OrgDiagramEdge()
+const edge2 = new DiagramEdge()
 edge2.id = 'edge2'
 edge2.source = 'nodeA'
 edge2.target = 'nodeC'
 
-const edge3 = new OrgDiagramEdge()
+const edge3 = new DiagramEdge()
 edge3.id = 'edge3'
 edge3.source = 'nodeB'
 edge3.target = 'nodeD'
 
 // Create the organizational chart instance
-const orgChart = new OrganizationalChart()
-orgChart.nodes = [nodeA, nodeB, nodeC, nodeD]
-orgChart.edges = [edge1, edge2, edge3]
+const orgChart = new OrganizationChart(
+    [nodeA, nodeB, nodeC, nodeD],
+    [edge1, edge2, edge3]
+)
 
 test('Child node gets its direct parent', () => {
     expect(orgChart.getParentsFromNode('nodeB')[0].id).toStrictEqual('nodeA')
@@ -61,5 +56,7 @@ test('The first node gets no parent', () => {
 })
 
 test('The last node gets its first parent', () => {
-    expect(orgChart.getParentsFromNode('nodeD')[0].id).toStrictEqual('nodeB')
+    const parents = orgChart.getParentsFromNode('nodeD')
+    expect(parents[0].id).toStrictEqual('nodeB')
+    expect(parents.length).toStrictEqual(1)
 })

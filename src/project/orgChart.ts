@@ -1,6 +1,4 @@
-import { OrgDiagramEdge } from './edge.schema'
-import { OrgDiagramNode } from './node.schema'
-import { OrganizationalChart } from './organizationalChart.schema'
+import { Prop, Schema } from '@nestjs/mongoose'
 
 // Define the Position type
 interface Position {
@@ -14,72 +12,68 @@ interface NodeData {
 }
 
 // Define the Node type
-class DiagramNode {
+@Schema({ _id: false })
+export class DiagramNode {
+    @Prop({ type: String })
     id: string
-    data: NodeData
-    type: string
-    position: Position
-    width: number
-    height: number
-    selected: boolean
-    positionAbsolute: Position
-    dragging: boolean
 
-    constructor(
-        id: string,
-        data: NodeData,
-        type: string,
-        position: Position,
-        width: number,
-        height: number,
-        selected: boolean,
-        positionAbsolute: Position,
-        dragging: boolean
-    ) {
-        this.id = id
-        this.data = data
-        this.type = type
-        this.position = position
-        this.width = width
-        this.height = height
-        this.selected = selected
-        this.positionAbsolute = positionAbsolute
-        this.dragging = dragging
-    }
+    @Prop({ type: { label: String } })
+    data: NodeData
+
+    @Prop({ type: String })
+    type: string
+
+    @Prop({ type: { x: Number, y: Number } })
+    position: Position
+
+    @Prop({ type: Number })
+    width: number
+
+    @Prop({ type: Number })
+    height: number
+
+    @Prop({ type: Boolean })
+    selected: boolean
+
+    @Prop({ type: { x: Number, y: Number } })
+    positionAbsolute: Position
+
+    @Prop({ type: Boolean })
+    dragging: boolean
 }
 
 // Define the Edge type
-class DiagramEdge {
-    source: string
-    sourceHandle: string | null
-    target: string
-    targetHandle: string | null
-    type: string
+@Schema({ _id: false })
+export class DiagramEdge {
+    @Prop({ type: String })
     id: string
-    selected: boolean
 
-    constructor(
-        source: string,
-        sourceHandle: string | null,
-        target: string,
-        targetHandle: string | null,
-        type: string,
-        id: string,
-        selected: boolean
-    ) {
-        this.source = source
-        this.sourceHandle = sourceHandle
-        this.target = target
-        this.targetHandle = targetHandle
-        this.type = type
-        this.id = id
-        this.selected = selected
-    }
+    @Prop({ type: String })
+    source: string
+
+    @Prop({ type: String })
+    sourceHandle: string | null
+
+    @Prop({ type: String })
+    target: string
+
+    @Prop({ type: String })
+    targetHandle: string | null
+
+    @Prop({ type: String })
+    type: string
+
+    @Prop({ type: Boolean })
+    selected: boolean
 }
 
 // Define the Graph class that holds nodes and edges
-class Graph {
+@Schema({ _id: false })
+export class OrganizationChart {
+    @Prop({ type: [DiagramNode] })
     nodes: DiagramNode[]
+
+    @Prop({ type: [DiagramEdge] })
     edges: DiagramEdge[]
 
     constructor(nodes: DiagramNode[], edges: DiagramEdge[]) {
@@ -87,18 +81,10 @@ class Graph {
         this.edges = edges
     }
 
-    public toOrganizationalChart() {
-        const orgChart = new OrganizationalChart()
-        orgChart.nodes = this.nodes.map((n) => {
-            const node = new OrgDiagramNode()
-            // TODO add fields
-            return node
-        })
-        orgChart.edges = this.edges.map((e) => {
-            const edge = new OrgDiagramEdge()
-            // TODO add fields
-            return edge
-        })
+    public getParentsFromNode(areaId: string) {
+        return this.edges
+            .filter((e) => e.target == areaId)
+            .flatMap((e) => this.nodes.filter((n) => n.id == e.source))
     }
 }
 
@@ -160,35 +146,3 @@ const exampleGraphData = {
         },
     ],
 }
-
-// Create nodes and edges from example data
-const nodes = exampleGraphData.nodes.map(
-    (nodeData) =>
-        new DiagramNode(
-            nodeData.id,
-            nodeData.data,
-            nodeData.type,
-            nodeData.position,
-            nodeData.width,
-            nodeData.height,
-            nodeData.selected,
-            nodeData.positionAbsolute,
-            nodeData.dragging
-        )
-)
-
-const edges = exampleGraphData.edges.map(
-    (edgeData) =>
-        new DiagramEdge(
-            edgeData.source,
-            edgeData.sourceHandle,
-            edgeData.target,
-            edgeData.targetHandle,
-            edgeData.type,
-            edgeData.id,
-            edgeData.selected
-        )
-)
-
-// Create the Graph instance
-const graph = new Graph(nodes, edges)
