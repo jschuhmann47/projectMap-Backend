@@ -1,19 +1,16 @@
 import { Prop, Schema } from '@nestjs/mongoose'
 
-// Define the Position type
 @Schema({ _id: false })
 class Position {
     x: number
     y: number
 }
 
-// Define the NodeData type
 @Schema({ _id: false })
 class NodeData {
     label: string
 }
 
-// Define the Node type
 @Schema({ _id: false })
 export class DiagramNode {
     @Prop({ type: String })
@@ -44,7 +41,6 @@ export class DiagramNode {
     dragging: boolean
 }
 
-// Define the Edge type
 @Schema({ _id: false })
 export class DiagramEdge {
     @Prop({ type: String })
@@ -69,7 +65,6 @@ export class DiagramEdge {
     selected: boolean
 }
 
-// Define the Graph class that holds nodes and edges
 @Schema({ _id: false })
 export class OrganizationChart {
     @Prop({ type: [DiagramNode] })
