@@ -1,17 +1,17 @@
 import { Prop, Schema } from '@nestjs/mongoose'
-import { DiagramEdge } from './edge.schema'
-import { DiagramNode } from './node.schema'
+import { OrgDiagramEdge } from './edge.schema'
+import { OrgDiagramNode } from './node.schema'
 
 @Schema({ _id: false })
 export class OrganizationalChart {
     @Prop()
-    nodes: DiagramNode[]
+    nodes: OrgDiagramNode[]
 
     @Prop()
-    edges: DiagramEdge[]
+    edges: OrgDiagramEdge[]
 
     // TODO validate length == 1 on whoever calls this
-    public getParentFromNode(areaId: string) {
+    public getParentsFromNode(areaId: string) {
         return this.edges
             .filter((e) => e.target == areaId)
             .flatMap((e) => this.nodes.filter((n) => n.id == e.source))

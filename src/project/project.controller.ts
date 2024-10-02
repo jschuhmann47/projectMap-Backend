@@ -121,9 +121,12 @@ export class ProjectController {
     @Post(':id/organizational-chart')
     async saveOrganizationalChart(
         @Param('id') projectId: string,
-        @Body() chart: ChartDto
+        @Body() chart: Graph
     ) {
-        return this.projectService.addChart(projectId, chart)
+        return this.projectService.addChart(
+            projectId,
+            chart.toOrganizationalChart()
+        )
     }
 
     @Get(':id/organizational-chart')

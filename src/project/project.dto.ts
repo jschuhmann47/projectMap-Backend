@@ -18,62 +18,6 @@ export class ProjectDto {
     color: string
 }
 
-export class Node {
-    @ApiProperty()
-    id: string
-
-    @ApiProperty()
-    height: number
-
-    @ApiProperty()
-    width: string
-
-    @ApiProperty()
-    type: string
-
-    @ApiProperty()
-    data: {
-        label: string
-    }
-
-    @ApiProperty()
-    source: string
-}
-
-export class Edge {
-    @ApiProperty()
-    id: string
-
-    @ApiProperty()
-    source: string
-
-    @ApiProperty()
-    target: string
-}
-
-export class ChartDto {
-    @ApiProperty()
-    nodes: Node[]
-
-    @ApiProperty()
-    edges: Edge[]
-}
-
-export class ShareProjectDto {
-    @ApiProperty()
-    users: string[]
-}
-
-export class ShareProjectEmailDto {
-    @ApiProperty()
-    email: string
-}
-
-export class StopSharingProjectEmailDto {
-    @ApiProperty()
-    emails: string[]
-}
-
 export class UpdateUserRolesDto {
     @ApiProperty()
     users: UpdateUserRolesData[]
