@@ -1,4 +1,9 @@
-import { DiagramEdge, DiagramNode, OrganizationChart } from './orgChart'
+import {
+    DiagramEdge,
+    DiagramNode,
+    OrganizationChart,
+    getParentsFromNode,
+} from './orgChart'
 
 // Create example nodes
 const nodeA = new DiagramNode()
@@ -48,15 +53,15 @@ const orgChart = new OrganizationChart(
 )
 
 test('Child node gets its direct parent', () => {
-    expect(orgChart.getParentsFromNode('nodeB')[0].id).toStrictEqual('nodeA')
+    expect(getParentsFromNode('nodeB', orgChart)[0].id).toStrictEqual('nodeA')
 })
 
 test('The first node gets no parent', () => {
-    expect(orgChart.getParentsFromNode('nodeA').length).toStrictEqual(0)
+    expect(getParentsFromNode('nodeA', orgChart).length).toStrictEqual(0)
 })
 
 test('The last node gets its first parent', () => {
-    const parents = orgChart.getParentsFromNode('nodeD')
+    const parents = getParentsFromNode('nodeD', orgChart)
     expect(parents[0].id).toStrictEqual('nodeB')
     expect(parents.length).toStrictEqual(1)
 })

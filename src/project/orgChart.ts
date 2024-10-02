@@ -1,13 +1,15 @@
 import { Prop, Schema } from '@nestjs/mongoose'
 
 // Define the Position type
-interface Position {
+@Schema({ _id: false })
+class Position {
     x: number
     y: number
 }
 
 // Define the NodeData type
-interface NodeData {
+@Schema({ _id: false })
+class NodeData {
     label: string
 }
 
@@ -80,69 +82,10 @@ export class OrganizationChart {
         this.nodes = nodes
         this.edges = edges
     }
-
-    public getParentsFromNode(areaId: string) {
-        return this.edges
-            .filter((e) => e.target == areaId)
-            .flatMap((e) => this.nodes.filter((n) => n.id == e.source))
-    }
 }
 
-// Example of how to create a Graph instance from the provided JSON object
-const exampleGraphData = {
-    nodes: [
-        {
-            id: '1',
-            data: { label: 'Gerencia general' },
-            type: 'default',
-            position: { x: -96.94434694164183, y: 123.92527104890166 },
-            width: 150,
-            height: 36,
-            selected: false,
-            positionAbsolute: { x: -96.94434694164183, y: 123.92527104890166 },
-            dragging: false,
-        },
-        {
-            id: '2',
-            data: { label: 'Gerencia de ventas' },
-            type: 'default',
-            position: { x: -198.20836131619285, y: 211.07102039911788 },
-            width: 150,
-            height: 36,
-            selected: false,
-            positionAbsolute: { x: -198.20836131619285, y: 211.07102039911788 },
-            dragging: false,
-        },
-        {
-            id: '3',
-            data: { label: 'asds' },
-            type: 'default',
-            position: { x: -10.565568134094121, y: 209.21505918477703 },
-            width: 150,
-            height: 36,
-            selected: true,
-            positionAbsolute: { x: -10.565568134094121, y: 209.21505918477703 },
-            dragging: false,
-        },
-    ],
-    edges: [
-        {
-            source: '1',
-            sourceHandle: null,
-            target: '2',
-            targetHandle: null,
-            type: 'step',
-            id: 'reactflow__edge-1-2',
-            selected: false,
-        },
-        {
-            source: '1',
-            sourceHandle: null,
-            target: '3',
-            targetHandle: null,
-            type: 'step',
-            id: 'reactflow__edge-1-3',
-            selected: false,
-        },
-    ],
+export function getParentsFromNode(areaId: string, chart: OrganizationChart) {
+    return chart.edges
+        .filter((e) => e.target == areaId)
+        .flatMap((e) => chart.nodes.filter((n) => n.id == e.source))
 }

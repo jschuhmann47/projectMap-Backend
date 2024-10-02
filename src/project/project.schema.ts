@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import * as mongoose from 'mongoose'
 import { Participant } from './participant.schema'
 import { User } from 'src/user/user.schema'
-import { OrganizationalChart } from './organizationalChart.schema'
+import { OrganizationChart } from './orgChart'
 
 @Schema()
 export class Project {
@@ -29,8 +29,8 @@ export class Project {
     @Prop({ type: [Participant] })
     participants: Participant[]
 
-    @Prop({ type: OrganizationalChart })
-    chart: OrganizationalChart
+    @Prop({ type: OrganizationChart })
+    chart: OrganizationChart
 
     constructor(name: string, description: string, color: string) {
         this.name = name
