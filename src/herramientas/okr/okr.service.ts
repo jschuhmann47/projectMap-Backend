@@ -153,4 +153,14 @@ export class OkrService {
             throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
         }
     }
+
+    async updateMissingAreas(projectId: string, deletedAreas: string[]) {
+        const okrs = await this.getAllByProjectId(projectId)
+        okrs.forEach((okr) => {
+            if (deletedAreas.some((a) => a == okr.area)) {
+                okr.area = 'Sin área'
+                okr.save()
+            }
+        })
+    }
 }
