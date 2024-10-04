@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    forwardRef,
+    HttpException,
+    HttpStatus,
+    Inject,
+    Injectable,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
@@ -8,12 +14,14 @@ import { defaultStages, Permission, Stage, StageType } from './stage.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
 import { getParentsFromNode, OrganizationChart } from './orgChart'
+import { OkrService } from 'src/herramientas/okr/okr.service'
 
 @Injectable()
 export class ProjectService {
     constructor(
-        @InjectModel('Project') private projectModel: Model<Project>,
-        private userService: UserService
+        @InjectModel(Project.name) private projectModel: Model<Project>,
+        private userService: UserService,
+        @Inject(forwardRef(() => OkrService)) private okrService: OkrService
     ) {}
 
     async getOne(id: string) {
@@ -154,6 +162,9 @@ export class ProjectService {
             }
         })
         const project = await this.projectModel.findById(projectId)
+        if (project.chart) {
+            this.updateMissingAreas(project, chart)
+        }
         project.chart = chart
         project.save()
     }
@@ -231,5 +242,16 @@ export class ProjectService {
                 model: 'User',
                 select: '-password',
             })
+    }
+
+    private updateMissingAreas(project: Project, newChart: OrganizationChart) {
+        const existingAreas = project.chart.nodes
+        const newAreas = newChart.nodes
+        const deletedAreas = existingAreas
+            .filter((node) =>
+                newAreas.every((n) => n.data.label != node.data.label)
+            )
+            .map((n) => n.data.label)
+        this.okrService.updateMissingAreas(project._id.toString(), deletedAreas)
     }
 }

@@ -10,12 +10,14 @@ import { PorterModule } from '../herramientas/porter/porter.module'
 import { QuestionnaireModule } from '../herramientas/questionnaire/questionnaire.module'
 import { UserModule } from '../user/user.module'
 import { ProjectController } from './project.controller'
-import { ProjectSchema } from './project.schema'
+import { Project, ProjectSchema } from './project.schema'
 import { ProjectService } from './project.service'
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: 'Project', schema: ProjectSchema }]),
+        MongooseModule.forFeature([
+            { name: Project.name, schema: ProjectSchema },
+        ]),
         FodaModule,
         PestelModule,
         AnsoffModule,

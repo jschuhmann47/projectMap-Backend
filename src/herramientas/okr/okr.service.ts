@@ -26,13 +26,17 @@ export class OkrService {
                 HttpStatus.BAD_REQUEST
             )
         }
-        const areasWithMatchingId = orgChart.nodes.filter(
-            (a) => a.id === okrDto.areaId
-        )
-        if (areasWithMatchingId.length == 0) {
-            throw new HttpException('Invalid area', HttpStatus.BAD_REQUEST)
+        if (okrDto.areaId) {
+            const areasWithMatchingId = orgChart.nodes.filter(
+                (a) => a.id === okrDto.areaId
+            )
+            if (areasWithMatchingId.length == 0) {
+                throw new HttpException('Invalid area', HttpStatus.BAD_REQUEST)
+            }
+            okrDto.area = areasWithMatchingId[0].data.label
+        } else {
+            okrDto.area = 'Sin área'
         }
-        okrDto.area = areasWithMatchingId[0].data.label
         const okr = new this.okrModel(okrDto)
         return okr.save()
     }
@@ -152,5 +156,15 @@ export class OkrService {
         } else {
             throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
         }
+    }
+
+    async updateMissingAreas(projectId: string, deletedAreas: string[]) {
+        const okrs = await this.getAllByProjectId(projectId)
+        okrs.forEach((okr) => {
+            if (deletedAreas.some((a) => a == okr.area)) {
+                okr.area = 'Sin área'
+                okr.save()
+            }
+        })
     }
 }

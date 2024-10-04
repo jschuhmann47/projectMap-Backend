@@ -105,7 +105,7 @@ export class Okr {
     @Prop({ type: Date, required: true })
     startingDate: Date
 
-    @Prop({ type: Number, enum: Priority })
+    @Prop({ type: Number, enum: Priority, default: Priority.MEDIUM })
     priority: Priority
 
     @Prop({ type: Number, default: 0, min: 0, max: 100 })
