@@ -47,7 +47,7 @@ export class ProjectService {
             return this.projectModel.find({
                 $or: [
                     { 'participants.user': requestorId },
-                    { 'coordinators.user': requestorId },
+                    { coordinators: requestorId },
                 ],
             })
         }
