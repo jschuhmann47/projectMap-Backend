@@ -26,13 +26,17 @@ export class OkrService {
                 HttpStatus.BAD_REQUEST
             )
         }
-        const areasWithMatchingId = orgChart.nodes.filter(
-            (a) => a.id === okrDto.areaId
-        )
-        if (areasWithMatchingId.length == 0) {
-            throw new HttpException('Invalid area', HttpStatus.BAD_REQUEST)
+        if (okrDto.areaId) {
+            const areasWithMatchingId = orgChart.nodes.filter(
+                (a) => a.id === okrDto.areaId
+            )
+            if (areasWithMatchingId.length == 0) {
+                throw new HttpException('Invalid area', HttpStatus.BAD_REQUEST)
+            }
+            okrDto.area = areasWithMatchingId[0].data.label
+        } else {
+            okrDto.area = 'Sin área'
         }
-        okrDto.area = areasWithMatchingId[0].data.label
         const okr = new this.okrModel(okrDto)
         return okr.save()
     }
