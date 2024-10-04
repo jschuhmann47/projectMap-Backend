@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
@@ -13,9 +13,9 @@ import { OkrService } from 'src/herramientas/okr/okr.service'
 @Injectable()
 export class ProjectService {
     constructor(
-        @InjectModel('Project') private projectModel: Model<Project>,
+        @InjectModel(Project.name) private projectModel: Model<Project>,
         private userService: UserService,
-        private okrService: OkrService
+        @Inject(forwardRef(() => OkrService)) private okrService: OkrService
     ) {}
 
     async getOne(id: string) {
