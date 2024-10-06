@@ -13,7 +13,7 @@ import { Project } from './project.schema'
 import { defaultStages, Permission, Stage, StageType } from './stage.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
-import { OrganizationChart } from './orgChart'
+import { getParentsFromNode, OrganizationChart } from './orgChart'
 import { OkrService } from 'src/herramientas/okr/okr.service'
 
 @Injectable()
@@ -153,6 +153,14 @@ export class ProjectService {
     }
 
     async addChart(projectId: string, chart: OrganizationChart) {
+        chart.nodes.forEach((node) => {
+            if (getParentsFromNode(node.id, chart).length > 1) {
+                throw new HttpException(
+                    'Diagrama tiene algún área con más de un área padre',
+                    HttpStatus.BAD_REQUEST
+                )
+            }
+        })
         const project = await this.projectModel.findById(projectId)
         if (project.chart) {
             this.updateMissingAreas(project, chart)
