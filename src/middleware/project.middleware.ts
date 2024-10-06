@@ -7,20 +7,24 @@ import {
     UnauthorizedException,
     UseGuards,
 } from '@nestjs/common'
-import { NextFunction, Response, Request } from 'express'
+import { AuthGuard } from '@nestjs/passport'
+import { NextFunction, Request, Response } from 'express'
+import { OkrService } from '../herramientas/okr/okr.service'
+import { AuthService } from '../auth/auth.service'
 import { ProjectService } from '../project/project.service'
 import {
     fromToolToStage,
     isValidTool,
     Permission,
+    Tool,
 } from '../project/stage.schema'
-import { AuthGuard } from '@nestjs/passport'
-import { AuthService } from '../auth/auth.service'
+import { Document } from 'mongoose'
 
 @UseGuards(AuthGuard('jwt'))
 @Injectable()
 export class ProjectStageUserEditionMiddleware implements NestMiddleware {
     constructor(
+        private okrService: OkrService,
         private projectService: ProjectService,
         private authService: AuthService
     ) {}
@@ -35,11 +39,15 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         }
 
         const token = authHeader.split('Bearer ')[1]
+        if (token == 'undefined' || !token) {
+            throw new UnauthorizedException()
+        }
         const { email } = await this.authService.verifyToken(token)
-        const { projectId } = req.body
-        const tool = req.path.slice(1)
+        const toolId = req.url.slice(1) //check
+        const tool = req.baseUrl.slice(1)
+        const projectId = await this.getTool(tool, toolId)
 
-        if (!projectId || !email || !tool || !isValidTool(tool)) {
+        if (!email || !projectId) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
         }
 
@@ -62,5 +70,21 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
             )
         }
         next()
+    }
+
+    async getTool(tool: string, toolId: string) {
+        if (!isValidTool(tool)) {
+            return ''
+        }
+        let projectId: Document
+        switch (tool) {
+            case Tool.Okr:
+                projectId = await this.okrService.findById(toolId)
+                if (projectId) {
+                    return projectId._id.toString()
+                }
+                break
+        }
+        return ''
     }
 }
