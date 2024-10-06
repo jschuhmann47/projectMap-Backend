@@ -87,7 +87,7 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         const { email } = await this.authService.verifyToken(token)
         const toolId = req.url.slice(1)
         const tool = req.baseUrl.slice(1)
-        const projectId = await this.getTool(tool, toolId)
+        const projectId = await this.getProjectId(tool, toolId)
 
         if (!email || !projectId) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
@@ -114,7 +114,7 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         next()
     }
 
-    async getTool(tool: string, toolId: string) {
+    async getProjectId(tool: string, toolId: string) {
         if (!isValidTool(tool)) {
             return ''
         }
