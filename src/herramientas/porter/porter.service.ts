@@ -33,7 +33,7 @@ export class PorterService {
         }
     }
 
-    async getPorterById(porterId: string) {
+    async getById(porterId: string) {
         const porter = await this.porterModel
             .findOne({
                 _id: porterId,
