@@ -1,5 +1,4 @@
 import {
-    BadRequestException,
     ForbiddenException,
     HttpException,
     HttpStatus,
@@ -31,7 +30,7 @@ import { MckinseyService } from 'src/herramientas/mckinsey/mckinsey.service'
 @UseGuards(AuthGuard('jwt'))
 @Injectable()
 export class ProjectStageUserEditionMiddleware implements NestMiddleware {
-    private toolServiceMap: Map<Tool, any>
+    private toolServiceMap: Map<Tool, (toolId: string) => Promise<Document>>
     constructor(
         private okrService: OkrService,
         private projectService: ProjectService,
@@ -44,16 +43,32 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         private questionnairesService: QuestionnaireService,
         private balancedScorecardService: BalancedScorecardService
     ) {
-        this.toolServiceMap = new Map([
-            [Tool.Porter, (toolId) => this.porterService.getById(toolId)],
-            [Tool.Pestel, (toolId) => this.pestelService.getOne(toolId)],
-            [Tool.Foda, (toolId) => this.fodaService.getOne(toolId)],
-            [Tool.Ansoff, (toolId) => this.ansoffService.findById(toolId)],
-            [Tool.McKinsey, (toolId) => this.mckinseyService.findById(toolId)],
-            [Tool.Questionnaires, (toolId) => this.questionnairesService.findById(toolId)],
-            [Tool.BalacedScorecard, (toolId) => this.balancedScorecardService.findById(toolId)],
-            [Tool.Okr, (toolId) => this.okrService.findById(toolId)]
-        ]);
+        this.toolServiceMap = new Map()
+
+        this.toolServiceMap.set(Tool.Porter, (toolId) =>
+            this.porterService.getById(toolId)
+        )
+        this.toolServiceMap.set(Tool.Pestel, (toolId) =>
+            this.pestelService.getOne(toolId)
+        )
+        this.toolServiceMap.set(Tool.Foda, (toolId) =>
+            this.fodaService.getOne(toolId)
+        )
+        this.toolServiceMap.set(Tool.Ansoff, (toolId) =>
+            this.ansoffService.findById(toolId)
+        )
+        this.toolServiceMap.set(Tool.McKinsey, (toolId) =>
+            this.mckinseyService.findById(toolId)
+        )
+        this.toolServiceMap.set(Tool.Questionnaires, (toolId) =>
+            this.questionnairesService.findById(toolId)
+        )
+        this.toolServiceMap.set(Tool.BalacedScorecard, (toolId) =>
+            this.balancedScorecardService.findById(toolId)
+        )
+        this.toolServiceMap.set(Tool.Okr, (toolId) =>
+            this.okrService.findById(toolId)
+        )
     }
 
     async use(req: Request, res: Response, next: NextFunction) {
@@ -104,33 +119,10 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
             return ''
         }
         let projectId: Document
-        switch (tool) {
-            case Tool.Porter:
-                projectId = await this.porterService.getById(toolId)
-                break
-            case Tool.Pestel:
-                projectId = await this.pestelService.getOne(toolId)
-                break
-            case Tool.Foda:
-                projectId = await this.fodaService.getOne(toolId)
-                break
-            case Tool.Ansoff:
-                projectId = await this.ansoffService.findById(toolId)
-                break
-            case Tool.McKinsey:
-                projectId = await this.mckinseyService.findById(toolId)
-                break
-            case Tool.Questionnaires:
-                projectId = await this.questionnairesService.findById(toolId)
-                break
-            case Tool.BalacedScorecard:
-                projectId = await this.balancedScorecardService.findById(toolId)
-                break
-            case Tool.Okr:
-                projectId = await this.okrService.findById(toolId)
-                break
-            default:
-                throw new BadRequestException('Invalid tool')
+        if (this.toolServiceMap.has(tool as Tool)) {
+            projectId = await this.toolServiceMap.get(tool as Tool)(toolId)
+        } else {
+            throw new Error('Unknown tool type')
         }
         if (projectId) {
             return projectId._id.toString()
