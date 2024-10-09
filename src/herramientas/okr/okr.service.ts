@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    BadRequestException,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { KeyResultDto, OkrDto } from './okr.dto'
@@ -69,9 +75,31 @@ export class OkrService {
         return new this.okrModel(okr).save()
     }
 
+    async addParentOkr(okrId: string, parentOkrId: string) {
+        const parentOkr = await this.okrModel.findById(parentOkrId).exec()
+        if (!parentOkr) {
+            throw new NotFoundException()
+        }
+        const childOkr = await this.okrModel.findOne({
+            id: okrId,
+            projectId: parentOkr.projectId,
+        })
+        if (!childOkr) {
+            throw new NotFoundException()
+        }
+        if (parentOkr.keyResults.length > 0) {
+            throw new BadRequestException('Parent has key results')
+        }
+        parentOkr.childOkrs.push(childOkr)
+        parentOkr.save()
+    }
+
     async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
         const okr = await this.okrModel.findById(okrId).exec()
 
+        if (okr.childOkrs.length > 0) {
+            throw new BadRequestException('Cannot add KRs to parent OKR')
+        }
         const keyStatusData = getStatusFromFrequencyAndHorizon(
             keyResultDto.frequency,
             okr.horizon
