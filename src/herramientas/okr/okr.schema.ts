@@ -114,6 +114,9 @@ export class Okr {
     @Prop({ type: [KeyResultSchema], default: [] })
     keyResults: KeyResult[]
 
+    @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Okr' })
+    childOkrs: Okr[]
+
     constructor(
         description: string,
         area: string,

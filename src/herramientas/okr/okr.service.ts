@@ -43,7 +43,14 @@ export class OkrService {
     }
 
     async findById(okrId: string) {
-        return this.okrModel.findById(okrId).exec()
+        return this.okrModel
+            .findById(okrId)
+            .populate({
+                path: 'childOkrs',
+                model: 'Okr',
+                select: '-childOkrs',
+            })
+            .exec()
     }
 
     async getAllByProjectId(projectId: string) {
