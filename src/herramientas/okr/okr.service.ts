@@ -25,6 +25,7 @@ import {
     KeyStatus,
     Okr,
 } from './okr.schema'
+import { getParentsFromNode } from 'src/project/orgChart'
 
 @Injectable()
 export class OkrService {
@@ -88,6 +89,33 @@ export class OkrService {
         okr.description = okrDto.description
 
         return new this.okrModel(okr).save()
+    }
+
+    async getOkrsFromParent(okrId: string) {
+        const okr = await this.okrModel.findById(okrId).exec()
+        if (!okr) {
+            throw new NotFoundException()
+        }
+        const project = (await this.projectService.getOne(okr.projectId))!
+        // I say to add validation: cannot add two areas with same name -> name unique, otherwise this will get more than one
+        const areaNode = project.chart.nodes.find(
+            (n) => n.data.label == okr.area
+        )
+        if (!areaNode) {
+            throw new BadRequestException('OKR does not have area')
+        }
+        const parent = getParentsFromNode(areaNode.id, project.chart)
+            .map((n) => n.data.label)
+            .at(0)
+        if (!parent) {
+            return []
+        }
+        return await this.okrModel
+            .find({
+                projectId: okr.projectId,
+                area: parent,
+            })
+            .select('-childOkrs')
     }
 
     async addParentOkr(okrId: string, parentOkrId: string) {

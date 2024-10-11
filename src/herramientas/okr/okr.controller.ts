@@ -30,6 +30,12 @@ export class OkrController {
         return okr
     }
 
+    @Get('parents/:okrId')
+    async getParents(@Param('okrId') okrId: string) {
+        const okr = await this.okrService.getOkrsFromParent(okrId)
+        return okr
+    }
+
     @Put(':okrId')
     async editOkr(@Param('okrId') okrId: string, @Body() okrDto: OkrDto) {
         const okr = await this.okrService.editOkr(okrId, okrDto)
