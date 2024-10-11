@@ -91,7 +91,7 @@ export class OkrService {
         return new this.okrModel(okr).save()
     }
 
-    async getOkrsFromParent(okrId: string) {
+    async getPossibleOkrsFromParent(okrId: string) {
         const okr = await this.okrModel.findById(okrId).exec()
         if (!okr) {
             throw new NotFoundException()
@@ -124,7 +124,7 @@ export class OkrService {
             throw new NotFoundException()
         }
         const childOkr = await this.okrModel.findOne({
-            id: okrId,
+            _id: okrId,
             projectId: parentOkr.projectId,
         })
         if (!childOkr) {

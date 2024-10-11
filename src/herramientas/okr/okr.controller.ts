@@ -30,9 +30,21 @@ export class OkrController {
         return okr
     }
 
-    @Get('parents/:okrId')
-    async getParents(@Param('okrId') okrId: string) {
-        const okr = await this.okrService.getOkrsFromParent(okrId)
+    @Get(':okrId/possible-parents')
+    async getPossibleParents(@Param('okrId') okrId: string) {
+        const okr = await this.okrService.getPossibleOkrsFromParent(okrId)
+        return okr
+    }
+
+    @Post(':okrId/parent')
+    async addParentOkr(
+        @Param('okrId') okrId: string,
+        @Body() parentDto: { parentOkrId: string }
+    ) {
+        const okr = await this.okrService.addParentOkr(
+            okrId,
+            parentDto.parentOkrId
+        )
         return okr
     }
 
