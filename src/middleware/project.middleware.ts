@@ -30,7 +30,10 @@ import { MckinseyService } from 'src/herramientas/mckinsey/mckinsey.service'
 @UseGuards(AuthGuard('jwt'))
 @Injectable()
 export class ProjectStageUserEditionMiddleware implements NestMiddleware {
-    private toolServiceMap: Map<Tool, (toolId: string) => Promise<Document>>
+    private toolServiceMap: Map<
+        Tool,
+        (toolId: string) => Promise<Document | null>
+    >
     constructor(
         private okrService: OkrService,
         private projectService: ProjectService,
@@ -119,15 +122,15 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         if (!isValidTool(tool)) {
             return ''
         }
-        let projectId: Document
+        let document: Document | null
         if (this.toolServiceMap.has(tool as Tool)) {
-            projectId = await this.toolServiceMap.get(tool as Tool)(toolId)
+            document = await this.toolServiceMap.get(tool as Tool)!(toolId)
+            if (document) {
+                return document.id // check
+            }
+            return ''
         } else {
             throw new Error('Unknown tool type')
         }
-        if (projectId) {
-            return projectId._id.toString()
-        }
-        return ''
     }
 }
