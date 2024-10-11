@@ -3,6 +3,7 @@ import {
     HttpException,
     HttpStatus,
     Injectable,
+    NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
@@ -40,11 +41,9 @@ export class UserService {
     }
 
     private sanitizeUser(user: User) {
-        if (user == null) {
-            return new User()
-        }
-        user.password = undefined
-        return user
+        const newUser = Object.create(user)
+        delete newUser.password //check
+        return newUser
     }
 
     async findByEmail(email: string) {
@@ -66,7 +65,10 @@ export class UserService {
     }
 
     async update(userId: string, updateUserDto: UpdateUserDto) {
-        const user: User = await this.userModel.findById(userId)
+        const user = await this.userModel.findById(userId)
+        if (!user) {
+            throw new NotFoundException()
+        }
         if (updateUserDto.firstName) user.firstName = updateUserDto.firstName
         if (updateUserDto.lastName) user.lastName = updateUserDto.lastName
         return new this.userModel(user).save()

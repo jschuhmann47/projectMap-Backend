@@ -12,6 +12,9 @@ export const mapImportanciaToValue = (key: Importancia): number => {
 }
 
 export const mapIntensidadToValue = (key: Intensidad, area: Area): number => {
+    if (area == Area.AMENAZA || area == Area.OPORTUNIDAD) {
+        return 0
+    }
     const dict = {
         [Area.FORTALEZA]: {
             [Intensidad['Muy fuerte']]: 5,

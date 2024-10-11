@@ -54,6 +54,7 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
 
         if (
             !userStagePermission ||
+            !userStagePermission.permission ||
             (userStagePermission &&
                 userStagePermission.permission != Permission.Edit)
         ) {

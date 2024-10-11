@@ -31,12 +31,12 @@ export class Producto {
         nombre: string,
         situacionDelMercado: SituacionDelMercado,
         situacionDelProducto: SituacionDelProducto,
-        exito?: string
+        exito: string
     ) {
         this.nombre = nombre
         this.situacionDelMercado = situacionDelMercado.valueOf()
         this.situacionDelProducto = situacionDelProducto.valueOf()
-        this.exito = exito?.valueOf()
+        this.exito = exito
         this.estrategia = Estrategia.calculate(
             this.situacionDelMercado as SituacionDelMercado,
             this.situacionDelProducto as SituacionDelProducto
@@ -49,7 +49,7 @@ const productSchema = SchemaFactory.createForClass(Producto)
 @Schema()
 export class Ansoff {
     _id: mongoose.Types.ObjectId
-    
+
     @Prop({ required: true })
     projectId: string
 

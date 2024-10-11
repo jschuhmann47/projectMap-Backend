@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { McKinsey, MckinseyDocument, UnidadDeNegocio } from './mckinsey.schema'
@@ -25,9 +30,12 @@ export class MckinseyService {
         unidadDeNegocioId: string,
         unidadDeNegocioDto: UnidadDeNegocioDto
     ) {
-        const mcKinsey: McKinsey = await this.mckinseyModel
+        const mcKinsey = await this.mckinseyModel
             .findOne({ _id: porterId })
             .exec()
+        if (!mcKinsey) {
+            throw new NotFoundException()
+        }
         mcKinsey.unidadesDeNegocio = mcKinsey.unidadesDeNegocio.map(
             (unidadDeNegocio) => {
                 if (unidadDeNegocio._id.toString() == unidadDeNegocioId) {
@@ -52,9 +60,12 @@ export class MckinseyService {
     }
 
     async removeUnidadDeNegocio(mcKinseyId: string, unidadId: string) {
-        const mcKinsey: McKinsey = await this.mckinseyModel
+        const mcKinsey = await this.mckinseyModel
             .findOne({ _id: mcKinseyId })
             .exec()
+        if (!mcKinsey) {
+            throw new NotFoundException()
+        }
         mcKinsey.unidadesDeNegocio = mcKinsey.unidadesDeNegocio.filter(
             (unidad) => unidad._id.toString() != unidadId
         )
@@ -68,6 +79,9 @@ export class MckinseyService {
         const mcKinsey = await this.mckinseyModel
             .findOne({ _id: mcKinseyId })
             .exec()
+        if (!mcKinsey) {
+            throw new NotFoundException()
+        }
         const unidadDeNegocio = new UnidadDeNegocio(
             unidadDeNegocioDto.nombre,
             unidadDeNegocioDto.fuerzaCompetitiva,

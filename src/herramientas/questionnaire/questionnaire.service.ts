@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import {
@@ -78,6 +83,9 @@ export class QuestionnaireService {
 
     async getQuestion(id: string, chapterId: number, questionId: number) {
         const questionnaire = await this.questionnaireModel.findById(id)
+        if (!questionnaire) {
+            throw new NotFoundException()
+        }
         const chapter = questionnaire.chapters.find(
             (chapter) => chapter.chapterId == chapterId
         )
@@ -91,6 +99,9 @@ export class QuestionnaireService {
         answerId: number
     ) {
         const questionnaire = await this.questionnaireModel.findById(id)
+        if (!questionnaire) {
+            throw new NotFoundException()
+        }
         const chapter = questionnaire.chapters.find(
             (chapter) => chapter.chapterId == chapterId
         )
@@ -98,7 +109,7 @@ export class QuestionnaireService {
             (question) => question.questionId == questionId
         )
 
-        if (question.answers.find((answer) => answer.answerId == answerId))
+        if (question?.answers.find((answer) => answer.answerId == answerId))
             question.selectedAnswer = answerId
         else throw new HttpException('Answer not found', HttpStatus.NOT_FOUND)
 
@@ -107,6 +118,9 @@ export class QuestionnaireService {
 
     async answerQuestionnaire(id: string, answers: AnswerDto[]) {
         const questionnaire = await this.questionnaireModel.findById(id)
+        if (!questionnaire) {
+            throw new NotFoundException()
+        }
 
         answers.forEach((answer) => {
             const chapter = questionnaire.chapters.find(
@@ -117,7 +131,7 @@ export class QuestionnaireService {
             )
 
             if (
-                question.answers.find(
+                question?.answers.find(
                     (answer) => answer.answerId == answer.answerId
                 )
             )

@@ -19,12 +19,15 @@ export class KeyResultDto {
     description: string
     responsible: string
     priority: number
-    baseline: number
-    currentScore: number
-    goal: number
     progress: number
+    currentScore: number
+    type: OkrType
+    keyStatus: (KeyStatusDto | ChecklistKeyStatusDto)[]
+
+    // for normal kr
+    baseline: number
+    goal: number
     frequency: Frequency
-    keyStatus: KeyStatusDto[]
 }
 
 export class KeyStatusDto {
@@ -36,4 +39,20 @@ export class KeyStatusDto {
         this.period = period
         this.value = value
     }
+}
+
+export class ChecklistKeyStatusDto {
+    _id: string
+    description: string
+    checked: boolean
+
+    constructor(description: string, checked: boolean) {
+        this.description = description
+        this.checked = checked
+    }
+}
+
+export enum OkrType {
+    NORMAL = 'normal',
+    CHECKLIST = 'checklist',
 }

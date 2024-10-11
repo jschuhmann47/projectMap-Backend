@@ -9,7 +9,7 @@ export enum Priority {
     HIGH,
 }
 
-@Schema({ _id: false })
+@Schema()
 export class KeyStatus {
     _id: mongoose.Types.ObjectId
 
@@ -27,7 +27,24 @@ export class KeyStatus {
 export const KeyStatusSchema = SchemaFactory.createForClass(KeyStatus)
 
 @Schema()
-export class KeyResult {
+export class ChecklistKeyStatus {
+    _id: mongoose.Types.ObjectId
+
+    @Prop({ type: String, required: true })
+    description: string
+
+    @Prop({ type: Boolean, required: true })
+    checked: boolean
+
+    constructor(description: string, checked: boolean) {
+        this.description = description
+        this.checked = checked
+    }
+}
+export const ChecklistKeyStatusSchema =
+    SchemaFactory.createForClass(ChecklistKeyStatus)
+
+class BaseKeyResult {
     _id: mongoose.Types.ObjectId
 
     @Prop({ type: String, required: true })
@@ -39,23 +56,36 @@ export class KeyResult {
     @Prop({ type: Number, default: Priority.MEDIUM, enum: Priority })
     priority: Priority
 
+    @Prop({ type: Number, required: false, default: 0, min: 0, max: 100 })
+    progress: number
+
+    @Prop({ type: Number, required: false })
+    currentScore: number
+
+    constructor(
+        description: string,
+        responsible: string,
+        priority = Priority.MEDIUM
+    ) {
+        this.description = description
+        this.responsible = responsible
+        this.priority = priority
+    }
+}
+
+@Schema()
+export class KeyResult extends BaseKeyResult {
     @Prop({ type: Number, required: true })
     baseline: number
 
     @Prop({ type: Number, required: true })
     goal: number
 
-    @Prop({ type: Number, required: false, default: 0, min: 0, max: 100 })
-    progress: number
-
     @Prop({ type: Number, required: true, enum: Frequency })
     frequency: Frequency
 
     @Prop({ type: [KeyStatusSchema], default: [] })
     keyStatus: KeyStatus[]
-
-    @Prop({ type: Number, required: false })
-    currentScore: number
 
     constructor(
         description: string,
@@ -66,13 +96,11 @@ export class KeyResult {
         priority = Priority.MEDIUM,
         keyStatus: KeyStatus[] = []
     ) {
-        this.description = description
+        super(description, responsible, priority)
         this.goal = goal
-        this.responsible = responsible
-        this.priority = priority
-        ;(this.baseline = baseline),
-            (this.frequency = frequency),
-            (this.keyStatus = keyStatus)
+        this.baseline = baseline
+        this.frequency = frequency
+        this.keyStatus = keyStatus
     }
 }
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
@@ -81,8 +109,35 @@ KeyResultSchema.pre('save', function (next) {
     const progress = Math.round(
         ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
     )
-    this.progress = Math.max(0, Math.min(100, progress))
+    this.progress = limitBetween(progress, 1, 100)
     this.currentScore = lastValue
+    next()
+})
+
+@Schema()
+export class ChecklistKeyResult extends BaseKeyResult {
+    @Prop({ type: [ChecklistKeyStatusSchema], default: [] })
+    keyStatus: ChecklistKeyStatus[]
+
+    constructor(
+        description: string,
+        responsible: string,
+        priority = Priority.MEDIUM,
+        keyStatus: ChecklistKeyStatus[]
+    ) {
+        super(description, responsible, priority)
+        this.keyStatus = keyStatus
+    }
+}
+export const ChecklistKeyResultSchema =
+    SchemaFactory.createForClass(ChecklistKeyResult)
+
+ChecklistKeyResultSchema.pre('save', function (next) {
+    const checkedCount = this.keyStatus.filter((ks) => ks.checked).length
+    const progress = Math.round(checkedCount / this.keyStatus.length)
+
+    this.progress = limitBetween(progress, 1, 100)
+    this.currentScore = checkedCount
     next()
 })
 
@@ -117,6 +172,9 @@ export class Okr {
     @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'Okr' })
     childOkrs: Okr[]
 
+    @Prop({ type: [ChecklistKeyResultSchema], default: [] })
+    checklistKeyResults: ChecklistKeyResult[]
+
     constructor(
         description: string,
         area: string,
@@ -142,14 +200,19 @@ OkrSchema.pre('save', function (next) {
                 .map((kr) => kr.progress)
                 .reduce((a, b) => a + b, 0) / this.keyResults.length
         )
-        this.progress = Math.max(0, Math.min(100, progress))
+        this.progress = limitBetween(progress, 1, 100)
     }
     next()
 })
 
 function getLastNonZeroValue(keyStatus: KeyStatus[]) {
-    if (!keyStatus.some((ks) => ks.value !== 0)) {
+    const nonZeroValues = keyStatus.filter((ks) => ks.value !== 0)
+    if (nonZeroValues.length == 0) {
         return 0
     }
-    return keyStatus.filter((ks) => ks.value !== 0).at(-1).value
+    return nonZeroValues.at(-1)!.value
+}
+
+function limitBetween(x: number, floor: number, top: number) {
+    return Math.max(floor, Math.min(top, x))
 }

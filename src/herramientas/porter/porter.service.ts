@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import {
@@ -39,6 +44,9 @@ export class PorterService {
                 _id: porterId,
             })
             .exec()
+        if (!porter) {
+            throw new NotFoundException()
+        }
 
         if (porter.preguntas.length > 0)
             porter.preguntasFormatted = this.formatPreguntas(porter.preguntas)
@@ -51,9 +59,10 @@ export class PorterService {
         questionId: string,
         preguntaDto: PreguntaDto
     ) {
-        const porter: Porter = await this.porterModel
-            .findOne({ _id: porterId })
-            .exec()
+        const porter = await this.porterModel.findOne({ _id: porterId }).exec()
+        if (!porter) {
+            throw new NotFoundException()
+        }
         porter.preguntas = porter.preguntas.map((pregunta) => {
             if (pregunta._id.toString() == questionId) {
                 pregunta.valoracion = preguntaDto.valoracion.toString()
@@ -66,9 +75,10 @@ export class PorterService {
     }
 
     async deleteQuestion(porterId: string, questionId: string) {
-        const porter: Porter = await this.porterModel
-            .findOne({ _id: porterId })
-            .exec()
+        const porter = await this.porterModel.findOne({ _id: porterId }).exec()
+        if (!porter) {
+            throw new NotFoundException()
+        }
         porter.preguntas = porter.preguntas.filter((pregunta) => {
             return pregunta._id.toString() != questionId
         })
@@ -76,10 +86,10 @@ export class PorterService {
     }
 
     async addQuestion(porterId: string, preguntaDto: PreguntaDto) {
-        const porter: Porter = await this.porterModel
-            .findOne({ _id: porterId })
-            .exec()
-
+        const porter = await this.porterModel.findOne({ _id: porterId }).exec()
+        if (!porter) {
+            throw new NotFoundException()
+        }
         const question = new Pregunta(
             preguntaDto.preguntaId,
             preguntaDto.fuerza,
@@ -94,7 +104,7 @@ export class PorterService {
         porterId: string,
         questionsByFuerza: BulkEditQuestions
     ) {
-        const newQuestions = []
+        const newQuestions: Array<Pregunta> = []
 
         Object.entries(questionsByFuerza.preguntas).forEach(
             ([fuerza, questions]) => {
@@ -114,7 +124,10 @@ export class PorterService {
             }
         )
 
-        const porter: Porter = await this.porterModel.findById(porterId).exec()
+        const porter = await this.porterModel.findById(porterId).exec()
+        if (!porter) {
+            throw new NotFoundException()
+        }
         porter.preguntas = newQuestions
         return new this.porterModel(porter).save()
     }
@@ -167,7 +180,7 @@ export class PorterService {
         const consejos = []
         const consejosDeFuerza = Consejos.getConsejos(fuerza)
         for (const [id, consejo] of Object.entries(consejosDeFuerza)) {
-            const puntaje = preguntasConPuntaje.get(consejo.pregunta)
+            const puntaje = preguntasConPuntaje.get(consejo.pregunta)!
             const factor = puntaje + Number(id) / 10000
             if (puntaje)
                 consejos.push({ consejo: consejo.consejo, factor: factor })
@@ -200,11 +213,19 @@ export class PorterService {
     }
 
     private formatPreguntas(preguntas: Pregunta[]) {
-        const preguntasFormatted = {}
-        const fuerzas = []
-        preguntas.map((pregunta) => {
-            if (!fuerzas.includes(pregunta.fuerza))
+        const preguntasFormatted: {
+            [fuerza: string]: {
+                [preguntaId: string]: {
+                    nivelDeConcordancia: string
+                    valoracion: string
+                }
+            }
+        } = {}
+        const fuerzas: Array<string> = []
+        preguntas.forEach((pregunta) => {
+            if (!fuerzas.includes(pregunta.fuerza)) {
                 fuerzas.push(pregunta.fuerza)
+            }
         })
 
         fuerzas.forEach((fuerza) => {

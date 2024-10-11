@@ -7,12 +7,24 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { KeyResultDto, OkrDto } from './okr.dto'
-import { KeyResult, KeyStatus, Okr } from './okr.schema'
+import { ProjectService } from 'src/project/project.service'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
 import { Horizon } from '../horizon'
-import { ProjectService } from 'src/project/project.service'
 import { addDateByFrequency, dateToString } from './dates'
+import {
+    ChecklistKeyStatusDto,
+    KeyResultDto,
+    KeyStatusDto,
+    OkrDto,
+    OkrType,
+} from './okr.dto'
+import {
+    ChecklistKeyResult,
+    ChecklistKeyStatus,
+    KeyResult,
+    KeyStatus,
+    Okr,
+} from './okr.schema'
 
 @Injectable()
 export class OkrService {
@@ -67,7 +79,10 @@ export class OkrService {
     }
 
     async editOkr(okrId: string, okrDto: OkrDto) {
-        const okr: Okr = await this.okrModel.findById(okrId).exec()
+        const okr = await this.okrModel.findById(okrId).exec()
+        if (!okr) {
+            throw new NotFoundException()
+        }
 
         okr.area = okrDto.area
         okr.description = okrDto.description
@@ -96,7 +111,9 @@ export class OkrService {
 
     async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
         const okr = await this.okrModel.findById(okrId).exec()
-
+        if (!okr) {
+            throw new NotFoundException()
+        }
         if (okr.childOkrs.length > 0) {
             throw new BadRequestException('Cannot add KRs to parent OKR')
         }
@@ -110,30 +127,21 @@ export class OkrService {
                 HttpStatus.BAD_REQUEST
             )
         }
-        const keyStatus: KeyStatus[] = []
-        for (let i = 0; i < keyStatusData.lengthOfPeriods; i++) {
-            const newDate = addDateByFrequency(
-                okr.startingDate,
-                keyResultDto.frequency,
-                i
-            )
-            const stringDate = dateToString(newDate)
-            keyStatus.push(new KeyStatus(stringDate, 0))
+        switch (keyResultDto.type as OkrType) {
+            case OkrType.NORMAL:
+                okr.keyResults.push(this.createKeyResult(okr, keyResultDto))
+                break
+            case OkrType.CHECKLIST:
+                okr.checklistKeyResults.push(
+                    this.createChecklistKeyResult(okr, keyResultDto)
+                )
+                break
+            default:
+                // TODO: when frontend sends type, delete this default case
+                okr.keyResults.push(this.createKeyResult(okr, keyResultDto))
+                // throw new BadRequestException('Invalid key result type')
+                break
         }
-
-        const keyResult = new KeyResult(
-            keyResultDto.description,
-            keyResultDto.responsible,
-            keyResultDto.baseline,
-            keyResultDto.goal,
-            keyResultDto.frequency,
-            keyResultDto.priority,
-            keyStatus
-        )
-
-        keyResult.keyStatus = keyStatus
-
-        okr.keyResults.push(keyResult)
 
         return okr.save()
     }
@@ -144,39 +152,25 @@ export class OkrService {
         keyResultDto: KeyResultDto
     ) {
         const okr = await this.okrModel.findById(okrId).exec()
+        if (!okr) {
+            throw new NotFoundException()
+        }
+        okr.keyResults
+            .filter((kr) => kr._id.toString() == keyResultId)
+            .forEach((kr) => updateNormalKeyResult(kr, keyResultDto))
 
-        okr.keyResults.forEach((keyResult) => {
-            if (keyResult._id.toString() == keyResultId) {
-                if (keyResultDto.description)
-                    keyResult.description = keyResultDto.description
-
-                if (keyResultDto.responsible)
-                    keyResult.responsible = keyResultDto.responsible
-
-                if (keyResultDto.baseline !== undefined)
-                    keyResult.baseline = keyResultDto.baseline
-
-                if (keyResultDto.goal !== undefined)
-                    keyResult.goal = keyResultDto.goal
-
-                if (keyResultDto.priority !== undefined)
-                    keyResult.priority = keyResultDto.priority
-
-                // frequency cannot be edited
-
-                if (keyResultDto.keyStatus)
-                    keyResultDto.keyStatus.forEach(
-                        (status, index) =>
-                            (keyResult.keyStatus[index].value = status.value)
-                    )
-            }
-        })
+        okr.checklistKeyResults
+            .filter((chckKr) => chckKr._id.toString() == keyResultId)
+            .forEach((chckKr) => updateChecklistKeyResult(chckKr, keyResultDto))
 
         return okr.save()
     }
 
     async removeKeyResult(okrId: string, keyResultId: string) {
         const okr = await this.okrModel.findById(okrId).exec()
+        if (!okr) {
+            throw new NotFoundException()
+        }
 
         okr.keyResults = okr.keyResults.filter(
             (keyResult) => keyResult._id.toString() != keyResultId
@@ -203,4 +197,92 @@ export class OkrService {
             }
         })
     }
+
+    private createKeyResult(okr: Okr, keyResultDto: KeyResultDto) {
+        const keyStatusData = getStatusFromFrequencyAndHorizon(
+            keyResultDto.frequency,
+            okr.horizon
+        )
+        if (keyStatusData.invalid) {
+            throw new HttpException(
+                'Invalid frequency or horizon',
+                HttpStatus.BAD_REQUEST
+            )
+        }
+        const keyStatus: KeyStatus[] = []
+        for (let i = 0; i < keyStatusData.lengthOfPeriods!; i++) {
+            const newDate = addDateByFrequency(
+                okr.startingDate,
+                keyResultDto.frequency,
+                i
+            )
+            const stringDate = dateToString(newDate)
+            keyStatus.push(new KeyStatus(stringDate, 0))
+        }
+
+        return new KeyResult(
+            keyResultDto.description,
+            keyResultDto.responsible,
+            keyResultDto.baseline,
+            keyResultDto.goal,
+            keyResultDto.frequency,
+            keyResultDto.priority,
+            keyStatus
+        )
+    }
+
+    private createChecklistKeyResult(okr: Okr, keyResultDto: KeyResultDto) {
+        const keyStatus: ChecklistKeyStatus[] = []
+        keyResultDto.keyStatus.forEach((checkKr) => {
+            const kr = checkKr as ChecklistKeyStatusDto
+            keyStatus.push(new ChecklistKeyStatus(kr.description, false))
+        })
+
+        return new ChecklistKeyResult(
+            keyResultDto.description,
+            keyResultDto.responsible,
+            keyResultDto.baseline,
+            keyStatus
+        )
+    }
+}
+
+const updateNormalKeyResult = (
+    keyResult: KeyResult,
+    keyResultDto: KeyResultDto
+) => {
+    updateBaseKeyResult(keyResult, keyResultDto)
+    if (keyResultDto.baseline !== undefined)
+        keyResult.baseline = keyResultDto.baseline
+    if (keyResultDto.goal !== undefined) keyResult.goal = keyResultDto.goal
+    // frequency cannot be edited
+    if (keyResultDto.keyStatus)
+        keyResultDto.keyStatus.forEach((status, index) => {
+            const newStatus = status as KeyStatusDto
+            keyResult.keyStatus[index].value = newStatus.value
+        })
+}
+
+const updateBaseKeyResult = (
+    keyResult: KeyResult | ChecklistKeyResult,
+    keyResultDto: KeyResultDto
+) => {
+    if (keyResultDto.description)
+        keyResult.description = keyResultDto.description
+    if (keyResultDto.responsible)
+        keyResult.responsible = keyResultDto.responsible
+    if (keyResultDto.priority !== undefined)
+        keyResult.priority = keyResultDto.priority
+}
+
+const updateChecklistKeyResult = (
+    keyResult: ChecklistKeyResult,
+    keyResultDto: KeyResultDto
+) => {
+    updateBaseKeyResult(keyResult, keyResultDto)
+    if (keyResultDto.keyStatus)
+        keyResultDto.keyStatus.forEach((status, index) => {
+            const newStatus = status as ChecklistKeyStatusDto
+            keyResult.keyStatus[index].checked = newStatus.checked
+        })
 }
