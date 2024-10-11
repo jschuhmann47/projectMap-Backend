@@ -21,6 +21,6 @@ export class User {
     isAdmin: boolean
 
     @Prop({ type: Number, required: false, default: null })
-    verificationCode: number
+    verificationCode: number | null
 }
 export const UserSchema = SchemaFactory.createForClass(User)

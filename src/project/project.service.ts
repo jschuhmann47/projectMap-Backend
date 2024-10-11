@@ -4,6 +4,7 @@ import {
     HttpStatus,
     Inject,
     Injectable,
+    NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import mongoose, { Model } from 'mongoose'
@@ -117,7 +118,7 @@ export class ProjectService {
         projectId: string,
         userEmail: string,
         stageId: string
-    ): Promise<Stage> {
+    ): Promise<Stage | null> {
         const user = await this.userService.findByEmail(userEmail)
         const canEdit = new Stage(
             // StageType can be anything here since we are checking only for the permission
@@ -131,7 +132,7 @@ export class ProjectService {
             return canEdit
         }
         const project = await this.getOne(projectId)
-        let stage = null
+        let stage: Stage | null = null
 
         if (project) {
             const matchedUser = project.participants.find(
@@ -139,7 +140,9 @@ export class ProjectService {
             )
 
             if (matchedUser) {
-                stage = matchedUser.stages.find((stage) => stage.id == stageId)
+                stage =
+                    matchedUser.stages.find((stage) => stage.id == stageId) ||
+                    null
             }
             const isCoordinator = project.coordinators.some(
                 (c) => c.email == userEmail
@@ -162,6 +165,9 @@ export class ProjectService {
             }
         })
         const project = await this.projectModel.findById(projectId)
+        if (!project) {
+            throw new NotFoundException()
+        }
         if (project.chart) {
             this.updateMissingAreas(project, chart)
         }
@@ -171,6 +177,9 @@ export class ProjectService {
 
     async getChart(projectId: string) {
         const project = await this.projectModel.findById(projectId)
+        if (!project) {
+            throw new NotFoundException()
+        }
         return project.chart
     }
 

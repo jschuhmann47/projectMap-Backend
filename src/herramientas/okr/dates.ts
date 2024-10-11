@@ -7,12 +7,13 @@ function addDays(date: Date, days: number): Date {
 }
 
 function addMonths(date: Date, months: number): Date {
-    const d = date.getDate()
-    date.setMonth(date.getMonth() + months)
-    if (date.getDate() != d) {
-        date.setDate(0)
+    const result = new Date(date)
+    const d = result.getDate()
+    result.setMonth(result.getMonth() + months)
+    if (result.getDate() != d) {
+        result.setDate(0)
     }
-    return date
+    return result
 }
 
 export function addDateByFrequency(

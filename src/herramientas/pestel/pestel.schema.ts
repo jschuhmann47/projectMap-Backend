@@ -48,7 +48,7 @@ export class Factor {
 export const factorSchema = SchemaFactory.createForClass(Factor)
 
 factorSchema.pre('save', function (next) {
-    const importancia = mapImportanciaToValue(this.importancia, this.area)
+    const importancia = mapImportanciaToValue(this.importancia)
     const intensidad = mapIntensidadToValue(this.intensidad, this.area)
     const tendencia = mapTendenciaToValue(this.tendencia, this.area)
 

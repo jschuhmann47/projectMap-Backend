@@ -37,7 +37,7 @@ unidadDeNegocioSchema.pre('save', function (next) {
     this.cuadrante = Cuadrantes.clasificarUnidadDeNegocio(
         this.fuerzaCompetitiva,
         this.atractivoDeMercado
-    )
+    )!
     next()
 })
 

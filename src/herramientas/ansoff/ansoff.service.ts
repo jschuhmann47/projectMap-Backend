@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Ansoff, AnsoffDocument, Producto } from './ansoff.schema'
 import { Model } from 'mongoose'
@@ -24,6 +29,9 @@ export class AnsoffService {
 
     async addProduct(id: string, productRequest: AnsoffProductDto) {
         const ansoff = await this.ansoffModel.findOne({ _id: id }).exec()
+        if (!ansoff) {
+            throw new NotFoundException()
+        }
         ansoff.productos.push(
             new Producto(
                 productRequest.nombre,
@@ -41,6 +49,9 @@ export class AnsoffService {
         productRequest: AnsoffProductDto
     ) {
         const ansoff = await this.ansoffModel.findOne({ _id: id }).exec()
+        if (!ansoff) {
+            throw new NotFoundException()
+        }
         ansoff.productos = ansoff.productos.map((product) => {
             if (product._id.toString() == productId) {
                 product.nombre = productRequest.nombre
@@ -58,16 +69,18 @@ export class AnsoffService {
     }
 
     async deleteProduct(id: string, productId: string) {
-        const ansoff: Ansoff = await this.ansoffModel
-            .findOne({ _id: id })
-            .exec()
+        const ansoff = await this.ansoffModel.findOne({ _id: id }).exec()
+        if (!ansoff) {
+            throw new NotFoundException()
+        }
         ansoff.productos = ansoff.productos.filter(
             (product) => product._id.toString() != productId
         )
         return new this.ansoffModel(ansoff).save()
     }
 
-    async findById(id: string) {
+
+    async findById(id: string): Promise<Ansoff | null> {
         return this.ansoffModel
             .findOne({
                 _id: id,

@@ -56,8 +56,8 @@ export class ProjectController {
     }
 
     @Get('search')
-    async searchProjects(@Query() query) {
-        const name = query['name']
+    async searchProjects(@Query() query: { name: string }) {
+        const name = query.name
         const projects = await this.projectService.findProjectsByName(name)
         return projects
     }

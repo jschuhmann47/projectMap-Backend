@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import {
@@ -53,6 +58,9 @@ export class BalancedScorecardService {
     async findObjectiveById(balancedScorecardId: string, objectiveId: string) {
         const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
 
         return balancedScorecard.objectives.find(
             (objective) => objective._id.toString() == objectiveId
@@ -70,8 +78,11 @@ export class BalancedScorecardService {
         balancedScorecardId: string,
         balancedScorecardDto: BalancedScorecardDto
     ) {
-        const balancedScorecard: BalancedScorecard =
+        const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
         balancedScorecard.description = balancedScorecardDto.description
         return new this.balancedScorecardModel(balancedScorecard).save()
     }
@@ -80,8 +91,11 @@ export class BalancedScorecardService {
         balancedScorecardId: string,
         objectiveDto: ObjectiveDto
     ) {
-        const balancedScorecard: BalancedScorecard =
+        const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
         const objective = new Objective(
             objectiveDto.action,
             objectiveDto.measure,
@@ -105,12 +119,12 @@ export class BalancedScorecardService {
         const defaultObjective =
             Math.round(
                 ((objectiveDto.goal - objectiveDto.baseline) /
-                    periodCount.lengthOfPeriods) *
+                    periodCount.lengthOfPeriods!) *
                     100
             ) / 100
         let startingObjective = defaultObjective
         objective.checkpoints = []
-        for (let i = 0; i < periodCount.lengthOfPeriods; i++) {
+        for (let i = 0; i < periodCount.lengthOfPeriods!; i++) {
             objective.checkpoints.push(
                 new Checkpoint(
                     periodCount.periodName + ' ' + (i + 1),
@@ -131,8 +145,11 @@ export class BalancedScorecardService {
         objectiveId: string,
         objectiveDto: ObjectiveDto
     ) {
-        const balancedScorecard: BalancedScorecard =
+        const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
 
         balancedScorecard.objectives.forEach((objective) => {
             if (objective._id.toString() == objectiveId) {
@@ -179,8 +196,11 @@ export class BalancedScorecardService {
     }
 
     async removeObjective(balancedScorecardId: string, objectiveId: string) {
-        const balancedScorecard: BalancedScorecard =
+        const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
 
         balancedScorecard.objectives = balancedScorecard.objectives.filter(
             (objective) => objective._id.toString() != objectiveId
@@ -195,12 +215,18 @@ export class BalancedScorecardService {
         checkpointId: string,
         checkpointDto: CheckpointDto
     ) {
-        const balancedScorecard: BalancedScorecard =
+        const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
 
         const objective = balancedScorecard.objectives.find(
             (o) => o._id.toString() == objectiveId
         )
+        if (!objective) {
+            throw new NotFoundException()
+        }
 
         // TODO: check here the sum if this endpoint is used
         objective.checkpoints.forEach((checkpoint) => {
@@ -218,13 +244,18 @@ export class BalancedScorecardService {
         objectiveId: string,
         checkpointId: string
     ) {
-        const balancedScorecard: BalancedScorecard =
+        const balancedScorecard =
             await this.balancedScorecardModel.findById(balancedScorecardId)
+        if (!balancedScorecard) {
+            throw new NotFoundException()
+        }
 
         const objective = balancedScorecard.objectives.find(
             (o) => o._id.toString() == objectiveId
         )
-
+        if (!objective) {
+            throw new NotFoundException()
+        }
         objective.checkpoints = objective.checkpoints.filter(
             (c) => c._id.toString() != checkpointId
         )
