@@ -47,7 +47,7 @@ export class RecoverPasswordNotification extends EmailNotification {
         this.email = email
         this.bodyText = htmlTemplate
             .replace('CODE', code.toString())
-            .replace('PROJECTMAP_WEBPAGE', process.env.PROJECTMAP_WEBPAGE)
+            .replace('PROJECTMAP_WEBPAGE', process.env.PROJECTMAP_WEBPAGE!)
         this.subject = `Recupero de contraseña - ProjectMap 🧭`
     }
 

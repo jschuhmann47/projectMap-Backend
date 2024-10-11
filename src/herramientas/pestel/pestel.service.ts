@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { FactorDto, PestelDto } from './pestel.dto'
@@ -26,6 +31,9 @@ export class PestelService {
 
     async insertFactor(id: string, factorDto: FactorDto) {
         const pestel = await this.pestelModel.findById(id)
+        if (!pestel) {
+            throw new NotFoundException()
+        }
         const factor = new Factor(
             factorDto.descripcion,
             factorDto.area,
@@ -41,9 +49,15 @@ export class PestelService {
 
     async editFactor(id: string, idFactor: string, updatedFactor: FactorDto) {
         const pestel = await this.pestelModel.findById(id).then((pestel) => {
+            if (!pestel) {
+                throw new NotFoundException()
+            }
             const factor = pestel.factores.find(
                 (factor) => factor._id.toString() == idFactor
             )
+            if (!factor) {
+                throw new NotFoundException()
+            }
             if (updatedFactor.area) factor.area = updatedFactor.area as Area
             if (updatedFactor.importancia)
                 factor.importancia = updatedFactor.importancia as Importancia
@@ -77,6 +91,9 @@ export class PestelService {
 
     async deleteFactor(id: string, idFactor: string) {
         const pestel = await this.pestelModel.findById(id).exec()
+        if (!pestel) {
+            throw new NotFoundException()
+        }
         const factores = pestel.factores.filter(
             (factor) => factor._id.toString() != idFactor
         )

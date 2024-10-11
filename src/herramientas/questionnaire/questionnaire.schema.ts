@@ -34,14 +34,14 @@ export class Question {
     rightAnswer: number
 
     @Prop({ type: Number })
-    selectedAnswer: number
+    selectedAnswer?: number
 
     constructor(
         questionId: number,
         question: string,
         answers: Answer[],
         rightAnswer: number,
-        selectedAnswer: number
+        selectedAnswer?: number
     ) {
         this.questionId = questionId
         this.question = question

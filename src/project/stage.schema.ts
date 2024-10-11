@@ -44,22 +44,22 @@ export enum Tool {
     Okr = 'okr',
 }
 
-const StagesByTool = {
-    [Tool.Porter]: StageType.ExternalEnvironment,
-    [Tool.Pestel]: StageType.ExternalEnvironment,
-    [Tool.Foda]: StageType.InternalSituation,
-    [Tool.Ansoff]: StageType.StrategicGuidelines,
-    [Tool.McKinsey]: StageType.CompetitiveStrategy,
-    [Tool.Questionnaires]: StageType.TransformationPlans,
-    [Tool.BalacedScorecard]: StageType.FinancialPlanning,
-    [Tool.Okr]: StageType.FinancialPlanning,
-}
+const StagesByTool: Map<Tool, StageType> = new Map([
+    [Tool.Porter, StageType.ExternalEnvironment],
+    [Tool.Pestel, StageType.ExternalEnvironment],
+    [Tool.Foda, StageType.InternalSituation],
+    [Tool.Ansoff, StageType.StrategicGuidelines],
+    [Tool.McKinsey, StageType.CompetitiveStrategy],
+    [Tool.Questionnaires, StageType.TransformationPlans],
+    [Tool.BalacedScorecard, StageType.FinancialPlanning],
+    [Tool.Okr, StageType.FinancialPlanning],
+])
 
 export function fromToolToStage(tool: string): string {
-    if (isValidTool(tool)) {
-        return StagesByTool[tool]
+    if (StagesByTool.has(tool as Tool)) {
+        return StagesByTool.get(tool as Tool)!.toString()
     }
-    return null
+    return ''
 }
 
 export function isValidStageType(value: string) {

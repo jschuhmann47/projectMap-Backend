@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import {
+    BadRequestException,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
 import { Model } from 'mongoose'
@@ -25,21 +31,19 @@ export class UserService {
         const { email, password } = UserDTO
         const user = await this.userModel.findOne({ email })
 
+        if (!user) {
+            throw new BadRequestException('Usuario o contraseña incorrectos')
+        }
+
         const passwordMatch = await bcrypt.compare(password, user.password)
         if (passwordMatch) return this.sanitizeUser(user)
-        else
-            throw new HttpException(
-                'Contraseña incorrecta',
-                HttpStatus.BAD_REQUEST
-            )
+        else throw new BadRequestException('Usuario o contraseña incorrectos')
     }
 
     private sanitizeUser(user: User) {
-        if (user == null) {
-            return new User()
-        }
-        user.password = undefined
-        return user
+        const newUser = Object.create(user)
+        delete newUser.password //check
+        return newUser
     }
 
     async findByEmail(email: string) {
@@ -61,7 +65,10 @@ export class UserService {
     }
 
     async update(userId: string, updateUserDto: UpdateUserDto) {
-        const user: User = await this.userModel.findById(userId)
+        const user = await this.userModel.findById(userId)
+        if (!user) {
+            throw new NotFoundException()
+        }
         if (updateUserDto.firstName) user.firstName = updateUserDto.firstName
         if (updateUserDto.lastName) user.lastName = updateUserDto.lastName
         return new this.userModel(user).save()

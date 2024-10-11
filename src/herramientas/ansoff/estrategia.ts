@@ -1,3 +1,4 @@
+import { Producto } from './ansoff.schema'
 import { SituacionDelMercado } from './situacionDelMercado'
 import { SituacionDelProducto } from './situacionDelProducto'
 
@@ -24,7 +25,7 @@ export function calculate(
     }
 }
 
-export function calcularEstrategia(product) {
+export function calcularEstrategia(product: Producto) {
     return calculate(
         product.situacionDelMercado as SituacionDelMercado,
         product.situacionDelProducto as SituacionDelProducto
