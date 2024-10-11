@@ -117,16 +117,6 @@ export class OkrService {
         if (okr.childOkrs.length > 0) {
             throw new BadRequestException('Cannot add KRs to parent OKR')
         }
-        const keyStatusData = getStatusFromFrequencyAndHorizon(
-            keyResultDto.frequency,
-            okr.horizon
-        )
-        if (keyStatusData.invalid) {
-            throw new HttpException(
-                'Invalid frequency or horizon',
-                HttpStatus.BAD_REQUEST
-            )
-        }
         switch (keyResultDto.type as OkrType) {
             case OkrType.NORMAL:
                 okr.keyResults.push(this.createKeyResult(okr, keyResultDto))
