@@ -91,7 +91,7 @@ export class OkrService {
         return new this.okrModel(okr).save()
     }
 
-    async getPossibleOkrsFromParent(okrId: string) {
+    async getPossibleOkrsFromParent(okrId: string, withChilds: boolean) {
         const okr = await this.okrModel.findById(okrId).exec()
         if (!okr) {
             throw new NotFoundException()
@@ -102,7 +102,7 @@ export class OkrService {
             (n) => n.data.label == okr.area
         )
         if (!areaNode) {
-            throw new BadRequestException('OKR does not have area')
+            return []
         }
         const parent = getParentsFromNode(areaNode.id, project.chart)
             .map((n) => n.data.label)
@@ -110,12 +110,14 @@ export class OkrService {
         if (!parent) {
             return []
         }
-        return await this.okrModel
-            .find({
-                projectId: okr.projectId,
-                area: parent,
-            })
-            .select('-childOkrs')
+        let query = this.okrModel.find({
+            projectId: okr.projectId,
+            area: parent,
+        })
+        if (!withChilds) {
+            query = query.select('-childOkrs')
+        }
+        return await query
     }
 
     async addParentOkr(okrId: string, parentOkrId: string) {
@@ -198,6 +200,12 @@ export class OkrService {
     }
 
     async delete(id: string) {
+        const parentOkr = await this.getPossibleOkrsFromParent(id, true)
+        parentOkr.forEach((p) => {
+            p.childOkrs = p.childOkrs.filter((o) => o._id.toString() != id)
+            p.save()
+        })
+
         const result = await this.okrModel.deleteOne({ _id: id })
         if (result.deletedCount) {
             return id

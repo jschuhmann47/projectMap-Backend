@@ -32,7 +32,10 @@ export class OkrController {
 
     @Get(':okrId/possible-parents')
     async getPossibleParents(@Param('okrId') okrId: string) {
-        const okr = await this.okrService.getPossibleOkrsFromParent(okrId)
+        const okr = await this.okrService.getPossibleOkrsFromParent(
+            okrId,
+            false
+        )
         return okr
     }
 
