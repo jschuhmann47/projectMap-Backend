@@ -36,8 +36,6 @@ export class BalancedScorecardService {
         const balancedScorecard = new this.balancedScorecardModel(
             balancedScorecardDto
         )
-        if (!balancedScorecardDto.objectives) balancedScorecard.objectives = []
-
         return balancedScorecard.save()
     }
 

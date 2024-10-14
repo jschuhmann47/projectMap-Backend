@@ -5,6 +5,7 @@ import { BSCCategory as BSCCategory } from './bsc_category'
 import { Trend } from './trends'
 import { Horizon } from '../horizon'
 import { Frequency } from '../frequency'
+import { limitBetween } from '../okr/utils'
 
 @Schema()
 export class Checkpoint {
@@ -13,15 +14,11 @@ export class Checkpoint {
     @Prop({ type: String, required: true })
     period: string
 
-    @Prop({ type: Number, required: true })
-    target: number
-
     @Prop({ type: Number, required: false })
     current: number
 
     constructor(period: string, target: number, current: number) {
         this.period = period
-        this.target = target
         this.current = current
     }
 }
@@ -32,18 +29,23 @@ export const checkPointSchema = SchemaFactory.createForClass(Checkpoint)
 export class Objective {
     _id: mongoose.Types.ObjectId
 
-    // This would be the title of the objective
     @Prop({ type: String, required: true })
     action: string
 
     @Prop({ type: String, required: false, default: '' })
     measure: string
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, required: true })
     goal: number
 
-    @Prop({ type: Number })
+    @Prop({ type: Number, required: true })
     baseline: number
+
+    @Prop({ type: Number, default: 0, min: 0, max: 100 })
+    progress: number
+
+    @Prop({ type: Number, required: false })
+    currentScore: number
 
     @Prop({ type: String, enum: BSCCategory, required: true })
     category: BSCCategory
@@ -51,16 +53,13 @@ export class Objective {
     @Prop({ type: [checkPointSchema], default: [] })
     checkpoints: Checkpoint[]
 
-    @Prop({ type: Number })
-    progress: number
-
-    @Prop({ type: String, enum: Trend })
+    @Prop({ type: String, enum: Trend, default: Trend.Stable })
     trend: Trend
 
-    @Prop({ type: String, enum: Deviation })
+    @Prop({ type: String, enum: Deviation, default: Deviation.None })
     deviation: Deviation
 
-    @Prop({ type: String, required: false })
+    @Prop({ type: String, required: false, default: '' })
     responsible: string
 
     @Prop({ type: Number, enum: Frequency, required: true })
@@ -92,37 +91,31 @@ objectiveSchema.pre('save', function (next) {
             (checkpoint) => checkpoint.current && checkpoint.current != 0
         )
         if (completedCheckpoints.length) {
-            const historicProgress = completedCheckpoints
-                .slice(0, completedCheckpoints.length - 1)
-                .map((k) => (k.current / k.target) * 100)
-            const avgHistoricProgress =
-                historicProgress.reduce((a, b) => a + b, 0) /
-                historicProgress.length
+            const lastProgress = this.progress
+            const incrementJump =
+                ((this.goal - this.baseline) / this.checkpoints.length) *
+                completedCheckpoints.length
 
-            const lastCheckpoint =
-                completedCheckpoints[completedCheckpoints.length - 1]
-            const lastProgress =
-                (lastCheckpoint.current / lastCheckpoint.target) * 100
+            const lastCheckpoint = completedCheckpoints.at(-1)!
 
-            if (lastProgress > avgHistoricProgress) this.trend = Trend.Upwards
-            else if (lastProgress < avgHistoricProgress)
+            const progress = Math.round(
+                ((lastCheckpoint.current - this.baseline) * 100) /
+                    (this.goal - this.baseline)
+            )
+            this.progress = limitBetween(progress, 0, 100)
+            this.currentScore = lastCheckpoint.current
+
+            // super wip
+            const dev =
+                this.currentScore - incrementJump * completedCheckpoints.length
+            if (this.progress > lastProgress) {
+                this.trend = Trend.Upwards
+            } else if (this.progress < lastProgress) {
                 this.trend = Trend.Downwards
-            else this.trend = Trend.Stable
+            } else this.trend = Trend.Upwards
 
-            const current = this.checkpoints
-                .map((k) => k.current)
-                .reduce((a, b) => a + b, 0)
-            this.progress = (current / (this.goal - this.baseline)) * 100
-
-            const progressFromCompletedCheckpoints =
-                completedCheckpoints
-                    .map((k) => (k.current / k.target) * 100)
-                    .reduce((a, b) => a + b, 0) / completedCheckpoints.length
-
-            if (progressFromCompletedCheckpoints > 95)
-                this.deviation = Deviation.None
-            else if (progressFromCompletedCheckpoints <= 70)
-                this.deviation = Deviation.Acceptable
+            if (dev > 95) this.deviation = Deviation.None
+            else if (dev >= 70) this.deviation = Deviation.Acceptable
             else this.deviation = Deviation.Risky
         }
     }
@@ -142,6 +135,12 @@ export class BalancedScorecard {
 
     @Prop({ type: Date, default: Date.now })
     createdAt: Date
+
+    @Prop({ type: Date, required: true, default: Date.now })
+    startingDate: Date
+
+    @Prop({ type: Number, default: 0, min: 0, max: 100 })
+    progress: number
 
     @Prop([objectiveSchema])
     objectives: Objective[]

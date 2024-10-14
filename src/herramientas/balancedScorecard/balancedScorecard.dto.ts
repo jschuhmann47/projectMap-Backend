@@ -30,6 +30,7 @@ export class BalancedScorecardDto {
     projectId: string
     description: string
     createdAt: Date
+    startingDate: Date
     objectives: ObjectiveDto[]
     horizon: Horizon
 }

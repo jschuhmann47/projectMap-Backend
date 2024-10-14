@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose from 'mongoose'
 import { Frequency } from '../frequency'
 import { Horizon } from '../horizon'
+import { limitBetween } from './utils'
 
 export enum Priority {
     LOW = 0,
@@ -211,8 +212,4 @@ function getLastNonZeroValue(keyStatus: KeyStatus[]) {
         return 0
     }
     return nonZeroValues.at(-1)!.value
-}
-
-function limitBetween(x: number, floor: number, top: number) {
-    return Math.max(floor, Math.min(top, x))
 }
