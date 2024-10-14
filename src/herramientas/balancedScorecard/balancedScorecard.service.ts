@@ -167,28 +167,27 @@ export class BalancedScorecardService {
                         if (objectiveToUpdate) {
                             objectiveToUpdate.current = checkpointDto.actual
                             objectiveToUpdate.period = checkpointDto.period
-                            objectiveToUpdate.target = checkpointDto.target
                         }
                     })
                 }
             }
         })
-        balancedScorecard.objectives.forEach((o) => {
-            let checkpointTotalTarget = 0
-            o.checkpoints.forEach((c) => {
-                checkpointTotalTarget += c.target
-            })
-            // math functions are to have some grace range because of decimals
-            if (
-                checkpointTotalTarget < Math.floor(o.goal) ||
-                checkpointTotalTarget > Math.ceil(o.goal)
-            ) {
-                throw new HttpException(
-                    "Sum of objectives don't match goal",
-                    HttpStatus.BAD_REQUEST
-                )
-            }
-        })
+        // balancedScorecard.objectives.forEach((o) => {
+        //     let checkpointTotalTarget = 0
+        //     o.checkpoints.forEach((c) => {
+        //         checkpointTotalTarget += c.target
+        //     })
+        //     // math functions are to have some grace range because of decimals
+        //     if (
+        //         checkpointTotalTarget < Math.floor(o.goal) ||
+        //         checkpointTotalTarget > Math.ceil(o.goal)
+        //     ) {
+        //         throw new HttpException(
+        //             "Sum of objectives don't match goal",
+        //             HttpStatus.BAD_REQUEST
+        //         )
+        //     }
+        // })
 
         return new this.balancedScorecardModel(balancedScorecard).save()
     }
@@ -230,7 +229,6 @@ export class BalancedScorecardService {
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
                 checkpoint.current = checkpointDto.actual
-                checkpoint.target = checkpointDto.target
             }
         })
 

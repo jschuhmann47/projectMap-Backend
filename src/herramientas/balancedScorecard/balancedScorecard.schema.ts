@@ -107,7 +107,21 @@ objectiveSchema.pre('save', function (next) {
 
             // super wip
             const dev =
-                this.currentScore - incrementJump * completedCheckpoints.length
+                100 -
+                limitBetween(
+                    Math.round(
+                        ((lastCheckpoint.current -
+                            (this.baseline * incrementJump) /
+                                completedCheckpoints.length) *
+                            100) /
+                            (this.goal -
+                                (this.baseline * incrementJump) /
+                                    completedCheckpoints.length)
+                    ),
+                    0,
+                    100
+                )
+
             if (this.progress > lastProgress) {
                 this.trend = Trend.Upwards
             } else if (this.progress < lastProgress) {
