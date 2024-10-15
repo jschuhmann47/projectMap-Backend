@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { getParentsFromNode } from 'src/project/orgChart'
 import { ProjectService } from 'src/project/project.service'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
 import { Horizon } from '../horizon'
@@ -23,9 +24,9 @@ import {
     ChecklistKeyStatus,
     KeyResult,
     KeyStatus,
+    limitBetween,
     Okr,
 } from './okr.schema'
-import { getParentsFromNode } from 'src/project/orgChart'
 
 @Injectable()
 export class OkrService {
@@ -116,6 +117,12 @@ export class OkrService {
         })
         if (!withChilds) {
             query = query.select('-childOkrs')
+        } else {
+            query = query.populate({
+                path: 'childOkrs',
+                model: 'Okr',
+                select: '-childOkrs',
+            })
         }
         return await query
     }
@@ -162,8 +169,9 @@ export class OkrService {
                 // throw new BadRequestException('Invalid key result type')
                 break
         }
-
-        return okr.save()
+        const res = await okr.save()
+        await this.updateParentInformation(okrId)
+        return res
     }
 
     async editKeyResult(
@@ -183,7 +191,9 @@ export class OkrService {
             .filter((chckKr) => chckKr._id.toString() == keyResultId)
             .forEach((chckKr) => updateChecklistKeyResult(chckKr, keyResultDto))
 
-        return okr.save()
+        const res = await okr.save()
+        await this.updateParentInformation(okrId)
+        return res
     }
 
     async removeKeyResult(okrId: string, keyResultId: string) {
@@ -196,7 +206,9 @@ export class OkrService {
             (keyResult) => keyResult._id.toString() != keyResultId
         )
 
-        return okr.save()
+        const res = await okr.save()
+        await this.updateParentInformation(okrId)
+        return res
     }
 
     async delete(id: string) {
@@ -270,6 +282,26 @@ export class OkrService {
             keyResultDto.baseline,
             keyStatus
         )
+    }
+
+    private async updateParentInformation(childOkrId: string) {
+        const okrs = await this.getPossibleOkrsFromParent(childOkrId, true)
+        okrs.filter((o) =>
+            o.childOkrs.some((child) => child._id.toString() == childOkrId)
+        ).forEach((o) => {
+            o.priority = Math.round(
+                o.childOkrs
+                    .map((kr) => kr.priority)
+                    .reduce((a, b) => a + b, 0) / o.childOkrs.length
+            )
+            const progress = Math.round(
+                o.childOkrs
+                    .map((kr) => kr.progress)
+                    .reduce((a, b) => a + b, 0) / o.childOkrs.length
+            )
+            o.progress = limitBetween(progress, 0, 100)
+            o.save()
+        })
     }
 }
 

@@ -213,6 +213,6 @@ function getLastNonZeroValue(keyStatus: KeyStatus[]) {
     return nonZeroValues.at(-1)!.value
 }
 
-function limitBetween(x: number, floor: number, top: number) {
+export function limitBetween(x: number, floor: number, top: number) {
     return Math.max(floor, Math.min(top, x))
 }
