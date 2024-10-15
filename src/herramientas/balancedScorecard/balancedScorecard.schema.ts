@@ -14,7 +14,7 @@ export class Checkpoint {
     @Prop({ type: String, required: true })
     period: string
 
-    @Prop({ type: Number, required: false })
+    @Prop({ type: Number, required: true })
     current: number
 
     constructor(period: string, target: number, current: number) {
@@ -105,22 +105,11 @@ objectiveSchema.pre('save', function (next) {
             this.progress = limitBetween(progress, 0, 100)
             this.currentScore = lastCheckpoint.current
 
-            // super wip
-            const dev =
-                100 -
-                limitBetween(
-                    Math.round(
-                        ((lastCheckpoint.current -
-                            (this.baseline * incrementJump) /
-                                completedCheckpoints.length) *
-                            100) /
-                            (this.goal -
-                                (this.baseline * incrementJump) /
-                                    completedCheckpoints.length)
-                    ),
-                    0,
-                    100
-                )
+            const currentStep = incrementJump * completedCheckpoints.length
+            const dev = +(
+                ((lastCheckpoint.current - currentStep) * 100) /
+                (this.baseline + currentStep)
+            ).toFixed(2)
 
             if (this.progress > lastProgress) {
                 this.trend = Trend.Upwards
@@ -128,8 +117,8 @@ objectiveSchema.pre('save', function (next) {
                 this.trend = Trend.Downwards
             } else this.trend = Trend.Upwards
 
-            if (dev > 95) this.deviation = Deviation.None
-            else if (dev >= 70) this.deviation = Deviation.Acceptable
+            if (dev > -5) this.deviation = Deviation.None
+            else if (dev >= -30) this.deviation = Deviation.Acceptable
             else this.deviation = Deviation.Risky
         }
     }
@@ -167,5 +156,10 @@ export const BalanceScorecardSchema =
     SchemaFactory.createForClass(BalancedScorecard)
 
 BalanceScorecardSchema.pre('save', function (next) {
+    const progress = Math.round(
+        this.objectives.map((o) => o.progress).reduce((a, b) => a + b, 0) /
+            this.objectives.length
+    )
+    this.progress = limitBetween(progress, 0, 100)
     next()
 })
