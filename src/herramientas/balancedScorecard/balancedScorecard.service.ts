@@ -21,6 +21,7 @@ import { BSCCategory } from './bsc_category'
 import { Trend } from './trends'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
 import { Horizon } from '../horizon'
+import { addDateByFrequency, dateToString } from '../okr/dates'
 
 @Injectable()
 export class BalancedScorecardService {
@@ -36,8 +37,6 @@ export class BalancedScorecardService {
         const balancedScorecard = new this.balancedScorecardModel(
             balancedScorecardDto
         )
-        if (!balancedScorecardDto.objectives) balancedScorecard.objectives = []
-
         return balancedScorecard.save()
     }
 
@@ -125,12 +124,14 @@ export class BalancedScorecardService {
         let startingObjective = defaultObjective
         objective.checkpoints = []
         for (let i = 0; i < periodCount.lengthOfPeriods!; i++) {
+            const newDate = addDateByFrequency(
+                balancedScorecard.startingDate,
+                objectiveDto.frequency,
+                i
+            )
+            const stringDate = dateToString(newDate)
             objective.checkpoints.push(
-                new Checkpoint(
-                    periodCount.periodName + ' ' + (i + 1),
-                    startingObjective,
-                    0
-                )
+                new Checkpoint(stringDate, startingObjective, 0)
             )
             startingObjective += defaultObjective
         }
@@ -167,31 +168,13 @@ export class BalancedScorecardService {
                                 checkpointDto._id.toString()
                         )
                         if (objectiveToUpdate) {
-                            objectiveToUpdate.current = checkpointDto.actual
+                            objectiveToUpdate.current = checkpointDto.current
                             objectiveToUpdate.period = checkpointDto.period
-                            objectiveToUpdate.target = checkpointDto.target
                         }
                     })
                 }
             }
         })
-        balancedScorecard.objectives.forEach((o) => {
-            let checkpointTotalTarget = 0
-            o.checkpoints.forEach((c) => {
-                checkpointTotalTarget += c.target
-            })
-            // math functions are to have some grace range because of decimals
-            if (
-                checkpointTotalTarget < Math.floor(o.goal) ||
-                checkpointTotalTarget > Math.ceil(o.goal)
-            ) {
-                throw new HttpException(
-                    "Sum of objectives don't match goal",
-                    HttpStatus.BAD_REQUEST
-                )
-            }
-        })
-
         return new this.balancedScorecardModel(balancedScorecard).save()
     }
 
@@ -228,11 +211,9 @@ export class BalancedScorecardService {
             throw new NotFoundException()
         }
 
-        // TODO: check here the sum if this endpoint is used
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
-                checkpoint.current = checkpointDto.actual
-                checkpoint.target = checkpointDto.target
+                checkpoint.current = checkpointDto.current
             }
         })
 

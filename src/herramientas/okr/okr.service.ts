@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     HttpException,
     HttpStatus,
     Injectable,
@@ -24,6 +25,7 @@ import {
     KeyStatus,
     Okr,
 } from './okr.schema'
+import { getParentsFromNode } from 'src/project/orgChart'
 
 @Injectable()
 export class OkrService {
@@ -60,7 +62,14 @@ export class OkrService {
     }
 
     async findById(okrId: string) {
-        return this.okrModel.findById(okrId).exec()
+        return this.okrModel
+            .findById(okrId)
+            .populate({
+                path: 'childOkrs',
+                model: 'Okr',
+                select: '-childOkrs',
+            })
+            .exec()
     }
 
     async getAllByProjectId(projectId: string) {
@@ -82,10 +91,61 @@ export class OkrService {
         return new this.okrModel(okr).save()
     }
 
+    async getPossibleOkrsFromParent(okrId: string, withChilds: boolean) {
+        const okr = await this.okrModel.findById(okrId).exec()
+        if (!okr) {
+            throw new NotFoundException()
+        }
+        const project = (await this.projectService.getOne(okr.projectId))!
+        // I say to add validation: cannot add two areas with same name -> name unique, otherwise this will get more than one
+        const areaNode = project.chart.nodes.find(
+            (n) => n.data.label == okr.area
+        )
+        if (!areaNode) {
+            return []
+        }
+        const parent = getParentsFromNode(areaNode.id, project.chart)
+            .map((n) => n.data.label)
+            .at(0)
+        if (!parent) {
+            return []
+        }
+        let query = this.okrModel.find({
+            projectId: okr.projectId,
+            area: parent,
+        })
+        if (!withChilds) {
+            query = query.select('-childOkrs')
+        }
+        return await query
+    }
+
+    async addParentOkr(okrId: string, parentOkrId: string) {
+        const parentOkr = await this.okrModel.findById(parentOkrId).exec()
+        if (!parentOkr) {
+            throw new NotFoundException()
+        }
+        const childOkr = await this.okrModel.findOne({
+            _id: okrId,
+            projectId: parentOkr.projectId,
+        })
+        if (!childOkr) {
+            throw new NotFoundException()
+        }
+        if (parentOkr.keyResults.length > 0) {
+            throw new BadRequestException('Parent has key results')
+        }
+        parentOkr.childOkrs.push(childOkr)
+        parentOkr.save()
+    }
+
     async addKeyResult(okrId: string, keyResultDto: KeyResultDto) {
         const okr = await this.okrModel.findById(okrId).exec()
         if (!okr) {
             throw new NotFoundException()
+        }
+        if (okr.childOkrs.length > 0) {
+            throw new BadRequestException('Cannot add KRs to parent OKR')
         }
         switch (keyResultDto.type as OkrType) {
             case OkrType.NORMAL:
@@ -140,6 +200,12 @@ export class OkrService {
     }
 
     async delete(id: string) {
+        const parentOkr = await this.getPossibleOkrsFromParent(id, true)
+        parentOkr.forEach((p) => {
+            p.childOkrs = p.childOkrs.filter((o) => o._id.toString() != id)
+            p.save()
+        })
+
         const result = await this.okrModel.deleteOne({ _id: id })
         if (result.deletedCount) {
             return id
@@ -195,7 +261,7 @@ export class OkrService {
         const keyStatus: ChecklistKeyStatus[] = []
         keyResultDto.keyStatus.forEach((checkKr) => {
             const kr = checkKr as ChecklistKeyStatusDto
-            keyStatus.push(new ChecklistKeyStatus(kr.description, false))
+            keyStatus.push(new ChecklistKeyStatus(kr.description, kr.checked))
         })
 
         return new ChecklistKeyResult(
