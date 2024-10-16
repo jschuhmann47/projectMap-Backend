@@ -261,7 +261,7 @@ export class OkrService {
         const keyStatus: ChecklistKeyStatus[] = []
         keyResultDto.keyStatus.forEach((checkKr) => {
             const kr = checkKr as ChecklistKeyStatusDto
-            keyStatus.push(new ChecklistKeyStatus(kr.description, false))
+            keyStatus.push(new ChecklistKeyStatus(kr.description, kr.checked))
         })
 
         return new ChecklistKeyResult(
