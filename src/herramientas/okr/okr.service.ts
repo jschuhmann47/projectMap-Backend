@@ -312,7 +312,7 @@ export class OkrService {
         const transactionSession = await connection.startSession()
         return transactionSession.withTransaction(async () => {
             const res = await okr.save()
-            await this.updateParentInformation(okr._id.toString())
+            await this.updateParentInformation(okr._id!.toString())
             return res
         })
     }
