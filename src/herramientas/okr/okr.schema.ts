@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose from 'mongoose'
 import { Frequency } from '../frequency'
 import { Horizon } from '../horizon'
+import { limitBetween } from './utils'
 
 export enum Priority {
     LOW = 0,
@@ -134,7 +135,7 @@ export const ChecklistKeyResultSchema =
 
 ChecklistKeyResultSchema.pre('save', function (next) {
     const checkedCount = this.keyStatus.filter((ks) => ks.checked).length
-    const progress = Math.round(checkedCount / this.keyStatus.length)
+    const progress = Math.round((checkedCount * 100) / this.keyStatus.length)
 
     this.progress = limitBetween(progress, 0, 100)
     this.currentScore = checkedCount
@@ -189,16 +190,27 @@ export class Okr {
 }
 export const OkrSchema = SchemaFactory.createForClass(Okr)
 OkrSchema.pre('save', function (next) {
-    if (this.keyResults.length) {
-        this.priority = Math.round(
-            this.keyResults
-                .map((kr) => kr.priority)
-                .reduce((a, b) => a + b, 0) / this.keyResults.length
+    if (this.keyResults.length || this.checklistKeyResults.length) {
+        const krPriority = this.keyResults
+            .map((kr) => kr.priority)
+            .reduce((a, b) => a + b, 0)
+        const checklistPriority = this.checklistKeyResults
+            .map((kr) => kr.priority)
+            .reduce((a, b) => a + b, 0)
+        const priority = Math.round(
+            (checklistPriority + krPriority) /
+                (this.keyResults.length + this.checklistKeyResults.length)
         )
+        this.priority = limitBetween(priority, 0, 2)
+        const krProgress = this.keyResults
+            .map((kr) => kr.progress)
+            .reduce((a, b) => a + b, 0)
+        const checklistProgress = this.checklistKeyResults
+            .map((kr) => kr.progress)
+            .reduce((a, b) => a + b, 0)
         const progress = Math.round(
-            this.keyResults
-                .map((kr) => kr.progress)
-                .reduce((a, b) => a + b, 0) / this.keyResults.length
+            (checklistProgress + krProgress) /
+                (this.keyResults.length + this.checklistKeyResults.length)
         )
         this.progress = limitBetween(progress, 0, 100)
     }
@@ -211,8 +223,4 @@ function getLastNonZeroValue(keyStatus: KeyStatus[]) {
         return 0
     }
     return nonZeroValues.at(-1)!.value
-}
-
-export function limitBetween(x: number, floor: number, top: number) {
-    return Math.max(floor, Math.min(top, x))
 }

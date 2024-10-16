@@ -6,7 +6,6 @@ import { Trend } from './trends'
 export class CheckpointDto {
     _id: string
     period: string
-    target: number
     current: number
 }
 
@@ -29,6 +28,7 @@ export class BalancedScorecardDto {
     projectId: string
     description: string
     createdAt: Date
+    startingDate: Date
     objectives: ObjectiveDto[]
     horizon: Horizon
 }
