@@ -27,7 +27,7 @@ export class PorterController {
 
     @Get(':porterId')
     async findById(@Param('porterId') porterId: string) {
-        const porters = await this.porterService.getPorterById(porterId)
+        const porters = await this.porterService.getById(porterId)
         return porters
     }
 
@@ -71,7 +71,7 @@ export class PorterController {
 
     @Get(':porterId/consejos')
     async getConsejos(@Param('porterId') porterId: string) {
-        const porter = await this.porterService.getPorterById(porterId)
+        const porter = await this.porterService.getById(porterId)
         return this.porterService.calcularConsejos((porter as Porter).preguntas)
     }
 

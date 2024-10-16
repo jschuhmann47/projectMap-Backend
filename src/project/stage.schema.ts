@@ -41,7 +41,7 @@ export enum Tool {
     McKinsey = 'mckinsey',
     Questionnaires = 'questionnaires',
     BalacedScorecard = 'balanced-scorecards',
-    Okr = 'okr-projects',
+    Okr = 'okr',
 }
 
 const StagesByTool: Map<Tool, StageType> = new Map([

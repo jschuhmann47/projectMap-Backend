@@ -79,7 +79,7 @@ export class AnsoffService {
         return new this.ansoffModel(ansoff).save()
     }
 
-    async findById(id: string): Promise<Ansoff | null> {
+    async findById(id: string) {
         return this.ansoffModel
             .findOne({
                 _id: id,
