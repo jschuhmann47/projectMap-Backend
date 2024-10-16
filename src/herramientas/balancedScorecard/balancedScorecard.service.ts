@@ -211,7 +211,6 @@ export class BalancedScorecardService {
             throw new NotFoundException()
         }
 
-        // TODO: check here the sum if this endpoint is used
         objective.checkpoints.forEach((checkpoint) => {
             if (checkpoint._id.toString() == checkpointId) {
                 checkpoint.current = checkpointDto.current
