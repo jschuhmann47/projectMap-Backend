@@ -24,10 +24,10 @@ import {
     ChecklistKeyStatus,
     KeyResult,
     KeyStatus,
-    limitBetween,
     Okr,
 } from './okr.schema'
 import mongoose from 'mongoose'
+import { limitBetween } from './utils'
 
 @Injectable()
 export class OkrService {
