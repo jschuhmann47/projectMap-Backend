@@ -14,7 +14,7 @@ export class Checkpoint {
     @Prop({ type: String, required: true })
     period: string
 
-    @Prop({ type: Number, required: true })
+    @Prop({ type: Number })
     current: number
 
     constructor(period: string, target: number, current: number) {
@@ -115,7 +115,7 @@ objectiveSchema.pre('save', function (next) {
                 this.trend = Trend.Upwards
             } else if (this.progress < lastProgress) {
                 this.trend = Trend.Downwards
-            } else this.trend = Trend.Upwards
+            } else this.trend = Trend.Stable
 
             if (dev > -5) this.deviation = Deviation.None
             else if (dev >= -30) this.deviation = Deviation.Acceptable
