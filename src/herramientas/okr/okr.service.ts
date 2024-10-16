@@ -5,8 +5,8 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { InjectConnection, InjectModel } from '@nestjs/mongoose'
+import { Connection, Model } from 'mongoose'
 import { getParentsFromNode } from 'src/project/orgChart'
 import { ProjectService } from 'src/project/project.service'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
@@ -27,11 +27,13 @@ import {
     limitBetween,
     Okr,
 } from './okr.schema'
+import mongoose from 'mongoose'
 
 @Injectable()
 export class OkrService {
     constructor(
         @InjectModel(Okr.name) private okrModel: Model<Okr>,
+        @InjectConnection() private connection: Connection,
         private projectService: ProjectService
     ) {}
 
@@ -169,9 +171,7 @@ export class OkrService {
                 // throw new BadRequestException('Invalid key result type')
                 break
         }
-        const res = await okr.save()
-        await this.updateParentInformation(okrId)
-        return res
+        return this.updateChildAndParent(this.connection, okr)
     }
 
     async editKeyResult(
@@ -191,9 +191,7 @@ export class OkrService {
             .filter((chckKr) => chckKr._id.toString() == keyResultId)
             .forEach((chckKr) => updateChecklistKeyResult(chckKr, keyResultDto))
 
-        const res = await okr.save()
-        await this.updateParentInformation(okrId)
-        return res
+        return this.updateChildAndParent(this.connection, okr)
     }
 
     async removeKeyResult(okrId: string, keyResultId: string) {
@@ -206,9 +204,7 @@ export class OkrService {
             (keyResult) => keyResult._id.toString() != keyResultId
         )
 
-        const res = await okr.save()
-        await this.updateParentInformation(okrId)
-        return res
+        return this.updateChildAndParent(this.connection, okr)
     }
 
     async delete(id: string) {
@@ -301,6 +297,23 @@ export class OkrService {
             )
             o.progress = limitBetween(progress, 0, 100)
             o.save()
+        })
+    }
+    /**
+     * Updates child in DB, triggering update to its parent if it has any,
+       all using a transaction. Returns the child okr after `.save()`
+     * @param connection
+     * @param okr
+     */
+    private async updateChildAndParent(
+        connection: Connection,
+        okr: mongoose.Document<mongoose.Types.ObjectId, object, Okr>
+    ) {
+        const transactionSession = await connection.startSession()
+        return transactionSession.withTransaction(async () => {
+            const res = await okr.save()
+            await this.updateParentInformation(okr._id.toString())
+            return res
         })
     }
 }
