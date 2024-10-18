@@ -10,4 +10,8 @@ export class PdcaService {
     async findById(id: string) {
         return this.pdcaModel.findById(id).exec()
     }
+
+    async findByProjectId(projectId: string) {
+        return this.pdcaModel.find({ projectId: projectId }).exec()
+    }
 }
