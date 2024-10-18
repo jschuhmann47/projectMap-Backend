@@ -5,8 +5,9 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { InjectConnection, InjectModel } from '@nestjs/mongoose'
+import { Connection, Model } from 'mongoose'
+import { getParentsFromNode } from 'src/project/orgChart'
 import { ProjectService } from 'src/project/project.service'
 import { getStatusFromFrequencyAndHorizon } from '../frequency'
 import { Horizon } from '../horizon'
@@ -25,12 +26,14 @@ import {
     KeyStatus,
     Okr,
 } from './okr.schema'
-import { getParentsFromNode } from 'src/project/orgChart'
+import mongoose from 'mongoose'
+import { limitBetween } from './utils'
 
 @Injectable()
 export class OkrService {
     constructor(
         @InjectModel(Okr.name) private okrModel: Model<Okr>,
+        @InjectConnection() private connection: Connection,
         private projectService: ProjectService
     ) {}
 
@@ -116,6 +119,12 @@ export class OkrService {
         })
         if (!withChilds) {
             query = query.select('-childOkrs')
+        } else {
+            query = query.populate({
+                path: 'childOkrs',
+                model: 'Okr',
+                select: '-childOkrs',
+            })
         }
         return await query
     }
@@ -162,8 +171,7 @@ export class OkrService {
                 // throw new BadRequestException('Invalid key result type')
                 break
         }
-
-        return okr.save()
+        return this.updateChildAndParent(this.connection, okr)
     }
 
     async editKeyResult(
@@ -183,7 +191,7 @@ export class OkrService {
             .filter((chckKr) => chckKr._id.toString() == keyResultId)
             .forEach((chckKr) => updateChecklistKeyResult(chckKr, keyResultDto))
 
-        return okr.save()
+        return this.updateChildAndParent(this.connection, okr)
     }
 
     async removeKeyResult(okrId: string, keyResultId: string) {
@@ -196,7 +204,7 @@ export class OkrService {
             (keyResult) => keyResult._id.toString() != keyResultId
         )
 
-        return okr.save()
+        return this.updateChildAndParent(this.connection, okr)
     }
 
     async delete(id: string) {
@@ -270,6 +278,43 @@ export class OkrService {
             keyResultDto.baseline,
             keyStatus
         )
+    }
+
+    private async updateParentInformation(childOkrId: string) {
+        const okrs = await this.getPossibleOkrsFromParent(childOkrId, true)
+        okrs.filter((o) =>
+            o.childOkrs.some((child) => child._id.toString() == childOkrId)
+        ).forEach((o) => {
+            o.priority = Math.round(
+                o.childOkrs
+                    .map((kr) => kr.priority)
+                    .reduce((a, b) => a + b, 0) / o.childOkrs.length
+            )
+            const progress = Math.round(
+                o.childOkrs
+                    .map((kr) => kr.progress)
+                    .reduce((a, b) => a + b, 0) / o.childOkrs.length
+            )
+            o.progress = limitBetween(progress, 0, 100)
+            o.save()
+        })
+    }
+    /**
+     * Updates child in DB, triggering update to its parent if it has any,
+       all using a transaction. Returns the child okr after `.save()`
+     * @param connection
+     * @param okr
+     */
+    private async updateChildAndParent(
+        connection: Connection,
+        okr: mongoose.Document<mongoose.Types.ObjectId, object, Okr>
+    ) {
+        const transactionSession = await connection.startSession()
+        return transactionSession.withTransaction(async () => {
+            const res = await okr.save()
+            await this.updateParentInformation(okr._id!.toString())
+            return res
+        })
     }
 }
 
