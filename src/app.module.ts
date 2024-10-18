@@ -13,9 +13,10 @@ import { PorterModule } from './herramientas/porter/porter.module'
 import { MckinseyModule } from './herramientas/mckinsey/mckinsey.module'
 import { BalancedScorecardModule } from './herramientas/balancedScorecard/balanceScorecard.module'
 import { QuestionnaireModule } from './herramientas/questionnaire/questionnaire.module'
-import { ContinuousImprovementModule } from './herramientas/continuousImprovement/continuousImprovement.module'
 import { ProjectStageUserEditionMiddleware } from './middleware/project.middleware'
 import { OkrModule } from './herramientas/okr/okr.module'
+import { PdcaModule } from './herramientas/pdca/pdca.module'
+
 
 dotenv.config()
 if (
@@ -42,7 +43,8 @@ if (
         BalancedScorecardModule,
         OkrModule,
         QuestionnaireModule,
-        ContinuousImprovementModule,
+        OkrModule,
+        PdcaModule,
     ],
     controllers: [AppController],
     providers: [],
