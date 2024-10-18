@@ -5,6 +5,7 @@ import {
     Get,
     HttpException,
     HttpStatus,
+    ImATeapotException,
     Param,
     Post,
     Put,
@@ -26,6 +27,7 @@ import { ProjectDto, UpdateUserRolesDto } from './project.dto'
 import { ProjectService } from './project.service'
 import { isValidPermission, isValidStageType, StageType } from './stage.schema'
 import { OrganizationChart } from './orgChart'
+import { PdcaService } from 'src/herramientas/pdca/pdca.service'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
@@ -40,12 +42,13 @@ export class ProjectController {
         private mckinseyService: MckinseyService,
         private okrService: OkrService,
         private balancedService: BalancedScorecardService,
-        private questionnaireService: QuestionnaireService
+        private questionnaireService: QuestionnaireService,
+        private pdcaService: PdcaService
     ) {}
 
     @Get('/shared')
     async goAway() {
-        throw new HttpException('Go away son', HttpStatus.I_AM_A_TEAPOT)
+        throw new ImATeapotException()
     }
 
     @Get('')
@@ -117,6 +120,11 @@ export class ProjectController {
     @Get(':projectId/questionnaires')
     async getQuestionnaires(@Param('projectId') projectId: string) {
         return this.questionnaireService.findByProjectId(projectId)
+    }
+
+    @Get(':projectId/pdcas')
+    async getPdcas(@Param('projectId') projectId: string) {
+        return this.pdcaService.findByProjectId(projectId)
     }
 
     @Post(':id/organizational-chart')

@@ -10,6 +10,6 @@ import { MongooseModule } from '@nestjs/mongoose'
     ],
     controllers: [PdcaController],
     providers: [PdcaService],
-    exports: [PdcaModule],
+    exports: [PdcaService],
 })
 export class PdcaModule {}
