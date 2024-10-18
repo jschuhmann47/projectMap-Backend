@@ -121,11 +121,12 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         if (!isValidTool(tool)) {
             return ''
         }
-        let document: Document | null
         if (this.toolServiceMap.has(tool as Tool)) {
-            document = await this.toolServiceMap.get(tool as Tool)!(toolId)
+            const document = await this.toolServiceMap.get(tool as Tool)!(
+                toolId
+            )
             if (document) {
-                return document.id // check
+                return document.id
             }
             return ''
         } else {
