@@ -11,7 +11,7 @@ import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
-import { defaultStages, Permission, Stage, StageType } from './stage.schema'
+import { defaultStages, Permission, Stage } from './stage.schema'
 import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
 import { getParentsFromNode, OrganizationChart } from './orgChart'
@@ -118,21 +118,16 @@ export class ProjectService {
         projectId: string,
         userEmail: string,
         stageId: string
-    ): Promise<Stage | null> {
+    ): Promise<Permission> {
         const user = await this.userService.findByEmail(userEmail)
-        const canEdit = new Stage(
-            // StageType can be anything here since we are checking only for the permission
-            StageType.CompetitiveStrategy,
-            Permission.Edit
-        )
         if (!user) {
-            return null
+            return Permission.Hide
         }
         if (user.isAdmin) {
-            return canEdit
+            return Permission.Edit
         }
         const project = await this.getOne(projectId)
-        let stage: Stage | null = null
+        let stage: Stage | undefined
 
         if (project) {
             const matchedUser = project.participants.find(
@@ -140,19 +135,17 @@ export class ProjectService {
             )
 
             if (matchedUser) {
-                stage =
-                    matchedUser.stages.find((stage) => stage.id == stageId) ||
-                    null
+                stage = matchedUser.stages.find((stage) => stage.id == stageId)
             }
             const isCoordinator = project.coordinators.some(
                 (c) => c.email == userEmail
             )
             if (isCoordinator) {
-                return canEdit
+                return Permission.Edit
             }
         }
 
-        return stage
+        return stage?.permission || Permission.Hide
     }
 
     async addChart(projectId: string, chart: OrganizationChart) {

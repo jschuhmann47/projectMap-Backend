@@ -26,6 +26,7 @@ import { AnsoffService } from 'src/herramientas/ansoff/ansoff.service'
 import { QuestionnaireService } from 'src/herramientas/questionnaire/questionnaire.service'
 import { BalancedScorecardService } from 'src/herramientas/balancedScorecard/balancedScorecard.service'
 import { MckinseyService } from 'src/herramientas/mckinsey/mckinsey.service'
+import { PdcaService } from 'src/herramientas/pdca/pdca.service'
 
 @UseGuards(AuthGuard('jwt'))
 @Injectable()
@@ -44,7 +45,8 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         private ansoffService: AnsoffService,
         private mckinseyService: MckinseyService,
         private questionnairesService: QuestionnaireService,
-        private balancedScorecardService: BalancedScorecardService
+        private balancedScorecardService: BalancedScorecardService,
+        private pdcaService: PdcaService
     ) {
         this.toolServiceMap = new Map()
 
@@ -72,6 +74,9 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
         this.toolServiceMap.set(Tool.Okr, (toolId) =>
             this.okrService.findById(toolId)
         )
+        this.toolServiceMap.set(Tool.Pdca, (toolId) =>
+            this.pdcaService.findById(toolId)
+        )
     }
 
     async use(req: Request, res: Response, next: NextFunction) {
@@ -98,19 +103,13 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
 
         const stage = fromToolToStage(tool)
 
-        const userStagePermission =
-            await this.projectService.getUserStagePermission(
-                projectId,
-                email,
-                stage
-            )
+        const permission = await this.projectService.getUserStagePermission(
+            projectId,
+            email,
+            stage
+        )
 
-        if (
-            !userStagePermission ||
-            !userStagePermission.permission ||
-            (userStagePermission &&
-                userStagePermission.permission != Permission.Edit)
-        ) {
+        if (permission != Permission.Edit) {
             throw new ForbiddenException(
                 'User is not available to edit this stage'
             )
