@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common'
+import { Controller, Delete, Get, Param } from '@nestjs/common'
 import { PdcaService } from './pdca.service'
 
 @Controller('pdca')
@@ -9,5 +9,10 @@ export class PdcaController {
     async findById(@Param('pdcaId') pdcaId: string) {
         const pdca = await this.pdcaService.findById(pdcaId)
         return pdca
+    }
+
+    @Delete(':pdcaId')
+    async deletePdca(@Param('pdcaId') pdcaId: string) {
+        return await this.pdcaService.deletePdca(pdcaId)
     }
 }
