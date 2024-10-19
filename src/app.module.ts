@@ -13,9 +13,10 @@ import { PorterModule } from './herramientas/porter/porter.module'
 import { MckinseyModule } from './herramientas/mckinsey/mckinsey.module'
 import { BalancedScorecardModule } from './herramientas/balancedScorecard/balanceScorecard.module'
 import { QuestionnaireModule } from './herramientas/questionnaire/questionnaire.module'
-import { ProjectStageUserEditionMiddleware } from './middleware/project.middleware'
 import { OkrModule } from './herramientas/okr/okr.module'
 import { PdcaModule } from './herramientas/pdca/pdca.module'
+import { ToolPermissionsMiddleware } from './middleware/toolPermissions.middleware'
+import { ProjectPermissionsMiddleware } from './middleware/projectPermissions.middleware'
 
 dotenv.config()
 if (
@@ -51,7 +52,7 @@ if (
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(ProjectStageUserEditionMiddleware)
+            .apply(ToolPermissionsMiddleware)
             .forRoutes(
                 'foda',
                 'porter',
@@ -62,5 +63,6 @@ export class AppModule {
                 'balanced-scorecards',
                 'okr'
             )
+        consumer.apply(ProjectPermissionsMiddleware).forRoutes('projects/')
     }
 }

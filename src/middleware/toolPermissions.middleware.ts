@@ -29,7 +29,7 @@ import { MckinseyService } from 'src/herramientas/mckinsey/mckinsey.service'
 
 @UseGuards(AuthGuard('jwt'))
 @Injectable()
-export class ProjectStageUserEditionMiddleware implements NestMiddleware {
+export class ToolPermissionsMiddleware implements NestMiddleware {
     private toolServiceMap: Map<
         Tool,
         (toolId: string) => Promise<Document | null>
