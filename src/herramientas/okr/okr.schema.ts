@@ -22,7 +22,7 @@ export class KeyStatus {
 
     constructor(period: string, value?: number) {
         this.period = period
-        this.value = Number.isFinite(value) ? Number(value) : null;
+        this.value = Number.isFinite(value) ? Number(value) : null
     }
 }
 export const KeyStatusSchema = SchemaFactory.createForClass(KeyStatus)
@@ -107,25 +107,25 @@ export class KeyResult extends BaseKeyResult {
 
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
 KeyResultSchema.pre('save', function (next) {
-    let lastValue;
+    let lastValue
 
     if (this.goal > this.baseline) {
-        lastValue = getLastNonZeroValue(this.keyStatus) as number;
+        lastValue = getLastNonZeroValue(this.keyStatus) as number
 
         const progress = Math.round(
             ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
         )
         this.progress = limitBetween(progress, 0, 100)
     } else if (this.goal < this.baseline) {
-        lastValue = getLastvalue(this.baseline, this.keyStatus);
+        lastValue = getLastvalue(this.baseline, this.keyStatus)
         const progress = Math.round(
             ((this.baseline - lastValue) * 100) / (this.baseline - this.goal)
         )
 
         this.progress = limitBetween(progress, 0, 100)
     }
-    
-    this.currentScore = lastValue as number;
+
+    this.currentScore = lastValue as number
     next()
 })
 
@@ -234,13 +234,15 @@ OkrSchema.pre('save', function (next) {
 function getLastvalue(baseline: number, keyStatus: KeyStatus[]) {
     const filtered: KeyStatus[] = keyStatus.filter((ks) => ks.value !== null)
     if (filtered.length == 0) {
-        return baseline;
+        return baseline
     }
     return filtered.at(-1)!.value as number
 }
 
 function getLastNonZeroValue(keyStatus: KeyStatus[]): number {
-    const nonZeroValues: KeyStatus[] = keyStatus.filter((ks) => ks.value !== 0 && ks.value !== null)
+    const nonZeroValues: KeyStatus[] = keyStatus.filter(
+        (ks) => ks.value !== 0 && ks.value !== null
+    )
     if (nonZeroValues.length == 0) {
         return 0
     }
