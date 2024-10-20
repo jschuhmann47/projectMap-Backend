@@ -11,6 +11,7 @@ export class PdcaService {
         return this.pdcaModel.findById(id).exec()
     }
 
+
     async deletePdca(id: string) {
         const result = await this.pdcaModel.deleteOne({ _id: id }).exec()
         if (result.deletedCount) {
@@ -18,5 +19,8 @@ export class PdcaService {
         } else {
             throw new NotFoundException()
         }
+
+    async findByProjectId(projectId: string) {
+        return this.pdcaModel.find({ projectId: projectId }).exec()
     }
 }
