@@ -12,6 +12,7 @@ import { UserModule } from '../user/user.module'
 import { ProjectController } from './project.controller'
 import { Project, ProjectSchema } from './project.schema'
 import { ProjectService } from './project.service'
+import { PdcaModule } from 'src/herramientas/pdca/pdca.module'
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { ProjectService } from './project.service'
         BalancedScorecardModule,
         QuestionnaireModule,
         UserModule,
+        PdcaModule,
     ],
     providers: [ProjectService],
     controllers: [ProjectController],

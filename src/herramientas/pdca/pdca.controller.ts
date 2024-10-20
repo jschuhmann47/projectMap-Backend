@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common'
 import { PdcaService } from './pdca.service'
 import { PdcaDto } from './pdca.dto'
 
@@ -16,5 +16,10 @@ export class PdcaController {
     async createPdca(@Body() pdcaDto: PdcaDto) {
         const pdca = await this.pdcaService.createPdca(pdcaDto)
         return pdca
+    }
+
+    @Delete(':pdcaId')
+    async deletePdca(@Param('pdcaId') pdcaId: string) {
+        return await this.pdcaService.deletePdca(pdcaId)
     }
 }

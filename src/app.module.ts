@@ -17,7 +17,6 @@ import { ProjectStageUserEditionMiddleware } from './middleware/project.middlewa
 import { OkrModule } from './herramientas/okr/okr.module'
 import { PdcaModule } from './herramientas/pdca/pdca.module'
 
-
 dotenv.config()
 if (
     !process.env.MONGO_URI ||
@@ -53,6 +52,7 @@ export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(ProjectStageUserEditionMiddleware)
+            .exclude('questionnaires/questions')
             .forRoutes(
                 'foda',
                 'porter',
