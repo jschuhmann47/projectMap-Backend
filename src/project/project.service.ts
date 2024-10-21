@@ -49,18 +49,27 @@ export class ProjectService {
         return this.projectModel.create(projectToCreate)
     }
 
-    async findUserProjects(requestorId: string) {
+    async findUserProjects(requestorId: string, limit: number, offset: number) {
         const isAdmin = await this.userService.isAdmin(requestorId)
-        if (isAdmin) {
-            return this.projectModel.find({})
-        } else {
-            return this.projectModel.find({
-                $or: [
-                    { 'participants.user': requestorId },
-                    { coordinators: requestorId },
-                ],
-            })
-        }
+
+        const query = isAdmin
+            ? {}
+            : {
+                  $or: [
+                      { 'participants.user': requestorId },
+                      { coordinators: requestorId }
+                  ]
+              }
+
+        const total = await this.projectModel.countDocuments(query)
+
+        const projects = await this.projectModel
+            .find(query)
+            .skip(offset)
+            .limit(limit)
+            .exec()
+
+        return [projects, total]
     }
 
     async findProjectsByName(name: string) {

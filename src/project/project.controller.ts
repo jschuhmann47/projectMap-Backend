@@ -52,10 +52,19 @@ export class ProjectController {
     }
 
     @Get('')
-    async getAllUserProjects(@Req() req: { user: { id: string } }) {
+    async getAllUserProjects(
+        @Req() req: { user: { id: string } },
+        @Query('limit') limit: number,
+        @Query('offset') offset: number,
+    ) {
         const { id } = req.user
-        const projects = await this.projectService.findUserProjects(id)
-        return projects
+
+        const [projects, total] = await this.projectService.findUserProjects(id, limit, offset)
+
+        return {
+            items: projects,
+            total
+        }
     }
 
     @Get('search')
