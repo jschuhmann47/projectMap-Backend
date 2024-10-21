@@ -27,7 +27,7 @@ import {
     Okr,
 } from './okr.schema'
 import mongoose from 'mongoose'
-import { limitBetween } from './utils'
+import { limitBetween } from '../utils'
 
 @Injectable()
 export class OkrService {

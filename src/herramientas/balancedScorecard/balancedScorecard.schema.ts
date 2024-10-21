@@ -5,7 +5,7 @@ import { BSCCategory as BSCCategory } from './bsc_category'
 import { Trend } from './trends'
 import { Horizon } from '../horizon'
 import { Frequency } from '../frequency'
-import { limitBetween } from '../okr/utils'
+import { limitBetween } from '../utils'
 
 @Schema()
 export class Checkpoint {
