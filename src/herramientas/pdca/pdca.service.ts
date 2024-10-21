@@ -14,8 +14,12 @@ export class PdcaService {
     }
 
     async createPdca(pdcaDto: PdcaDto) {
-        if (!pdcaDto.name || !pdcaDto.projectId) {
-            throw new BadRequestException('Missing fields')
+        if (!pdcaDto.name) {
+            throw new BadRequestException('Name required')
+        }
+
+        if (!pdcaDto.projectId) {
+            throw new BadRequestException('Project ID required')
         }
         const pdca = new this.pdcaModel(pdcaDto)
         pdca.progress = 0
