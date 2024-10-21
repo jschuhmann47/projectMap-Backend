@@ -251,7 +251,7 @@ export class OkrService {
                 i
             )
             const stringDate = dateToString(newDate)
-            keyStatus.push(new KeyStatus(stringDate, 0))
+            keyStatus.push(new KeyStatus(stringDate))
         }
 
         return new KeyResult(
