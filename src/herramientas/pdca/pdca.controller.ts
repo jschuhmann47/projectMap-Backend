@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+} from '@nestjs/common'
 import { PdcaService } from './pdca.service'
 import { PdcaDto } from './pdca.dto'
 
@@ -22,5 +30,10 @@ export class PdcaController {
     async editPdca(@Param('pdcaId') pdcaId: string, @Body() pdcaDto: PdcaDto) {
         const pdca = await this.pdcaService.editPdca(pdcaId, pdcaDto)
         return pdca
+    }
+
+    @Delete(':pdcaId')
+    async deletePdca(@Param('pdcaId') pdcaId: string) {
+        return await this.pdcaService.deletePdca(pdcaId)
     }
 }

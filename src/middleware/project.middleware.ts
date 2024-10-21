@@ -88,9 +88,17 @@ export class ProjectStageUserEditionMiddleware implements NestMiddleware {
             throw new UnauthorizedException()
         }
         const { email } = await this.authService.verifyToken(token)
-        const toolId = req.url.slice(1)
+        const toolId = req.url.slice(1).split('/')[0]
         const tool = req.baseUrl.slice(1)
-        const projectId = await this.getProjectId(tool, toolId)
+
+        // if we're POSTing a new instance of a tool, the projectId will come from the body,
+        // and toolId will be '', as it doesn't exist yet :P
+        let projectId: string
+        if (toolId) {
+            projectId = await this.getProjectId(tool, toolId)
+        } else {
+            projectId = req.body.projectId
+        }
 
         if (!email || !projectId) {
             throw new HttpException('Campos faltantes', HttpStatus.BAD_REQUEST)
