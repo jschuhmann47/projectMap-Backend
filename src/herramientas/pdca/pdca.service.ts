@@ -40,13 +40,17 @@ export class PdcaService {
         }
         if (pdcaDto.actions !== undefined) {
             pdca.actions = []
-            pdcaDto.actions.forEach((a) => {
+            pdcaDto.actions.forEach((a, i) => {
                 if (!a.name) {
-                    throw new BadRequestException('Missing action name')
+                    throw new BadRequestException(
+                        'Missing action name in index ' + i
+                    )
                 }
                 if (a.progress) {
                     if (a.progress < 0 || a.progress > 100) {
-                        throw new BadRequestException('Invalid progress value')
+                        throw new BadRequestException(
+                            'Invalid progress value in index ' + i
+                        )
                     }
                 }
                 pdca.actions.push(
