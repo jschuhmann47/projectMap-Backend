@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose from 'mongoose'
-import { limitBetween } from '../okr/utils'
+import { limitBetween } from '../utils'
 
 @Schema()
 export class Action {
