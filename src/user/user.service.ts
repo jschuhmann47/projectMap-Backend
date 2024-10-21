@@ -163,13 +163,14 @@ export class UserService {
     }
 
     async updatePassword(userId: string, newPassword: string) {
+        const passwordError = this.validatePasswordStrength(newPassword)
+        if (passwordError)
+            throw new HttpException(passwordError, HttpStatus.BAD_REQUEST)
+
         const user = await this.findById(userId)
         if (!user) {
             throw new HttpException('Usuario inexistente', HttpStatus.NOT_FOUND)
         }
-        const passwordError = this.validatePasswordStrength(newPassword)
-        if (passwordError)
-            throw new HttpException(passwordError, HttpStatus.BAD_REQUEST)
         user.password = await bcrypt.hash(newPassword, 10)
         await user.save()
         return {}
