@@ -18,6 +18,20 @@ import { signPayloadHelper } from 'src/auth/sign'
 export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) {}
 
+    validatePasswordStrength(value: string): string | undefined {
+        let error;
+        const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&-+=()!? "]).{8,128}$/
+
+        if (!value) {
+            error = 'La contraseña es obligatoria.';
+        } else if (!passwordRegex.test(value)) {
+            error = 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.';
+        }
+
+        return error;
+    }
+
     async create(userDTO: CreateUserDto) {
         await this.validate(userDTO)
         userDTO.password = await bcrypt.hash(userDTO.password, 10)
@@ -91,6 +105,9 @@ export class UserService {
                 HttpStatus.BAD_REQUEST
             )
 
+        const passwordError = this.validatePasswordStrength(password);
+        if (passwordError)
+            throw new HttpException(passwordError, HttpStatus.BAD_REQUEST);
         const user = await this.userModel.findOne({ email })
         if (user)
             throw new HttpException(
@@ -149,6 +166,9 @@ export class UserService {
         if (!user) {
             throw new HttpException('Usuario inexistente', HttpStatus.NOT_FOUND)
         }
+        const passwordError = this.validatePasswordStrength(newPassword);
+        if (passwordError)
+            throw new HttpException(passwordError, HttpStatus.BAD_REQUEST);
         user.password = await bcrypt.hash(newPassword, 10)
         await user.save()
         return {}
