@@ -7,6 +7,7 @@ import {
     NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
+import { FilterQuery } from 'mongoose'
 import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
@@ -17,6 +18,11 @@ import { User } from 'src/user/user.schema'
 import { getParentsFromNode, OrganizationChart } from './orgChart'
 import { OkrService } from 'src/herramientas/okr/okr.service'
 
+type ProjectQuery = FilterQuery<{
+    'participants.user'?: string
+    coordinators?: string
+    titulo?: { $regex: RegExp }
+}>
 @Injectable()
 export class ProjectService {
     constructor(
@@ -49,17 +55,28 @@ export class ProjectService {
         return this.projectModel.create(projectToCreate)
     }
 
-    async findUserProjects(requestorId: string, limit: number, offset: number) {
+    async findUserProjects(
+        requestorId: string,
+        limit: number,
+        offset: number,
+        text: string
+    ) {
         const isAdmin = await this.userService.isAdmin(requestorId)
 
-        const query = isAdmin
+        let query: ProjectQuery = isAdmin
             ? {}
             : {
                   $or: [
                       { 'participants.user': requestorId },
-                      { coordinators: requestorId }
-                  ]
+                      { coordinators: requestorId },
+                  ],
               }
+
+        if (text) {
+            query = {
+                $and: [query, { titulo: { $regex: new RegExp(text, 'i') } }],
+            } as ProjectQuery
+        }
 
         const total = await this.projectModel.countDocuments(query)
 
@@ -70,12 +87,6 @@ export class ProjectService {
             .exec()
 
         return [projects, total]
-    }
-
-    async findProjectsByName(name: string) {
-        return this.projectModel.find({
-            name: insensitiveRegExp(name),
-        })
     }
 
     async update(id: string, updated: ProjectDto) {
