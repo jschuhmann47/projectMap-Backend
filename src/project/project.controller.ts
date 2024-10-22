@@ -56,7 +56,7 @@ export class ProjectController {
         @Req() req: { user: { id: string } },
         @Query('limit') limit: number,
         @Query('offset') offset: number,
-        @Query('text') text: string
+        @Query('search') search: string
     ) {
         const { id } = req.user
 
@@ -64,7 +64,7 @@ export class ProjectController {
             id,
             limit,
             offset,
-            text
+            search
         )
 
         return {

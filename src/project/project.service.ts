@@ -13,7 +13,6 @@ import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
 import { defaultStages, Permission, Stage, StageType } from './stage.schema'
-import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
 import { getParentsFromNode, OrganizationChart } from './orgChart'
 import { OkrService } from 'src/herramientas/okr/okr.service'
@@ -59,7 +58,7 @@ export class ProjectService {
         requestorId: string,
         limit: number,
         offset: number,
-        text: string
+        search: string
     ) {
         const isAdmin = await this.userService.isAdmin(requestorId)
 
@@ -72,9 +71,9 @@ export class ProjectService {
                   ],
               }
 
-        if (text) {
+        if (search) {
             query = {
-                $and: [query, { titulo: { $regex: new RegExp(text, 'i') } }],
+                $and: [query, { name: { $regex: new RegExp(search, 'i') } }],
             } as ProjectQuery
         }
 
