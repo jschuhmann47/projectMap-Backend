@@ -42,6 +42,7 @@ export enum Tool {
     Questionnaires = 'questionnaires',
     BalacedScorecard = 'balanced-scorecards',
     Okr = 'okr',
+    Pdca = 'pdca',
 }
 
 const StagesByTool: Map<Tool, StageType> = new Map([
@@ -53,6 +54,7 @@ const StagesByTool: Map<Tool, StageType> = new Map([
     [Tool.Questionnaires, StageType.TransformationPlans],
     [Tool.BalacedScorecard, StageType.FinancialPlanning],
     [Tool.Okr, StageType.FinancialPlanning],
+    [Tool.Pdca, StageType.ContinuousImprovement],
 ])
 
 export function fromToolToStage(tool: string): string {

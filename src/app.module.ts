@@ -53,6 +53,7 @@ export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(ToolPermissionsMiddleware)
+            .exclude('questionnaires/questions')
             .forRoutes(
                 'foda',
                 'porter',
