@@ -24,7 +24,7 @@ export class UserService {
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&-+=()!? "]).{8,128}$/
 
         if (!value) {
-            error = 'La contraseña es obligatoria.'
+            return 'La contraseña es obligatoria.'
         } else if (!passwordRegex.test(value)) {
             return
                 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.'
