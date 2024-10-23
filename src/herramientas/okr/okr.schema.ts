@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import mongoose from 'mongoose'
 import { Frequency } from '../frequency'
 import { Horizon } from '../horizon'
-import { limitBetween } from './utils'
+import { limitBetween } from '../utils'
 
 export enum Priority {
     LOW = 0,
