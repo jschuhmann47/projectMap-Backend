@@ -20,7 +20,7 @@ import { OkrService } from 'src/herramientas/okr/okr.service'
 type ProjectQuery = FilterQuery<{
     'participants.user'?: string
     coordinators?: string
-    titulo?: { $regex: RegExp }
+    name?: { $regex: RegExp }
 }>
 @Injectable()
 export class ProjectService {
