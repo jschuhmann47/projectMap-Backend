@@ -30,7 +30,7 @@ import { PdcaService } from 'src/herramientas/pdca/pdca.service'
 
 @UseGuards(AuthGuard('jwt'))
 @Injectable()
-export class ProjectStageUserEditionMiddleware implements NestMiddleware {
+export class ToolPermissionsMiddleware implements NestMiddleware {
     private toolServiceMap: Map<
         Tool,
         (toolId: string) => Promise<Document | null>
