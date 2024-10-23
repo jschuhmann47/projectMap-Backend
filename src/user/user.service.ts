@@ -19,18 +19,14 @@ export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) {}
 
     validatePasswordStrength(value: string): string | undefined {
-        let error
         const passwordRegex =
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&-+=()!? "]).{8,128}$/
 
         if (!value) {
             return 'La contraseña es obligatoria.'
         } else if (!passwordRegex.test(value)) {
-            return
-                'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.'
+            return 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.'
         }
-
-        return error
     }
 
     async create(userDTO: CreateUserDto) {
