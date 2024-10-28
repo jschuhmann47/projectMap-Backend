@@ -28,7 +28,7 @@ export class ProjectPermissionsMiddleware implements NestMiddleware {
         }
         const { email } = await this.authService.verifyToken(token)
         const user = await this.authService.validateUser({ email })
-        const projectId = req.url.split('/')[1]
+        const projectId = req.url.split('/')[1].split('?')[0]
         if (projectId === '') {
             next()
             return
