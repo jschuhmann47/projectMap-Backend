@@ -7,16 +7,22 @@ import {
     NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
+import { FilterQuery } from 'mongoose'
 import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
 import { Project } from './project.schema'
 import { defaultStages, Permission, Stage } from './stage.schema'
-import { insensitiveRegExp } from './utils/escape_string'
 import { User } from 'src/user/user.schema'
 import { getParentsFromNode, OrganizationChart } from './orgChart'
 import { OkrService } from 'src/herramientas/okr/okr.service'
+import { insensitiveRegExp } from './utils/escape_string'
 
+type ProjectQuery = FilterQuery<{
+    'participants.user'?: string
+    coordinators?: string
+    name?: { $regex: RegExp }
+}>
 @Injectable()
 export class ProjectService {
     constructor(
@@ -49,24 +55,38 @@ export class ProjectService {
         return this.projectModel.create(projectToCreate)
     }
 
-    async findUserProjects(requestorId: string) {
+    async findUserProjects(
+        requestorId: string,
+        limit: number,
+        offset: number,
+        search: string
+    ) {
         const isAdmin = await this.userService.isAdmin(requestorId)
-        if (isAdmin) {
-            return this.projectModel.find({})
-        } else {
-            return this.projectModel.find({
-                $or: [
-                    { 'participants.user': requestorId },
-                    { coordinators: requestorId },
-                ],
-            })
-        }
-    }
 
-    async findProjectsByName(name: string) {
-        return this.projectModel.find({
-            name: insensitiveRegExp(name),
-        })
+        let query: ProjectQuery = isAdmin
+            ? {}
+            : {
+                  $or: [
+                      { 'participants.user': requestorId },
+                      { coordinators: requestorId },
+                  ],
+              }
+
+        if (search) {
+            query = {
+                $and: [query, { name: { $regex: insensitiveRegExp(search) } }],
+            } as ProjectQuery
+        }
+
+        const total = await this.projectModel.countDocuments(query)
+
+        const projects = await this.projectModel
+            .find(query)
+            .skip(offset)
+            .limit(limit)
+            .exec()
+
+        return [projects, total]
     }
 
     async update(id: string, updated: ProjectDto) {

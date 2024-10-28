@@ -54,6 +54,7 @@ export class AppModule {
         consumer
             .apply(ToolPermissionsMiddleware)
             .exclude('questionnaires/questions')
+            .exclude('pestel/options')
             .forRoutes(
                 'foda',
                 'porter',

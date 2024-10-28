@@ -8,7 +8,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import * as bcrypt from 'bcrypt'
 import { Model } from 'mongoose'
-import { insensitiveRegExp } from 'src/project/utils/escape_string'
+import { insensitiveRegExp } from '../project/utils/escape_string'
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto'
 import { User } from './user.schema'
 import { RecoverPasswordNotification } from './../notifications/RecoverPasswordNotification'
@@ -17,6 +17,17 @@ import { signPayloadHelper } from 'src/auth/sign'
 @Injectable()
 export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) {}
+
+    validatePasswordStrength(value: string): string | undefined {
+        const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&-+=()!? "]).{8,128}$/
+
+        if (!value) {
+            return 'La contraseña es obligatoria.'
+        } else if (!passwordRegex.test(value)) {
+            return 'La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.'
+        }
+    }
 
     async create(userDTO: CreateUserDto) {
         await this.validate(userDTO)
@@ -91,6 +102,9 @@ export class UserService {
                 HttpStatus.BAD_REQUEST
             )
 
+        const passwordError = this.validatePasswordStrength(password)
+        if (passwordError)
+            throw new HttpException(passwordError, HttpStatus.BAD_REQUEST)
         const user = await this.userModel.findOne({ email })
         if (user)
             throw new HttpException(
@@ -145,6 +159,10 @@ export class UserService {
     }
 
     async updatePassword(userId: string, newPassword: string) {
+        const passwordError = this.validatePasswordStrength(newPassword)
+        if (passwordError)
+            throw new HttpException(passwordError, HttpStatus.BAD_REQUEST)
+
         const user = await this.findById(userId)
         if (!user) {
             throw new HttpException('Usuario inexistente', HttpStatus.NOT_FOUND)

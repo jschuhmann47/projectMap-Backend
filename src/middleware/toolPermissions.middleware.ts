@@ -33,7 +33,7 @@ import { PdcaService } from 'src/herramientas/pdca/pdca.service'
 export class ToolPermissionsMiddleware implements NestMiddleware {
     private toolServiceMap: Map<
         Tool,
-        (toolId: string) => Promise<Document | null>
+        (toolId: string) => Promise<(Document & { projectId: string }) | null>
     >
     constructor(
         private okrService: OkrService,
@@ -134,7 +134,7 @@ export class ToolPermissionsMiddleware implements NestMiddleware {
                 toolId
             )
             if (document) {
-                return document.id
+                return document.projectId
             }
             return ''
         } else {
