@@ -42,8 +42,12 @@ export class ProjectPermissionsMiddleware implements NestMiddleware {
         }
         const hasPermissions =
             user.isAdmin ||
-            project.coordinators.some((u) => u._id.toString() == projectId) ||
-            project.participants.some((p) => p.user._id.toString() == projectId)
+            project.coordinators.some(
+                (u) => u._id.toString() == user._id.toString()
+            ) ||
+            project.participants.some(
+                (p) => p.user._id.toString() == user._id.toString()
+            )
         if (!hasPermissions) {
             throw new ForbiddenException()
         }
