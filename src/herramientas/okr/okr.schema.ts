@@ -107,7 +107,7 @@ export class KeyResult extends BaseKeyResult {
 
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
 KeyResultSchema.pre('save', function (next) {
-    let lastValue
+    let lastValue: number = 0;
 
     if (this.goal > this.baseline) {
         lastValue = getLastNonZeroValue(this.keyStatus) as number
@@ -125,7 +125,7 @@ KeyResultSchema.pre('save', function (next) {
         this.progress = limitBetween(progress, 0, 100)
     }
 
-    this.currentScore = lastValue as number
+    this.currentScore = lastValue;
     next()
 })
 
