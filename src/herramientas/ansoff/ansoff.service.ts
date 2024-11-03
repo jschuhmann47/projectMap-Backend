@@ -107,4 +107,14 @@ export class AnsoffService {
         if (result.deletedCount) return id
         else throw new HttpException('Ansoff not found', HttpStatus.NOT_FOUND)
     }
+
+    async deleteAllWithProjectId(projectId: string) {
+        const result = await this.ansoffModel.deleteMany({ projectId })
+
+        if (result && result.acknowledged) {
+            return projectId
+        } else {
+            throw new HttpException('Ansoff not found', HttpStatus.NOT_FOUND)
+        }
+    }
 }

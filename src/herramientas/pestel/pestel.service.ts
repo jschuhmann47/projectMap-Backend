@@ -89,6 +89,16 @@ export class PestelService {
         else throw new HttpException('Pestel not found', HttpStatus.NOT_FOUND)
     }
 
+    async deleteAllWithProjectId(projectId: string, session: any) {
+        const result = await this.pestelModel.deleteMany({ projectId }, {session})
+
+        if (result && result.acknowledged) {
+            return projectId
+        } else {
+            throw new HttpException('Pestel not found', HttpStatus.NOT_FOUND)
+        }
+    }
+
     async deleteFactor(id: string, idFactor: string) {
         const pestel = await this.pestelModel.findById(id).exec()
         if (!pestel) {

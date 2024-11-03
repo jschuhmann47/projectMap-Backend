@@ -6,8 +6,8 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { FilterQuery } from 'mongoose'
+import { InjectConnection, InjectModel } from '@nestjs/mongoose'
+import { Connection, FilterQuery } from 'mongoose'
 import mongoose, { Model } from 'mongoose'
 import { UserService } from '../user/user.service'
 import { ProjectDto, toParticipant, UpdateUserRolesDto } from './project.dto'
@@ -17,6 +17,14 @@ import { User } from 'src/user/user.schema'
 import { getParentsFromNode, OrganizationChart } from './orgChart'
 import { OkrService } from 'src/herramientas/okr/okr.service'
 import { insensitiveRegExp } from './utils/escape_string'
+import { FodaService } from 'src/herramientas/foda/foda.service'
+import { PorterService } from 'src/herramientas/porter/porter.service'
+import { PestelService } from 'src/herramientas/pestel/pestel.service'
+import { AnsoffService } from 'src/herramientas/ansoff/ansoff.service'
+import { MckinseyService } from 'src/herramientas/mckinsey/mckinsey.service'
+import { QuestionnaireService } from 'src/herramientas/questionnaire/questionnaire.service'
+import { BalancedScorecardService } from 'src/herramientas/balancedScorecard/balancedScorecard.service'
+import { PdcaService } from 'src/herramientas/pdca/pdca.service'
 
 type ProjectQuery = FilterQuery<{
     'participants.user'?: string
@@ -28,8 +36,19 @@ export class ProjectService {
     constructor(
         @InjectModel(Project.name) private projectModel: Model<Project>,
         private userService: UserService,
-        @Inject(forwardRef(() => OkrService)) private okrService: OkrService
-    ) {}
+        @Inject(forwardRef(() => OkrService)) private okrService: OkrService,
+        private fodaService: FodaService,
+        private porterService: PorterService,
+        private pestelService: PestelService,
+        private ansoffService: AnsoffService,
+        private mckinseyService: MckinseyService,
+        private questionnaireService: QuestionnaireService,
+        private balancedScorecardService: BalancedScorecardService,
+        private pdcaService: PdcaService,
+        @InjectConnection() private connection: Connection,
+    ) {
+        console.log({connection: this.connection})
+    }
 
     async getOne(id: string) {
         const project = await this.getPopulatedProject(id)
@@ -94,9 +113,34 @@ export class ProjectService {
     }
 
     async delete(id: string) {
-        const result = await this.projectModel.deleteOne({ _id: id })
-        if (result.deletedCount) return id
-        else throw new HttpException('Project not found', HttpStatus.NOT_FOUND)
+        const session = await this.connection.startSession();
+        let error = false;
+
+        try {
+            await session.withTransaction(async () => {
+                await this.porterService.deleteAllWithProjectId(id, session);
+                await this.pestelService.deleteAllWithProjectId(id, session)
+                await this.fodaService.deleteAllWithProjectId(id);
+                await this.ansoffService.deleteAllWithProjectId(id);
+                await this.mckinseyService.deleteAllWithProjectId(id);
+                await this.questionnaireService.deleteAllWithProjectId(id);
+                await this.okrService.deleteAllWithProjectId(id);
+                await this.balancedScorecardService.deleteAllWithProjectId(id);
+                await this.pdcaService.deleteAllWithProjectId(id);
+                await this.projectModel.deleteOne({ _id: id })
+            })
+        } catch (e) {
+            console.error({e});
+            error = true;
+        } finally {
+            session.endSession();
+        }
+  
+        if (error) {
+          throw new HttpException('There was an error while trying to remove the project or some tools from the project', HttpStatus.INTERNAL_SERVER_ERROR)    
+        }
+
+        return id;
     }
 
     async updateUserRoles(

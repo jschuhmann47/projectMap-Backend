@@ -144,6 +144,16 @@ export class PorterService {
         else throw new HttpException('Porter not found', HttpStatus.NOT_FOUND)
     }
 
+    async deleteAllWithProjectId(projectId: string, session: any) {
+        const result = await this.porterModel.deleteMany({ projectId }, {session})
+
+        if (result && result.acknowledged) {
+            return projectId
+        } else {
+            throw new HttpException('Porter not found', HttpStatus.NOT_FOUND)
+        }
+    }
+
     getPreguntas() {
         return {
             [Fuerza.RIVALIDAD_ENTRE_COMPETIDORES]:
