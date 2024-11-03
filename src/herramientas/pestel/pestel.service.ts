@@ -90,7 +90,10 @@ export class PestelService {
     }
 
     async deleteAllWithProjectId(projectId: string, session: any) {
-        const result = await this.pestelModel.deleteMany({ projectId }, {session})
+        const result = await this.pestelModel.deleteMany(
+            { projectId },
+            { session }
+        )
 
         if (result && result.acknowledged) {
             return projectId

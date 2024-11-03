@@ -97,7 +97,6 @@ export class MckinseyService {
         else throw new HttpException('McKinsey not found', HttpStatus.NOT_FOUND)
     }
 
-
     async deleteAllWithProjectId(projectId: string) {
         const result = await this.mckinseyModel.deleteMany({ projectId })
 

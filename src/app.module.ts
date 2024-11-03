@@ -61,7 +61,7 @@ export class AppModule {
                 'foda/options',
                 'foda/preSeeds',
                 'porter/options',
-                'porter/preguntas',
+                'porter/preguntas'
             )
             .forRoutes(
                 'foda',

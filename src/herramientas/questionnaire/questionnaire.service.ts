@@ -155,14 +155,17 @@ export class QuestionnaireService {
                 HttpStatus.NOT_FOUND
             )
     }
-    
+
     async deleteAllWithProjectId(projectId: string) {
         const result = await this.questionnaireModel.deleteMany({ projectId })
 
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('Questionnaire not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'Questionnaire not found',
+                HttpStatus.NOT_FOUND
+            )
         }
     }
 }

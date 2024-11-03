@@ -51,12 +51,17 @@ export class BalancedScorecardService {
     }
 
     async deleteAllWithProjectId(projectId: string) {
-        const result = await this.balancedScorecardModel.deleteMany({ projectId })
+        const result = await this.balancedScorecardModel.deleteMany({
+            projectId,
+        })
 
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('Balanced Scorecard not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'Balanced Scorecard not found',
+                HttpStatus.NOT_FOUND
+            )
         }
     }
 

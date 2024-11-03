@@ -45,9 +45,9 @@ export class ProjectService {
         private questionnaireService: QuestionnaireService,
         private balancedScorecardService: BalancedScorecardService,
         private pdcaService: PdcaService,
-        @InjectConnection() private connection: Connection,
+        @InjectConnection() private connection: Connection
     ) {
-        console.log({connection: this.connection})
+        console.log({ connection: this.connection })
     }
 
     async getOne(id: string) {
@@ -113,34 +113,37 @@ export class ProjectService {
     }
 
     async delete(id: string) {
-        const session = await this.connection.startSession();
-        let error = false;
+        const session = await this.connection.startSession()
+        let error = false
 
         try {
             await session.withTransaction(async () => {
-                await this.porterService.deleteAllWithProjectId(id, session);
+                await this.porterService.deleteAllWithProjectId(id, session)
                 await this.pestelService.deleteAllWithProjectId(id, session)
-                await this.fodaService.deleteAllWithProjectId(id);
-                await this.ansoffService.deleteAllWithProjectId(id);
-                await this.mckinseyService.deleteAllWithProjectId(id);
-                await this.questionnaireService.deleteAllWithProjectId(id);
-                await this.okrService.deleteAllWithProjectId(id);
-                await this.balancedScorecardService.deleteAllWithProjectId(id);
-                await this.pdcaService.deleteAllWithProjectId(id);
+                await this.fodaService.deleteAllWithProjectId(id)
+                await this.ansoffService.deleteAllWithProjectId(id)
+                await this.mckinseyService.deleteAllWithProjectId(id)
+                await this.questionnaireService.deleteAllWithProjectId(id)
+                await this.okrService.deleteAllWithProjectId(id)
+                await this.balancedScorecardService.deleteAllWithProjectId(id)
+                await this.pdcaService.deleteAllWithProjectId(id)
                 await this.projectModel.deleteOne({ _id: id })
             })
         } catch (e) {
-            console.error({e});
-            error = true;
+            console.error({ e })
+            error = true
         } finally {
-            session.endSession();
-        }
-  
-        if (error) {
-          throw new HttpException('There was an error while trying to remove the project or some tools from the project', HttpStatus.INTERNAL_SERVER_ERROR)    
+            session.endSession()
         }
 
-        return id;
+        if (error) {
+            throw new HttpException(
+                'There was an error while trying to remove the project or some tools from the project',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
+        }
+
+        return id
     }
 
     async updateUserRoles(
