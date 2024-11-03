@@ -108,16 +108,16 @@ export class KeyResult extends BaseKeyResult {
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
 
 function getLastvalue(keyStatus: KeyStatus[], defaultValue: number) {
-    const filtered: KeyStatus[] = keyStatus.filter((ks) => ks.value !== null);
-    
+    const filtered: KeyStatus[] = keyStatus.filter((ks) => ks.value !== null)
+
     if (filtered.length == 0) {
-        return defaultValue;
+        return defaultValue
     }
     return filtered.at(-1)!.value as number
 }
 
 KeyResultSchema.pre('save', function (next) {
-    let lastValue: number = 0;
+    let lastValue: number = 0
 
     if (this.goal > this.baseline) {
         lastValue = getLastvalue(this.keyStatus, 0) as number
@@ -135,7 +135,7 @@ KeyResultSchema.pre('save', function (next) {
         this.progress = limitBetween(progress, 0, 100)
     }
 
-    this.currentScore = lastValue;
+    this.currentScore = lastValue
     next()
 })
 
