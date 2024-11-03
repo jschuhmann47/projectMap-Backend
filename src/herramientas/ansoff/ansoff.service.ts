@@ -114,7 +114,10 @@ export class AnsoffService {
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('Ansoff not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'Ansoff delete error',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
     }
 }

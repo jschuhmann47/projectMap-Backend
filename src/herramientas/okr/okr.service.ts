@@ -228,7 +228,10 @@ export class OkrService {
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('Okr not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'Okr delete error',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
     }
 

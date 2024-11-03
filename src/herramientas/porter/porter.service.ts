@@ -144,13 +144,16 @@ export class PorterService {
         else throw new HttpException('Porter not found', HttpStatus.NOT_FOUND)
     }
 
-    async deleteAllWithProjectId(projectId: string, session: any) {
-        const result = await this.porterModel.deleteMany({ projectId }, {session})
+    async deleteAllWithProjectId(projectId: string) {
+        const result = await this.porterModel.deleteMany({ projectId })
 
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('Porter not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'Porter delete error',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
     }
 

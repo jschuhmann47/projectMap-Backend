@@ -101,7 +101,10 @@ export class FodaService {
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('Foda not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'Foda delete error',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
     }
 

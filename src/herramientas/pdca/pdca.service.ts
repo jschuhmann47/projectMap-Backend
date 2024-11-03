@@ -78,7 +78,10 @@ export class PdcaService {
         if (result && result.acknowledged) {
             return projectId
         } else {
-            throw new HttpException('PDCA not found', HttpStatus.NOT_FOUND)
+            throw new HttpException(
+                'PDCA delete error',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
     }
 
