@@ -17,12 +17,12 @@ export class KeyStatus {
     @Prop({ type: String, required: true })
     period: string
 
-    @Prop({ type: Number, required: true })
-    value: number
+    @Prop({ type: Number, required: false, default: null })
+    value: number | null
 
-    constructor(period: string, value: number) {
+    constructor(period: string, value?: number) {
         this.period = period
-        this.value = value
+        this.value = Number.isFinite(value) ? Number(value) : null
     }
 }
 export const KeyStatusSchema = SchemaFactory.createForClass(KeyStatus)
@@ -104,13 +104,37 @@ export class KeyResult extends BaseKeyResult {
         this.keyStatus = keyStatus
     }
 }
+
 export const KeyResultSchema = SchemaFactory.createForClass(KeyResult)
+
+function getLastvalue(keyStatus: KeyStatus[], defaultValue: number) {
+    const filtered: KeyStatus[] = keyStatus.filter((ks) => ks.value !== null)
+
+    if (filtered.length == 0) {
+        return defaultValue
+    }
+    return filtered.at(-1)!.value as number
+}
+
 KeyResultSchema.pre('save', function (next) {
-    const lastValue = getLastNonZeroValue(this.keyStatus)
-    const progress = Math.round(
-        ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
-    )
-    this.progress = limitBetween(progress, 0, 100)
+    let lastValue: number = 0
+
+    if (this.goal > this.baseline) {
+        lastValue = getLastvalue(this.keyStatus, 0) as number
+
+        const progress = Math.round(
+            ((lastValue - this.baseline) * 100) / (this.goal - this.baseline)
+        )
+        this.progress = limitBetween(progress, 0, 100)
+    } else if (this.goal < this.baseline) {
+        lastValue = getLastvalue(this.keyStatus, this.baseline)
+        const progress = Math.round(
+            ((this.baseline - lastValue) * 100) / (this.baseline - this.goal)
+        )
+
+        this.progress = limitBetween(progress, 0, 100)
+    }
+
     this.currentScore = lastValue
     next()
 })
@@ -216,11 +240,3 @@ OkrSchema.pre('save', function (next) {
     }
     next()
 })
-
-function getLastNonZeroValue(keyStatus: KeyStatus[]) {
-    const nonZeroValues = keyStatus.filter((ks) => ks.value !== 0)
-    if (nonZeroValues.length == 0) {
-        return 0
-    }
-    return nonZeroValues.at(-1)!.value
-}
