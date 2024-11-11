@@ -5,33 +5,56 @@ import mongoose from 'mongoose'
 import { Stage } from './stage.schema'
 
 export class ProjectDto {
-    @ApiProperty()
+    @ApiProperty({
+        example: '123456',
+        description: 'ID of the user requesting the project',
+    })
     requestorId: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'New Project',
+        description: 'Title of the project',
+    })
     titulo: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'Project description goes here',
+        description: 'Description of the project',
+    })
     descripcion: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: '#FF5733',
+        description: 'Hex color code for the project',
+    })
     color: string
 }
 
 export class UpdateUserRolesDto {
-    @ApiProperty()
+    @ApiProperty({
+        type: () => UpdateUserRolesData,
+        isArray: true,
+        description: 'List of users and their roles to update',
+    })
     users: UpdateUserRolesData[]
 }
 
 export class UpdateUserRolesData {
-    @ApiProperty()
+    @ApiProperty({ example: '123456', description: 'ID of the user' })
     userId: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'coordinator',
+        description: 'Role of the user',
+        enum: ['coordinator', 'participant'],
+    })
     role: string
 
-    // Only if participant
-    @ApiProperty()
+    @ApiProperty({
+        type: [Stage],
+        description: 'Stages assigned to the user if role is participant',
+        required: false,
+    })
     stages: Stage[]
 }
 

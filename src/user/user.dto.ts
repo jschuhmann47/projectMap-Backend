@@ -1,47 +1,67 @@
-//import { Roles } from './user.schema'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class UserDto {
-    @ApiProperty()
+    @ApiProperty({
+        example: 'user@example.com',
+        description: 'Email of the user',
+    })
     email: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'password123',
+        description: 'Password of the user',
+    })
     password: string
 }
 
 export class CreateUserDto {
-    @ApiProperty()
+    @ApiProperty({ example: 'John', description: 'First name of the user' })
     firstName: string
 
-    @ApiProperty()
+    @ApiProperty({ example: 'Doe', description: 'Last name of the user' })
     lastName: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'password123',
+        description: 'Password of the user',
+    })
     password: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'password123',
+        description: 'Password confirmation',
+    })
     confirmPassword: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'user@example.com',
+        description: 'Email of the user',
+    })
     email: string
 
-    // @ApiProperty({ enum: Roles })
-    // type: Roles
-
-    @ApiProperty()
+    @ApiProperty({
+        example: 'Software developer with 10 years of experience.',
+        description: 'Biography of the user',
+    })
     biography: string
 }
 
 export class UpdateUserDto {
-    @ApiProperty()
+    @ApiProperty({ example: 'John', description: 'First name of the user' })
     firstName: string
 
-    @ApiProperty()
+    @ApiProperty({ example: 'Doe', description: 'Last name of the user' })
     lastName: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'calendlyUser123',
+        description: 'Calendly username for scheduling meetings',
+    })
     calendlyUser: string
 
-    @ApiProperty()
+    @ApiProperty({
+        example: 'Experienced project manager and team leader.',
+        description: 'Biography of the user',
+    })
     biography: string
 }

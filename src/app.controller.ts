@@ -9,10 +9,18 @@ export class AppController {
     @ApiOperation({ summary: 'Retrieve available tools' })
     @ApiResponse({
         status: 200,
-        description: 'List of available tools',
+        description: 'Returns a list of available tools with their identifiers',
         schema: {
-            example: {
-                tool: ['Tool1', 'Tool2', 'Tool3'],
+            type: 'object',
+            properties: {
+                tool: {
+                    type: 'array',
+                    items: {
+                        enum: Object.values(Tool),
+                    },
+                    description:
+                        'List of tool identifiers available in the system',
+                },
             },
         },
     })

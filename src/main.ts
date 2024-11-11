@@ -5,6 +5,7 @@ import {
     SwaggerDocumentOptions,
     SwaggerModule,
 } from '@nestjs/swagger'
+import { Logger } from '@nestjs/common'
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule)
@@ -33,6 +34,10 @@ async function bootstrap() {
     })
 
     await app.listen(process.env.PORT || 3000)
+    Logger.log(
+        `Swagger is available at http://localhost:${process.env.PORT}/docs`,
+        'Bootstrap'
+    )
 }
 
 bootstrap()
