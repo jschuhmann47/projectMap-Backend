@@ -19,34 +19,14 @@ import {
     ApiParam,
     ApiQuery,
 } from '@nestjs/swagger'
-import { AnsoffService } from '../herramientas/ansoff/ansoff.service'
-import { BalancedScorecardService } from '../herramientas/balancedScorecard/balancedScorecard.service'
-import { FodaService } from '../herramientas/foda/foda.service'
-import { MckinseyService } from '../herramientas/mckinsey/mckinsey.service'
-import { OkrService } from '../herramientas/okr/okr.service'
-import { PestelService } from '../herramientas/pestel/pestel.service'
-import { PorterService } from '../herramientas/porter/porter.service'
-import { QuestionnaireService } from '../herramientas/questionnaire/questionnaire.service'
 import { ProjectDto } from './project.dto'
 import { ProjectService } from './project.service'
-import { PdcaService } from 'src/herramientas/pdca/pdca.service'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('projects')
 @Controller('projects')
 export class ProjectController {
-    constructor(
-        private projectService: ProjectService,
-        private fodaService: FodaService,
-        private pestelService: PestelService,
-        private ansoffService: AnsoffService,
-        private porterService: PorterService,
-        private mckinseyService: MckinseyService,
-        private okrService: OkrService,
-        private balancedService: BalancedScorecardService,
-        private questionnaireService: QuestionnaireService,
-        private pdcaService: PdcaService
-    ) {}
+    constructor(private projectService: ProjectService) {}
 
     @Get('/shared')
     @ApiOperation({ summary: 'Throws an HTTP 418 error' })
