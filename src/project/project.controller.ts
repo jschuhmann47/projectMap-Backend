@@ -49,7 +49,7 @@ export class ProjectController {
     ) {}
 
     @Get('/shared')
-    @ApiOperation({ summary: 'Throws an HTTP 418 error as a joke' })
+    @ApiOperation({ summary: 'Throws an HTTP 418 error' })
     @ApiResponse({ status: 418, description: "I'm a teapot" })
     async goAway() {
         throw new ImATeapotException()
