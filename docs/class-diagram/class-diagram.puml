@@ -1,5 +1,4 @@
 @startuml
-
 ' Controladores
 class AuthController {
     + hiddenInformation()
@@ -228,6 +227,12 @@ AnsoffController --> AnsoffService : uses
 OkrController --> OkrService : uses
 BalancedScorecardController --> BalancedScorecardService : uses
 
+FodaService --> Foda : manages
+PestelService --> Pestel : manages
+AnsoffService --> Ansoff : manages
+OkrService --> Okr : manages
+BalancedScorecardService --> BalancedScorecard : manages
+
 Foda --> Project : belongs_to
 Foda --> Factor : has
 Pestel --> Project : belongs_to
@@ -255,5 +260,4 @@ ToolsModule --> PestelController
 ToolsModule --> AnsoffController
 ToolsModule --> OkrController
 ToolsModule --> BalancedScorecardController
-
 @enduml
