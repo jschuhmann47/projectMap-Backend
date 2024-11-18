@@ -67,6 +67,20 @@ class QuestionnaireController {
     + delete(questionnaireId: string)
 }
 
+class PorterController {
+    + create(porterDto: PorterDto)
+    + getAllByProject(projectId: string)
+    + update(porterId: string, porterDto: PorterDto)
+    + delete(porterId: string)
+}
+
+class MckinseyController {
+    + create(mckinseyDto: McKinseyDto)
+    + getAllByProject(projectId: string)
+    + update(mckinseyId: string, mckinseyDto: McKinseyDto)
+    + delete(mckinseyId: string)
+}
+
 ' Servicios
 class AuthService {
     + validateUser(email: string)
@@ -134,25 +148,18 @@ class QuestionnaireService {
     + delete(questionnaireId: string)
 }
 
-' Módulos
-class AuthModule {
-    + providers
-    + controllers
+class PorterService {
+    + create(porterDto: PorterDto)
+    + findAllByProject(projectId: string)
+    + update(porterId: string, porterDto: PorterDto)
+    + delete(porterId: string)
 }
 
-class ProjectModule {
-    + providers
-    + controllers
-}
-
-class UserModule {
-    + providers
-    + controllers
-}
-
-class ToolsModule {
-    + providers
-    + controllers
+class MckinseyService {
+    + create(mckinseyDto: MckinseyDto)
+    + findAllByProject(projectId: string)
+    + update(mckinseyId: string, mckinseyDto: McKinseyDto)
+    + delete(mckinseyId: string)
 }
 
 ' Entidades principales
@@ -164,6 +171,8 @@ class User {
     - password: string
     - isAdmin: boolean
     - verificationCode: number | null
+    - createdAt: Date
+    - updatedAt: Date
 }
 
 class Project {
@@ -171,6 +180,8 @@ class Project {
     - name: string
     - description: string
     - owner: User
+    - createdAt: Date
+    - updatedAt: Date
 }
 
 class Foda {
@@ -178,6 +189,7 @@ class Foda {
     - title: string
     - factors: Factor[]
     - projectId: Project
+    - completionStatus: string
 }
 
 class Pestel {
@@ -185,6 +197,7 @@ class Pestel {
     - title: string
     - factors: Factor[]
     - projectId: Project
+    - analysisSummary: string
 }
 
 class Ansoff {
@@ -198,6 +211,7 @@ class Okr {
     - _id: mongoose.Types.ObjectId
     - title: string
     - objectives: Objective[]
+    - progressPercentage: number
     - projectId: Project
 }
 
@@ -214,6 +228,7 @@ class Pdca {
     - title: string
     - steps: string[]
     - projectId: Project
+    - completionDate: Date
 }
 
 class Questionnaire {
@@ -221,41 +236,80 @@ class Questionnaire {
     - title: string
     - questions: Question[]
     - projectId: Project
+    - averageScore: number
+}
+
+class Porter {
+    - _id: mongoose.Types.ObjectId
+    - title: string
+    - forces: Force[]
+    - projectId: Project
+    - competitiveIndex: number
+}
+
+class McKinsey {
+    - _id: mongoose.Types.ObjectId
+    - title: string
+    - businessUnits: BusinessUnit[]
+    - projectId: Project
+    - portfolioStrength: string
 }
 
 class Factor {
     - description: string
     - importance: string
     - urgency: string
+    - influence: string
 }
 
 class Strategy {
     - marketSituation: string
     - productSituation: string
     - successLevel: string
+    - strategyName: string
+}
+
+class Force {
+    - description: string
+    - impact: string
+    - priorityLevel: string
+}
+
+class BusinessUnit {
+    - name: string
+    - competitiveStrength: string
+    - marketAttractiveness: string
+    - unitValue: number
 }
 
 class Objective {
     - description: string
     - keyResults: KeyResult[]
+    - responsible: string
+    - completionStatus: string
 }
 
 class KeyResult {
     - metric: string
     - target: number
     - currentValue: number
+    - progress: number
 }
 
 class Initiative {
     - description: string
     - area: string
     - responsible: string
+    - startDate: Date
+    - dueDate: Date
 }
 
 class Question {
     - text: string
     - options: string[]
     - correctAnswer: string
+    - difficulty: string
+    - selectedAnswers: string[]
 }
 
 ' Relaciones
@@ -276,6 +330,8 @@ OkrController --> OkrService : uses
 BalancedScorecardController --> BalancedScorecardService : uses
 PdcaController --> PdcaService : uses
 QuestionnaireController --> QuestionnaireService : uses
+PorterController --> PorterService : uses
+MckinseyController --> MckinseyService : uses
 
 FodaService --> Foda : manages
 PestelService --> Pestel : manages
@@ -284,6 +340,8 @@ OkrService --> Okr : manages
 BalancedScorecardService --> BalancedScorecard : manages
 PdcaService --> Pdca : manages
 QuestionnaireService --> Questionnaire : manages
+PorterService --> Porter : manages
+MckinseyService --> McKinsey : manages
 
 Foda --> Project : belongs_to
 Foda --> Factor : has
@@ -300,6 +358,10 @@ BalancedScorecard --> Initiative : has
 Pdca --> Project : belongs_to
 Questionnaire --> Project : belongs_to
 Questionnaire --> Question : has
+Porter --> Project : belongs_to
+Porter --> Force : has
+McKinsey --> Project : belongs_to
+McKinsey --> BusinessUnit : has
 
 Project --> Foda : has
 Project --> Pestel : has
@@ -308,6 +370,8 @@ Project --> Okr : has
 Project --> BalancedScorecard : has
 Project --> Pdca : has
 Project --> Questionnaire : has
+Project --> Porter : has
+Project --> McKinsey : has
 
 AuthModule --> AuthController
 ProjectModule --> ProjectController
@@ -319,4 +383,6 @@ ToolsModule --> OkrController
 ToolsModule --> BalancedScorecardController
 ToolsModule --> PdcaController
 ToolsModule --> QuestionnaireController
+ToolsModule --> PorterController
+ToolsModule --> MckinseyController
 @enduml
