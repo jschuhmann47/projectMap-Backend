@@ -53,6 +53,20 @@ class BalancedScorecardController {
     + delete(balancedId: string)
 }
 
+class PdcaController {
+    + create(pdcaDto: PdcaDto)
+    + getAllByProject(projectId: string)
+    + update(pdcaId: string, pdcaDto: PdcaDto)
+    + delete(pdcaId: string)
+}
+
+class QuestionnaireController {
+    + create(questionnaireDto: QuestionnaireDto)
+    + getAllByProject(projectId: string)
+    + update(questionnaireId: string, questionnaireDto: QuestionnaireDto)
+    + delete(questionnaireId: string)
+}
+
 ' Servicios
 class AuthService {
     + validateUser(email: string)
@@ -104,6 +118,20 @@ class BalancedScorecardService {
     + findAllByProject(projectId: string)
     + update(balancedId: string, balancedDto: BalancedScorecardDto)
     + delete(balancedId: string)
+}
+
+class PdcaService {
+    + create(pdcaDto: PdcaDto)
+    + findAllByProject(projectId: string)
+    + update(pdcaId: string, pdcaDto: PdcaDto)
+    + delete(pdcaId: string)
+}
+
+class QuestionnaireService {
+    + create(questionnaireDto: QuestionnaireDto)
+    + findAllByProject(projectId: string)
+    + update(questionnaireId: string, questionnaireDto: QuestionnaireDto)
+    + delete(questionnaireId: string)
 }
 
 ' Módulos
@@ -181,6 +209,20 @@ class BalancedScorecard {
     - projectId: Project
 }
 
+class Pdca {
+    - _id: mongoose.Types.ObjectId
+    - title: string
+    - steps: string[]
+    - projectId: Project
+}
+
+class Questionnaire {
+    - _id: mongoose.Types.ObjectId
+    - title: string
+    - questions: Question[]
+    - projectId: Project
+}
+
 class Factor {
     - description: string
     - importance: string
@@ -210,6 +252,12 @@ class Initiative {
     - responsible: string
 }
 
+class Question {
+    - text: string
+    - options: string[]
+    - correctAnswer: string
+}
+
 ' Relaciones
 AuthController --> AuthService : uses
 AuthController --> UserService : uses
@@ -226,12 +274,16 @@ PestelController --> PestelService : uses
 AnsoffController --> AnsoffService : uses
 OkrController --> OkrService : uses
 BalancedScorecardController --> BalancedScorecardService : uses
+PdcaController --> PdcaService : uses
+QuestionnaireController --> QuestionnaireService : uses
 
 FodaService --> Foda : manages
 PestelService --> Pestel : manages
 AnsoffService --> Ansoff : manages
 OkrService --> Okr : manages
 BalancedScorecardService --> BalancedScorecard : manages
+PdcaService --> Pdca : manages
+QuestionnaireService --> Questionnaire : manages
 
 Foda --> Project : belongs_to
 Foda --> Factor : has
@@ -245,12 +297,17 @@ Objective --> KeyResult : has
 BalancedScorecard --> Project : belongs_to
 BalancedScorecard --> Objective : has
 BalancedScorecard --> Initiative : has
+Pdca --> Project : belongs_to
+Questionnaire --> Project : belongs_to
+Questionnaire --> Question : has
 
 Project --> Foda : has
 Project --> Pestel : has
 Project --> Ansoff : has
 Project --> Okr : has
 Project --> BalancedScorecard : has
+Project --> Pdca : has
+Project --> Questionnaire : has
 
 AuthModule --> AuthController
 ProjectModule --> ProjectController
@@ -260,4 +317,6 @@ ToolsModule --> PestelController
 ToolsModule --> AnsoffController
 ToolsModule --> OkrController
 ToolsModule --> BalancedScorecardController
+ToolsModule --> PdcaController
+ToolsModule --> QuestionnaireController
 @enduml
