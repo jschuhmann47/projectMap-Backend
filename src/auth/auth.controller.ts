@@ -4,12 +4,7 @@ import { CreateUserDto } from 'src/user/user.dto'
 import { UserService } from 'src/user/user.service'
 import { AuthService } from './auth.service'
 import { LoginDTO } from './login.dto'
-import {
-    ApiTags,
-    ApiOperation,
-    ApiResponse,
-    ApiBearerAuth,
-} from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { User } from 'src/user/user.schema'
 
 @Controller('auth')
@@ -23,7 +18,6 @@ export class AuthController {
     @Get('/onlyauth')
     @UseGuards(AuthGuard('jwt'))
     @ApiOperation({ summary: 'Access protected information' })
-    @ApiBearerAuth()
     @ApiResponse({
         status: 200,
         description: 'Returns hidden information for authenticated users only.',
@@ -72,7 +66,6 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     @Get('/profile')
     @ApiOperation({ summary: 'Get the profile of the authenticated user' })
-    @ApiBearerAuth()
     @ApiResponse({
         status: 200,
         description:

@@ -9,20 +9,13 @@ import {
     UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import {
-    ApiTags,
-    ApiOperation,
-    ApiResponse,
-    ApiParam,
-    ApiBearerAuth,
-} from '@nestjs/swagger'
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { KeyResultDto, OkrDto } from './okr.dto'
 import { OkrService } from './okr.service'
 
 @Controller('okr')
 @ApiTags('okr')
 @UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth() // Requiere autenticación JWT
 export class OkrController {
     constructor(private okrService: OkrService) {}
 

@@ -9,13 +9,7 @@ import {
     UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import {
-    ApiTags,
-    ApiOperation,
-    ApiResponse,
-    ApiParam,
-    ApiBearerAuth,
-} from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger'
 import {
     BalancedScorecardDto,
     CheckpointDto,
@@ -26,7 +20,6 @@ import { BalancedScorecardService } from './balancedScorecard.service'
 @Controller('balanced-scorecards')
 @ApiTags('balanced-scorecards')
 @UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth() // Requiere token JWT
 export class BalancedScorecardController {
     constructor(private balancedScorecardService: BalancedScorecardService) {}
 

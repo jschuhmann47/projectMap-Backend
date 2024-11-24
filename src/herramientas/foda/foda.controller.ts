@@ -11,17 +11,10 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { FactorDto, FodaDto } from './foda.dto'
 import { FodaService } from './foda.service'
-import {
-    ApiTags,
-    ApiOperation,
-    ApiResponse,
-    ApiParam,
-    ApiBearerAuth,
-} from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger'
 
 @UseGuards(AuthGuard('jwt'))
 @ApiTags('foda')
-@ApiBearerAuth() // Requiere autenticación JWT
 @Controller('foda')
 export class FodaController {
     constructor(private fodaService: FodaService) {}
